@@ -1,0 +1,96 @@
+# ЧЁТКОЕ ТЗ: перепроверка и завершение Moira
+
+## ПРАВИЛО ВЫПОЛНЕНИЯ (самое главное)
+Ты должна выполнить шаги 1→6 СТРОГО ПО ПОРЯДКУ и ОСТАНОВИТЬСЯ после шага 6.
+- каждый шаг = готовая команда, которую ты просто запускаешь и записываешь вывод;
+- НЕ исследуй проект сверх команды;
+- НЕ перечитывай этот файл в цикле — прочитай один раз, иди по шагам;
+- НЕ спрашивай «continue if you have next steps»; если шаг сделан — сразу переходи к следующему по списку;
+- после завершения шага 6 выведи `[ГОТОВО]` и прекрати.
+
+## ЖЁСТКИЕ ЗАПРЕТЫ
+- не меняй: aiogram, bot/main.py, тарифы, payment/referral, БД-схему, docs/STABILIZATION_*
+- не пиши файлы вне C:/Users/IMYAREK/Voprosy/moira
+- не коммить, не пуши
+- не «облагораживай» тексты свыше шага
+- если команда падает — выведи первые 15 строк ошибки, укажи [ОШИБКА], переходи к следующему шагу (не исправляй код без отдельного указания)
+
+---
+
+## ШАГ 1 — прогнать все тесты
+Выполни и запиши вывод:
+```
+./.venv/Scripts/python.exe -m pytest tests/ -q
+```
+Выведи: `[ШАГ1] N passed, M failed`.
+
+## ШАГ 2 — проверить колоду 78 карт
+```
+./.venv/Scripts/python.exe -m pytest tests/test_cards_78.py -v
+```
+```
+./.venv/Scripts/python.exe -c "import sys; sys.path.insert(0,'.'); from bot.tarot.deck import build_deck; d=build_deck(); print('len',len(d)); print('unique',len(set(c.id for c in d))); print('majors',sum(1 for c in d if c.arcana=='major')); print('minors',sum(1 for c in d if c.arcana=='minor'))"
+```
+Выведи: `[ШАГ2] len=78 unique=78 majors=22 minors=56`, аномалии если есть.
+
+## ШАГ 3 — проверить fallback без LLM
+```
+./.venv/Scripts/python.exe -m pytest tests/test_fallback.py -v
+```
+```
+./.venv/Scripts/python.exe -c "import sys; sys.path.insert(0,'.'); from bot.tarot.fallback import compose_fallback_reading; from bot.tarot.spreads import draw_cards; r=compose_fallback_reading('ru','situation',draw_cards('situation')); print('keys',list(r.keys()))"
+```
+Выведи: `[ШАГ3] ключи: ...`, тесты N passed.
+
+## ШАГ 4 — «Мой Аркан»: 22 аркана, без % 22
+```
+./.venv/Scripts/python.exe -c "import re; s=open('bot/tarot/quiz.py',encoding='utf8').read(); print('mod22_in_code:', bool(re.search(r'%\s*22|mod\s*22', s)))"
+```
+```
+./.venv/Scripts/python.exe -c "import sys; sys.path.insert(0,'.'); from bot.tarot.quiz import compute_result; from itertools import product; r=set(); [r.add(compute_result(list(a))) for a in product(range(4),repeat=6)]; print('reached', len(r), 'covered_0_21', all(i in r for i in range(22)))"
+```
+Выведи: `[ШАГ4] mod22=False reached=22 covered_0_21=True`.
+
+## ШАГ 5 — создать визуальные изображения (ИСПРАВЛЕННЫЙ код, сигнатуры верные)
+ВНИМАНИЕ: cards_info требует объекты TarotCard: `{'label':str,'card':TarotCard,'reversed':bool,'name':str}`.
+make_share_image(spread_title, cards_info, summary_str, footer). НЕ передавай dict как 'name'.
+Создай папку и изображения, выполни РОВНО этот код:
+```python
+import sys, os
+sys.path.insert(0, '.')
+from bot.visual.render import make_spread_image, make_share_image, make_single_image
+from bot.tarot.deck import build_deck
+os.makedirs('artifacts/visual_review', exist_ok=True)
+deck = build_deck()
+def ci(tc, label, rev=False):
+    return {'label': label, 'card': tc, 'reversed': rev, 'name': label}
+info = [ci(deck[0],'Sun'), ci(deck[1],'Moon',True), ci(deck[2],'World')]
+open('artifacts/visual_review/spread_ru.png','wb').write(make_spread_image('Расклад Ситуация', info))
+open('artifacts/visual_review/share_ru.png','wb').write(make_share_image('Расклад Ситуация', info, 'Синтез: карты указывают на новые возможности.'))
+open('artifacts/visual_review/single_card.png','wb').write(make_single_image('Заголовок','Подзаголовок', deck[0]))
+open('artifacts/visual_review/single_rev.png','wb').write(make_single_image('Заголовок','Подзаголовок', deck[0], reversed_=True))
+print('files:', [(f, os.path.getsize('artifacts/visual_review/'+f)) for f in os.listdir('artifacts/visual_review')])
+```
+Выведи: `[ШАГ5] files: [(имя, байт), ...]`. Если функция падает — [ОШИБКА] + строки ошибки, иди к шагу 6.
+
+## ШАГ 6 — создать итоговый отчёт
+Создай файл `docs/REVERIFICATION_REPORT.md` содержимым:
+```
+# Отчёт перепроверки Moira
+## 1. Тесты
+[paste ШАГ1 output]
+## 2. Колода
+[paste ШАГ2 output]
+## 3. Fallback
+[paste ШАГ3 output]
+## 4. Мой Аркан
+[paste ШАГ4 output]
+## 5. Визуал
+[paste ШАГ5 output]
+## 6. Что осталось на ручную проверку
+- поллинг бота с реальным Telegram-токеном
+- реальный синтез TTS (edge-tts)
+- отрисовка и читаемость на телефоне
+- восприятие RU/EN пользователями
+```
+Затем выведи: `[ГОТОВО] docs/REVERIFICATION_REPORT.md создан.` и остановись.

@@ -1,0 +1,160 @@
+# Moira — ИИ-оракул таро (Telegram-бот)
+
+Двуязычный (RU/EN) Telegram-бот: таро-расклады с ИИ-трактовками, картинки карт,
+голосовые предсказания, личный алтарь с картой дня и лунным календарём,
+тест «Мой Аркан». Монетизация: Telegram Stars + промокоды.
+
+## Что работает и проверено
+
+- 🃏 **Расклады «Ситуация / Любовь / Выбор»**: картинка расклада + текстовая
+  трактовка под Telegram-spoiler + голос оракула (TTS fallback).
+- 🔮 **ИИ-трактовки**: OpenAI-compatible endpoint (OpenRouter/AIGate/другой);
+  без ключа — встроенные трактовки карт. Структурированный вывод через Instructor
+  с лимитами длины, safety-фильтром и одним retry.
+- 🌙 **Личный алтарь**: карта дня, фаза Луны, Луна в знаке, персональная строка
+  по стихиям (если указана дата рождения). Утренний пуш (06 UTC ≈ 09 МСК).
+- 🎭 **Тест «Мой Аркан»**: 6 вопросов → Старший Аркан с картинкой и девизом.
+- 💎 **Тарифы Stars**: 1 расклад 25⭐ / 7 дней 99⭐ / 30 дней 150⭐ (подписка).
+- 🎟 **Промокоды** и early-bird (первым 50 пользователям +3 расклада).
+- 🌐 **RU/EN**: автоопределение языка + переключатель.
+- 👑 **Админка**: `/stats`, `/promo_create`, `/promo_list`, `/grant`.
+- 💰 **Платежи**: idempotent payment ledger по `telegram_payment_charge_id`,
+  атомарная выдача прав, referral reward один раз, self-referral запрещён,
+  обработка refund.
+- 🗑 **Удаление данных**: `/delete_my_data` удаляет расклады, избранное,
+  события, usage-записи и профиль. Payment-ledger остаётся для аудита.
+- 🔒 **Приватность**: Sentry/PostHog не получают вопросы, трактовки, имена,
+  usernames, даты рождения и Telegram ID в открытом виде.
+
+## Реализовано, но экспериментально
+
+- 🪞 **Зеркало недели**: воскресное резюме по частым картам за неделю.
+  Работает, но качество LLM-резюме зависит от модели.
+- 🎤 **Голос**: edge-tts. Если пользователь отключил voice-notes в Telegram,
+  бот пробует отправить обычный audio-файл, затем текстовое уведомление.
+- 🌟 **Реферальная программа**: ссылка `https://t.me/<bot>?start=ref_<id>`,
+  награда за первый платёж приглашённого. Проверка подписки на канал пока не
+  реализована.
+
+## Известные ограничения
+
+- **SQLite**: один writer-процесс. Не запускайте несколько инстансов бота
+  с одной БД одновременно.
+- **Фоновые задачи** (daily push / weekly mirror) живут в процессе polling.
+  При рестарте планировщик начинает заново; дубли предотвращаются полями
+  `last_push_date` и `last_mirror_week`.
+- **TTS**: edge-tts требует интернета и возвращает MP3. Telegram voice note
+  предпочитает OGG/OPUS; текущая реализация полагается на Bot API.
+- **Safety**: фильтр чувствительных тем — эвристический. Он снижает риск, но
+  не заменяет человеческую модерацию.
+- **Визуал**: рендер карт требует файлов из `assets/cards/`. Если карта или шрифт
+  отсутствуют, бот продолжает работу, но изображение будет неполным.
+
+## Запланировано
+
+- ЮKassa (карты РФ/СБП) для внешнего платёжного сценария.
+- Натальная карта и расширенная астрология.
+- Webhook-режим и отдельный worker для фоновых задач.
+- PostgreSQL при росте нагрузки.
+
+## Запуск (локально, Windows)
+
+1. У @BotFather: `/newbot` → получить токен.
+2. Скопируй `.env.example` → `.env`, вставь `BOT_TOKEN` и `ADMIN_IDS`.
+3. Установи зависимости (один раз):
+   ```powershell
+   .venv\Scripts\python.exe -m pip install -r requirements.txt
+   ```
+4. Накати миграции:
+   ```powershell
+   .venv\Scripts\python.exe -m alembic upgrade head
+   .venv\Scripts\python.exe -m alembic check
+   ```
+5. Запуск:
+   ```powershell
+   run.bat
+   # или
+   .venv\Scripts\python.exe -m bot.main
+   ```
+
+## Запуск (Linux / VPS)
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+alembic check
+python -m bot.main
+```
+
+## Миграции БД (Alembic)
+
+```powershell
+.venv\Scripts\python.exe -m alembic current
+.venv\Scripts\python.exe -m alembic upgrade head
+.venv\Scripts\python.exe -m alembic check
+```
+
+Текущая версия: `0002_growth`.
+
+Перед любыми миграциями на production:
+
+```powershell
+cp moira.db moira.db.$(Get-Date -Format yyyyMMdd-HHmmss).bak
+```
+
+## Подключение ИИ-трактовок
+
+```env
+OPENROUTER_API_KEY=sk-or-...
+# или любой OpenAI-compatible endpoint:
+LLM_BASE_URL=https://api.aigate.shop/v1
+LLM_MODEL=deepseek/deepseek-chat
+```
+
+Без ключа бот работает на встроенных трактовках карт (режим MVP).
+
+## Команды
+
+```
+/start          — меню и онбординг
+/help           — помощь
+/delete_my_data — удалить свои данные
+```
+
+Админ:
+
+```
+/stats
+/promo_create readings 5 WELCOME5
+/promo_create days 30 VIP30
+/promo_list
+/grant 123456789 readings:3
+```
+
+## Тесты
+
+```powershell
+.venv\Scripts\python.exe -m compileall bot
+.venv\Scripts\python.exe tests/smoke_test.py
+.venv\Scripts\python.exe tests/test_patch1_runtime.py
+.venv\Scripts\python.exe tests/test_patch2_payments.py
+.venv\Scripts\python.exe tests/test_patch3_llm.py
+.venv\Scripts\python.exe tests/test_patch4_critical.py
+.venv\Scripts\python.exe tests/test_patch5_i18n_quiz.py
+.venv\Scripts\python.exe tests/test_patch6_background.py
+```
+
+## Privacy и безопасность
+
+- Тексты вопросов и трактовок не уходят в Sentry/PostHog.
+- `OPENROUTER_API_KEY`, `BOT_TOKEN`, `SENTRY_DSN`, `POSTHOG_API_KEY` не логируются.
+- Пользователь может удалить свои данные через `/delete_my_data`.
+- Бот отказывает в трактовке медицинских, юридических, финансовых и кризисных
+  запросов, а также попыток prompt injection.
+
+## Лицензия и карты
+
+- Код проекта — собственная разработка.
+- Изображения карт — RWS public domain (`assets/cards/`).
