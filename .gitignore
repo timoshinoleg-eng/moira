@@ -17,3 +17,6 @@ chat-export-*.json
 *_prompt_dump.txt
 moira_prompt_dump.txt
 artifacts/
+
+# Work archives and extracts
+архивы и доработки/

@@ -1,0 +1,1346 @@
+[
+  {
+    "id": "situation_ru_01",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "Что происходит в моей ситуации на работе?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "wands_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_ru_02",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "Почему я чувствую, что стою на месте?",
+    "cards": [
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "swords_five",
+        "reversed": true
+      },
+      {
+        "id": "major_16",
+        "reversed": true
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_ru_03",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "Как мне поступить в сложившейся ситуации?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_ru_04",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "Какой урок я прохожу сейчас?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_1",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_ru_05",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "На что мне направить свою энергию?",
+    "cards": [
+      {
+        "id": "wands_ace",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      },
+      {
+        "id": "wands_king",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_ru_06",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "Почему у меня конфликт с руководством?",
+    "cards": [
+      {
+        "id": "major_4",
+        "reversed": false
+      },
+      {
+        "id": "major_16",
+        "reversed": false
+      },
+      {
+        "id": "swords_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_ru_07",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "Любит ли он меня?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_ru_08",
+    "spread": "situation",
+    "lang": "ru",
+    "question": "Стоит ли менять работу?",
+    "cards": [
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_eight",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_09",
+    "spread": "situation",
+    "lang": "en",
+    "question": "What is happening with my situation at work?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "wands_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_10",
+    "spread": "situation",
+    "lang": "en",
+    "question": "Why do I feel stuck?",
+    "cards": [
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "swords_five",
+        "reversed": true
+      },
+      {
+        "id": "major_16",
+        "reversed": true
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_11",
+    "spread": "situation",
+    "lang": "en",
+    "question": "How should I act in this situation?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_12",
+    "spread": "situation",
+    "lang": "en",
+    "question": "What lesson am I going through now?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_1",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_13",
+    "spread": "situation",
+    "lang": "en",
+    "question": "Where should I direct my energy?",
+    "cards": [
+      {
+        "id": "wands_ace",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      },
+      {
+        "id": "wands_king",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_14",
+    "spread": "situation",
+    "lang": "en",
+    "question": "Why is there a conflict with my manager?",
+    "cards": [
+      {
+        "id": "major_4",
+        "reversed": false
+      },
+      {
+        "id": "major_16",
+        "reversed": false
+      },
+      {
+        "id": "swords_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_15",
+    "spread": "situation",
+    "lang": "en",
+    "question": "Does he love me?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "situation_en_16",
+    "spread": "situation",
+    "lang": "en",
+    "question": "Should I change jobs?",
+    "cards": [
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_eight",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_17",
+    "spread": "love",
+    "lang": "ru",
+    "question": "Что происходит в моей ситуации на работе?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "wands_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_18",
+    "spread": "love",
+    "lang": "ru",
+    "question": "Почему я чувствую, что стою на месте?",
+    "cards": [
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "swords_five",
+        "reversed": true
+      },
+      {
+        "id": "major_16",
+        "reversed": true
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_19",
+    "spread": "love",
+    "lang": "ru",
+    "question": "Как мне поступить в сложившейся ситуации?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_20",
+    "spread": "love",
+    "lang": "ru",
+    "question": "Какой урок я прохожу сейчас?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_1",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_21",
+    "spread": "love",
+    "lang": "ru",
+    "question": "На что мне направить свою энергию?",
+    "cards": [
+      {
+        "id": "wands_ace",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      },
+      {
+        "id": "wands_king",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_22",
+    "spread": "love",
+    "lang": "ru",
+    "question": "Почему у меня конфликт с руководством?",
+    "cards": [
+      {
+        "id": "major_4",
+        "reversed": false
+      },
+      {
+        "id": "major_16",
+        "reversed": false
+      },
+      {
+        "id": "swords_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_23",
+    "spread": "love",
+    "lang": "ru",
+    "question": "Любит ли он меня?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_ru_24",
+    "spread": "love",
+    "lang": "ru",
+    "question": "Стоит ли менять работу?",
+    "cards": [
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_eight",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_25",
+    "spread": "love",
+    "lang": "en",
+    "question": "What is happening with my situation at work?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "wands_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_26",
+    "spread": "love",
+    "lang": "en",
+    "question": "Why do I feel stuck?",
+    "cards": [
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "swords_five",
+        "reversed": true
+      },
+      {
+        "id": "major_16",
+        "reversed": true
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_27",
+    "spread": "love",
+    "lang": "en",
+    "question": "How should I act in this situation?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_28",
+    "spread": "love",
+    "lang": "en",
+    "question": "What lesson am I going through now?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_1",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_29",
+    "spread": "love",
+    "lang": "en",
+    "question": "Where should I direct my energy?",
+    "cards": [
+      {
+        "id": "wands_ace",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      },
+      {
+        "id": "wands_king",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_30",
+    "spread": "love",
+    "lang": "en",
+    "question": "Why is there a conflict with my manager?",
+    "cards": [
+      {
+        "id": "major_4",
+        "reversed": false
+      },
+      {
+        "id": "major_16",
+        "reversed": false
+      },
+      {
+        "id": "swords_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_31",
+    "spread": "love",
+    "lang": "en",
+    "question": "Does he love me?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "love_en_32",
+    "spread": "love",
+    "lang": "en",
+    "question": "Should I change jobs?",
+    "cards": [
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_eight",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_33",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "Что происходит в моей ситуации на работе?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "wands_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_34",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "Почему я чувствую, что стою на месте?",
+    "cards": [
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "swords_five",
+        "reversed": true
+      },
+      {
+        "id": "major_16",
+        "reversed": true
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_35",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "Как мне поступить в сложившейся ситуации?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_36",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "Какой урок я прохожу сейчас?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_1",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_37",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "На что мне направить свою энергию?",
+    "cards": [
+      {
+        "id": "wands_ace",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      },
+      {
+        "id": "wands_king",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_38",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "Почему у меня конфликт с руководством?",
+    "cards": [
+      {
+        "id": "major_4",
+        "reversed": false
+      },
+      {
+        "id": "major_16",
+        "reversed": false
+      },
+      {
+        "id": "swords_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_39",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "Любит ли он меня?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_ru_40",
+    "spread": "choice",
+    "lang": "ru",
+    "question": "Стоит ли менять работу?",
+    "cards": [
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_eight",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_41",
+    "spread": "choice",
+    "lang": "en",
+    "question": "What is happening with my situation at work?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "wands_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_42",
+    "spread": "choice",
+    "lang": "en",
+    "question": "Why do I feel stuck?",
+    "cards": [
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "swords_five",
+        "reversed": true
+      },
+      {
+        "id": "major_16",
+        "reversed": true
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_43",
+    "spread": "choice",
+    "lang": "en",
+    "question": "How should I act in this situation?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": true
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_44",
+    "spread": "choice",
+    "lang": "en",
+    "question": "What lesson am I going through now?",
+    "cards": [
+      {
+        "id": "major_0",
+        "reversed": false
+      },
+      {
+        "id": "major_1",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_45",
+    "spread": "choice",
+    "lang": "en",
+    "question": "Where should I direct my energy?",
+    "cards": [
+      {
+        "id": "wands_ace",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      },
+      {
+        "id": "wands_king",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_46",
+    "spread": "choice",
+    "lang": "en",
+    "question": "Why is there a conflict with my manager?",
+    "cards": [
+      {
+        "id": "major_4",
+        "reversed": false
+      },
+      {
+        "id": "major_16",
+        "reversed": false
+      },
+      {
+        "id": "swords_ace",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_47",
+    "spread": "choice",
+    "lang": "en",
+    "question": "Does he love me?",
+    "cards": [
+      {
+        "id": "major_6",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  },
+  {
+    "id": "choice_en_48",
+    "spread": "choice",
+    "lang": "en",
+    "question": "Should I change jobs?",
+    "cards": [
+      {
+        "id": "major_10",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_eight",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "reversed": false
+      }
+    ],
+    "expect": {
+      "must_reference_positions": true,
+      "must_distinguish_reversal": true,
+      "must_include_synthesis": true,
+      "must_not_assert_other_person_thoughts": true,
+      "must_include_reflection_question": true,
+      "maximum_length": 3000
+    }
+  }
+]
