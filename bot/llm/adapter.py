@@ -193,6 +193,15 @@ def _build_card_block(
                 block += f" Визуальные символы карты: {sym_str}."
             else:
                 block += f" Visual symbols: {sym_str}."
+
+    # Расширенные поля (light/shadow/advice) вытянутой ориентации
+    cm = loc.reversed if drawn.reversed else loc.upright
+    if cm.light:
+        block += f" Дар: {cm.light}." if lang == "ru" else f" Gift: {cm.light}."
+    if cm.shadow:
+        block += f" Тень: {cm.shadow}." if lang == "ru" else f" Shadow: {cm.shadow}."
+    if cm.advice:
+        block += f" Действие: {cm.advice}." if lang == "ru" else f" Action: {cm.advice}."
     return block
 
 

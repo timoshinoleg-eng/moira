@@ -110,22 +110,46 @@ def _build_major(m: dict) -> TarotCard:
             "en": {"upright": m["en_upr"], "reversed": m["en_rev"]},
         },
         ru=LocalizedCard(
-            upright=CardMeanings(essence=m["ru_upr"], keywords=m["kw_ru"]),
-            reversed=CardMeanings(essence=m["ru_rev"], keywords=m["kw_ru"]),
+            upright=CardMeanings(
+                essence=m["ru_upr"], keywords=m["kw_ru"],
+                light=m.get("ru_upr_light", ""), shadow=m.get("ru_upr_shadow", ""),
+                advice=m.get("ru_upr_advice", ""),
+            ),
+            reversed=CardMeanings(
+                essence=m["ru_rev"], keywords=m["kw_ru"],
+                light=m.get("ru_rev_light", ""), shadow=m.get("ru_rev_shadow", ""),
+                advice=m.get("ru_rev_advice", ""),
+            ),
             symbols=symbols.get("ru", []),
             reflection_question=reflection.get("ru", ""),
         ),
         en=LocalizedCard(
-            upright=CardMeanings(essence=m["en_upr"], keywords=m["kw_en"]),
-            reversed=CardMeanings(essence=m["en_rev"], keywords=m["kw_en"]),
+            upright=CardMeanings(
+                essence=m["en_upr"], keywords=m["kw_en"],
+                light=m.get("en_upr_light", ""), shadow=m.get("en_upr_shadow", ""),
+                advice=m.get("en_upr_advice", ""),
+            ),
+            reversed=CardMeanings(
+                essence=m["en_rev"], keywords=m["kw_en"],
+                light=m.get("en_rev_light", ""), shadow=m.get("en_rev_shadow", ""),
+                advice=m.get("en_rev_advice", ""),
+            ),
             symbols=symbols.get("en", []),
             reflection_question=reflection.get("en", ""),
         ),
     )
 
 
+def _fmt(text: str, theme: str) -> str:
+    return text.format(theme=theme) if "{theme}" in text else text
+
+
 def _build_minor(suit_id: str, suit: dict, rank_id: str, rank_name_ru: str, rank_name_en: str,
-                 ru_upr: str, ru_rev: str, en_upr: str, en_rev: str) -> TarotCard:
+                 ru_upr: str, ru_rev: str, en_upr: str, en_rev: str,
+                 ru_upr_light: str = "", ru_upr_shadow: str = "", ru_upr_advice: str = "",
+                 ru_rev_light: str = "", ru_rev_shadow: str = "", ru_rev_advice: str = "",
+                 en_upr_light: str = "", en_upr_shadow: str = "", en_upr_advice: str = "",
+                 en_rev_light: str = "", en_rev_shadow: str = "", en_rev_advice: str = "") -> TarotCard:
     return TarotCard(
         id=f"{suit_id}_{rank_id}",
         name_ru=f"{rank_name_ru} {suit['ru_gen']}",
@@ -140,12 +164,24 @@ def _build_minor(suit_id: str, suit: dict, rank_id: str, rank_name_ru: str, rank
             "en": {"upright": en_upr, "reversed": en_rev},
         },
         ru=LocalizedCard(
-            upright=CardMeanings(essence=ru_upr, keywords=suit["kw_ru"]),
-            reversed=CardMeanings(essence=ru_rev, keywords=suit["kw_ru"]),
+            upright=CardMeanings(
+                essence=ru_upr, keywords=suit["kw_ru"],
+                light=ru_upr_light, shadow=ru_upr_shadow, advice=ru_upr_advice,
+            ),
+            reversed=CardMeanings(
+                essence=ru_rev, keywords=suit["kw_ru"],
+                light=ru_rev_light, shadow=ru_rev_shadow, advice=ru_rev_advice,
+            ),
         ),
         en=LocalizedCard(
-            upright=CardMeanings(essence=en_upr, keywords=suit["kw_en"]),
-            reversed=CardMeanings(essence=en_rev, keywords=suit["kw_en"]),
+            upright=CardMeanings(
+                essence=en_upr, keywords=suit["kw_en"],
+                light=en_upr_light, shadow=en_upr_shadow, advice=en_upr_advice,
+            ),
+            reversed=CardMeanings(
+                essence=en_rev, keywords=suit["kw_en"],
+                light=en_rev_light, shadow=en_rev_shadow, advice=en_rev_advice,
+            ),
         ),
     )
 
@@ -163,10 +199,23 @@ def build_deck() -> list[TarotCard]:
             ru_rev = variants.get("ru_rev", "").format(theme=suit["ru_theme"])
             en_upr = variants.get("en_upr", "").format(theme=suit["en_theme"])
             en_rev = variants.get("en_rev", "").format(theme=suit["en_theme"])
+            theme_ru, theme_en = suit["ru_theme"], suit["en_theme"]
             deck.append(_build_minor(
                 suit_id, suit, rank_id,
                 RANK_NAMES_RU[rank_id], RANK_NAMES_EN[rank_id],
                 ru_upr, ru_rev, en_upr, en_rev,
+                _fmt(variants.get("ru_upr_light", ""), theme_ru),
+                _fmt(variants.get("ru_upr_shadow", ""), theme_ru),
+                _fmt(variants.get("ru_upr_advice", ""), theme_ru),
+                _fmt(variants.get("ru_rev_light", ""), theme_ru),
+                _fmt(variants.get("ru_rev_shadow", ""), theme_ru),
+                _fmt(variants.get("ru_rev_advice", ""), theme_ru),
+                _fmt(variants.get("en_upr_light", ""), theme_en),
+                _fmt(variants.get("en_upr_shadow", ""), theme_en),
+                _fmt(variants.get("en_upr_advice", ""), theme_en),
+                _fmt(variants.get("en_rev_light", ""), theme_en),
+                _fmt(variants.get("en_rev_shadow", ""), theme_en),
+                _fmt(variants.get("en_rev_advice", ""), theme_en),
             ))
         for court_id in COURT_NAMES_RU:
             variants = COURT_SUIT_VARIANTS.get(court_id, {}).get(suit_id, {})
@@ -174,9 +223,22 @@ def build_deck() -> list[TarotCard]:
             ru_rev = variants.get("ru_rev", "").format(theme=suit["ru_theme"])
             en_upr = variants.get("en_upr", "").format(theme=suit["en_theme"])
             en_rev = variants.get("en_rev", "").format(theme=suit["en_theme"])
+            theme_ru, theme_en = suit["ru_theme"], suit["en_theme"]
             deck.append(_build_minor(
                 suit_id, suit, court_id,
                 COURT_NAMES_RU[court_id], COURT_NAMES_EN[court_id],
                 ru_upr, ru_rev, en_upr, en_rev,
+                _fmt(variants.get("ru_upr_light", ""), theme_ru),
+                _fmt(variants.get("ru_upr_shadow", ""), theme_ru),
+                _fmt(variants.get("ru_upr_advice", ""), theme_ru),
+                _fmt(variants.get("ru_rev_light", ""), theme_ru),
+                _fmt(variants.get("ru_rev_shadow", ""), theme_ru),
+                _fmt(variants.get("ru_rev_advice", ""), theme_ru),
+                _fmt(variants.get("en_upr_light", ""), theme_en),
+                _fmt(variants.get("en_upr_shadow", ""), theme_en),
+                _fmt(variants.get("en_upr_advice", ""), theme_en),
+                _fmt(variants.get("en_rev_light", ""), theme_en),
+                _fmt(variants.get("en_rev_shadow", ""), theme_en),
+                _fmt(variants.get("en_rev_advice", ""), theme_en),
             ))
     return deck
