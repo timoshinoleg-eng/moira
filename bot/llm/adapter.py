@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
+from datetime import datetime
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field, model_validator
@@ -17,6 +18,27 @@ logger = logging.getLogger(__name__)
 PROMPT_VERSION = "v3-content"
 SCHEMA_VERSION = "v3"
 MAX_LLM_ATTEMPTS = 2  # one initial + one format/network retry
+
+# --- agent-core integration ---------------------------------------
+# These imports are optional — the adapter works without agent-core,
+# but uses it when available for structured memory, retry, and evidence.
+
+try:
+    from agent_core import (
+        AttentionState,
+        EvidenceRecord,
+        RetryPolicy,
+        TrustTier,
+    )
+    from ..agent import get_harness, get_attention, get_evidence
+    _AGENT_CORE = True
+except ImportError:
+    _AGENT_CORE = False
+except RuntimeError:
+    # harness not yet initialized — agent-core present but not ready
+    _AGENT_CORE = False
+
+# --- /agent-core integration --------------------------------------
 
 # Voice & rules — Level 1
 VOICE_RU = (
@@ -236,7 +258,11 @@ def _build_user_message(
 
 
 async def _recent_reads_memory(user_id: int, limit: int = 3) -> str:
-    """Return a short, privacy-safe memory snippet. Never includes Telegram IDs or usernames."""
+    """Return a short, privacy-safe memory snippet. Never includes Telegram IDs or usernames.
+
+    When agent-core is available, the snippet is also written to MemoryStore
+    with confidence and trust metadata, enabling cross-session long-term memory.
+    """
     try:
         async with get_session() as session:
             rows = (
@@ -248,9 +274,27 @@ async def _recent_reads_memory(user_id: int, limit: int = 3) -> str:
                 )
             ).scalars().all()
         parts = [r[:300] for r in reversed(rows) if r]
-        return " | ".join(parts)[:900]
+        memory_text = " | ".join(parts)[:900]
     except Exception:  # noqa: BLE001
         return ""
+
+    # --- agent-core: persist memory with confidence ---
+    if _AGENT_CORE and memory_text:
+        try:
+            harness = get_harness()
+            await harness.memory.put(
+                f"user:{user_id}:recent_reads",
+                memory_text,
+                ttl=3600,  # 1 hour
+                trust=TrustTier.MACHINE_CONFIRMED,
+                confidence=0.8,
+                actor="agent:moira",
+                scope="session",
+            )
+        except Exception:  # noqa: BLE001
+            pass  # memory store is best-effort
+
+    return memory_text
 
 
 def _error_category(exc: Exception) -> str:
@@ -297,6 +341,39 @@ async def _log_usage(
             await session.commit()
     except Exception as exc:  # noqa: BLE001
         logger.warning("llm_usage log failed: %s", exc)
+
+    # --- agent-core: record evidence ---
+    if _AGENT_CORE:
+        try:
+            chain = get_evidence()
+            chain.add(
+                EvidenceRecord(
+                    id=f"llm:{user_id}:{int(datetime.now().timestamp())}",
+                    action=f"llm_interpret status={status} spread={spread}",
+                    actor="agent:moira",
+                    timestamp=datetime.now(),
+                    inputs={
+                        "user_id": user_id,
+                        "spread": spread,
+                        "model": model,
+                        "provider": provider,
+                        "attempts": attempts,
+                    },
+                    outputs={
+                        "status": status,
+                        "latency_ms": latency_ms,
+                        "prompt_tokens": prompt_tokens,
+                        "completion_tokens": completion_tokens,
+                        "fallback_used": fallback_used,
+                        "error_category": error_category,
+                    },
+                    success=(status == "ok"),
+                    error=error_category if status != "ok" else None,
+                )
+            )
+        except Exception:  # noqa: BLE001
+            pass  # evidence chain is best-effort
+
     logger.debug(
         "llm_usage provider=%s attempts=%d fallback=%s error_category=%s",
         provider, attempts, fallback_used, error_category,
@@ -325,6 +402,14 @@ async def interpret_reading(
     except ImportError:
         logger.warning("instructor/openai missing — falling back to embedded meanings")
         return None
+
+    # --- agent-core: attention transition → FOCUS ---
+    if _AGENT_CORE:
+        try:
+            attn = get_attention()
+            attn.transition(AttentionState.FOCUS, reason=f"interpret_reading: {spread_id}")
+        except Exception:  # noqa: BLE001
+            pass
 
     provider = _provider_from_url(cfg.llm_base_url)
     memory = await _recent_reads_memory(user_id) if user_id else ""
@@ -390,6 +475,12 @@ async def interpret_reading(
                 fallback_used=False,
                 error_category=None,
             )
+            # --- agent-core: attention transition → IDLE (success) ---
+            if _AGENT_CORE:
+                try:
+                    get_attention().transition(AttentionState.IDLE, reason="llm success")
+                except Exception:  # noqa: BLE001
+                    pass
             return result
         except Exception as exc:  # noqa: BLE001
             last_exc = exc
@@ -407,6 +498,12 @@ async def interpret_reading(
         fallback_used=True,
         error_category=_error_category(last_exc) if last_exc else None,
     )
+    # --- agent-core: attention transition → IDLE (fallback) ---
+    if _AGENT_CORE:
+        try:
+            get_attention().transition(AttentionState.IDLE, reason="llm fallback")
+        except Exception:  # noqa: BLE001
+            pass
     return None
 
 

@@ -168,6 +168,14 @@ async def main() -> None:
     _init_sentry(cfg)
     await init_db(cfg.db_path)
 
+    # --- agent-core: initialize HarnessState ---
+    try:
+        from .agent import init_harness
+        await init_harness()
+        logger.info("agent-core HarnessState initialized")
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("agent-core init failed (non-blocking): %s", exc)
+
     analytics = Analytics(cfg)
     bot = Bot(
         token=cfg.bot_token,
@@ -189,6 +197,12 @@ async def main() -> None:
     finally:
         push_task.cancel()
         analytics.shutdown()
+        # --- agent-core: close harness ---
+        try:
+            from .agent import close_harness
+            await close_harness()
+        except Exception:  # noqa: BLE001
+            pass
         await bot.session.close()
 
 
