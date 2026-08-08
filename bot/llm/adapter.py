@@ -185,8 +185,8 @@ def _build_card_block(
     if lang == "en":
         block = f"Position «{label}» (meaning: {pos_meaning}). Card: {name} ({orientation}). Key themes: {kws}."
 
+    loc = drawn.card.localized(lang)
     if include_symbols:
-        loc = drawn.card.localized(lang)
         if loc.symbols:
             sym_str = ", ".join(loc.symbols[:3])
             if lang == "ru":
