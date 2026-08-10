@@ -169,15 +169,13 @@ def _provider_from_url(base_url: str) -> str:
 
 
 def _build_card_block(
-    lang: str, card: DrawnCard, include_symbols: bool = True
+    lang: str, card: DrawnCard, spread_id: str, include_symbols: bool = True
 ) -> str:
     """Build a structured description of a drawn card for the LLM prompt."""
     drawn = card
     label = drawn.position_label.get(lang, drawn.position_label["ru"])
     name = drawn.card.name(lang)
-    pos_meaning = position_meaning(
-        _current_spread_id or "", drawn.position_id, lang
-    )
+    pos_meaning = position_meaning(spread_id, drawn.position_id, lang)
     orientation = "перевёрнутая" if drawn.reversed else "прямая" if lang == "ru" else "reversed" if drawn.reversed else "upright"
     kws = ", ".join(drawn.card.keywords(lang))
 
@@ -205,9 +203,6 @@ def _build_card_block(
     return block
 
 
-_current_spread_id: str = ""  # set during _build_user_message
-
-
 def _build_user_message(
     lang: str,
     spread_id: str,
@@ -216,9 +211,6 @@ def _build_user_message(
     drawn: list[DrawnCard],
     memory: str,
 ) -> str:
-    global _current_spread_id
-    _current_spread_id = spread_id
-
     # Level 1: Voice
     parts = [VOICE_RU if lang == "ru" else VOICE_EN, ""]
 
@@ -244,7 +236,7 @@ def _build_user_message(
     else:
         parts.append("Cards in the spread:")
     for d in drawn:
-        parts.append("- " + _build_card_block(lang, d))
+        parts.append("- " + _build_card_block(lang, d, spread_id))
     parts.append("")
 
     # Level 4: Memory
@@ -262,7 +254,6 @@ def _build_user_message(
     # Level 5: Format
     parts.append(FORMAT_RU if lang == "ru" else FORMAT_EN)
 
-    _current_spread_id = ""
     return "\n".join(parts)
 
 

@@ -80,25 +80,39 @@ def invite_menu_kb(lang: str) -> InlineKeyboardMarkup:
     )
 
 
-def reading_footer_kb(lang: str, reading_id: int, faved: bool = False) -> InlineKeyboardMarkup:
+def reading_footer_kb(
+    lang: str, reading_id: int, spread_id: str = "", faved: bool = False
+) -> InlineKeyboardMarkup:
     fav_text = t(lang, "btn_unfav") if faved else t(lang, "btn_fav")
+    followups = {
+        "situation": [("hidden", "btn_follow_hidden"), ("next", "btn_follow_next")],
+        "love": [("hidden", "btn_follow_dynamic"), ("next", "btn_follow_focus")],
+        "choice": [("hidden", "btn_follow_compare"), ("next", "btn_follow_criterion")],
+    }.get(spread_id, [("deeper", "btn_follow_deeper")])
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(text=t(lang, "btn_share"), callback_data=f"share:{reading_id}"),
                 InlineKeyboardButton(text=fav_text, callback_data=f"fav:{reading_id}"),
             ],
+            [
+                InlineKeyboardButton(text=t(lang, "btn_feedback_yes"), callback_data=f"feedback:{reading_id}:yes"),
+                InlineKeyboardButton(text=t(lang, "btn_feedback_no"), callback_data=f"feedback:{reading_id}:no"),
+            ],
+            [
+                InlineKeyboardButton(text=t(lang, key), callback_data=f"follow:{reading_id}:{kind}")
+                for kind, key in followups
+            ],
             [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
         ]
     )
 
 
-def history_kb(lang: str, faved_reading_ids: set[int], readings_ids: list[tuple[int, str, int]]) -> InlineKeyboardMarkup:
-    """readings_ids: [(reading_id, short_label, index)] — toggle buttons for favorites."""
+def history_kb(lang: str, readings_ids: list[tuple[int, str]]) -> InlineKeyboardMarkup:
+    """readings_ids: [(reading_id, short_label)] — opens a complete saved reading."""
     rows = []
-    for rid, label, _idx in readings_ids:
-        text = ("⭐ " if rid in faved_reading_ids else "☆ ") + label
-        rows.append([InlineKeyboardButton(text=text, callback_data=f"fav:{rid}:h")])
+    for rid, label in readings_ids:
+        rows.append([InlineKeyboardButton(text=label, callback_data=f"history:open:{rid}")])
     rows.append([InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 

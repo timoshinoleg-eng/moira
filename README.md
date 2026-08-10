@@ -25,6 +25,9 @@
   события, usage-записи и профиль. Payment-ledger остаётся для аудита.
 - 🔒 **Приватность**: Sentry/PostHog не получают вопросы, трактовки, имена,
   usernames, даты рождения и Telegram ID в открытом виде.
+- 📖 **Дневник раскладов**: открывает сохранённый вопрос, карты и трактовку;
+  из записи доступны избранное, безопасный share, контекстное продолжение и
+  feedback 👍/👎.
 
 ## Реализовано, но экспериментально
 
@@ -81,7 +84,7 @@
 2. Скопируй `.env.example` → `.env`, вставь `BOT_TOKEN` и `ADMIN_IDS`.
 3. Установи зависимости (один раз):
    ```powershell
-   .venv\Scripts\python.exe -m pip install -r requirements.txt
+   .venv\Scripts\python.exe -m pip install -r requirements-dev.txt
    ```
 4. Накати миграции:
    ```powershell
@@ -175,4 +178,12 @@ LLM_MODEL=deepseek/deepseek-chat
 ## Лицензия и карты
 
 - Код проекта — собственная разработка.
-- Изображения карт — RWS public domain (`assets/cards/`).
+- Изображения карт — полный RWS public-domain set из Wikimedia Commons,
+  78/78 tracked в assets/cards/. Локальные и исходные хэши:
+  [assets/cards/PROVENANCE.md](assets/cards/PROVENANCE.md).
+
+## Runbooks
+
+- Invite-only beta: [docs/BETA_RUNBOOK.md](docs/BETA_RUNBOOK.md)
+- Single-instance production: [docs/PRODUCTION_RUNBOOK.md](docs/PRODUCTION_RUNBOOK.md)
+- Product decisions informed by Sibyl research: [docs/SIBYL_PRODUCT_COMPARISON.md](docs/SIBYL_PRODUCT_COMPARISON.md)

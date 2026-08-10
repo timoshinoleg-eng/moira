@@ -20,7 +20,7 @@ from ..llm import interpret_reading
 from ..services.analytics import Analytics
 from ..tarot import SPREADS, draw
 from ..tarot.deck import cards_from_codes
-from ..tarot.fallback import compose_fallback_reading
+from ..tarot.fallback import compose_fallback_reading, compose_followup
 from ..visual.render import make_share_image, make_spread_image
 from ..voice.speaker import synthesize_reading_voice
 from .helpers import get_or_create_user, is_unlimited
@@ -68,7 +68,10 @@ async def cb_spread(callback: CallbackQuery, state: FSMContext, cfg: Config, ana
         return
     user = await get_or_create_user(callback.from_user, cfg)
     await analytics.track(user.id, "spread_started", spread=spread_id)
-    await callback.message.answer(t(user.language, "ask_question"), reply_markup=back_menu_kb(user.language))
+    await callback.message.answer(
+        t(user.language, f"ask_question_{spread_id}"),
+        reply_markup=back_menu_kb(user.language),
+    )
     await state.set_state(ReadingStates.waiting_question)
     await state.update_data(spread_id=spread_id)
     await callback.answer()
@@ -109,6 +112,8 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
 
     drawn: list = []
     result = None
+    share_summary = ""
+    response_mode = "fallback"
     try:
         drawn = draw(spread_id)
         spread_title = SPREADS[spread_id]["title"][lang]
@@ -157,8 +162,10 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
             text = "\n".join(parts)
             plain = ". ".join(plain_parts)
             voice_text = html.unescape(f"{result.headline}. {result.voice_summary}")
+            share_summary = result.share_summary
+            response_mode = "llm"
         else:
-            fallback = compose_fallback_reading(lang, spread_id, drawn)
+            fallback = compose_fallback_reading(lang, spread_id, drawn, question or None)
             parts = [f"<b>{html.escape(fallback['headline'])}</b>"]
             if fallback["opening"]:
                 parts.append(f"<i>{html.escape(fallback['opening'])}</i>")
@@ -169,10 +176,11 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
             if fallback["practical_focus"]:
                 parts.append(f"<i>{html.escape(fallback['practical_focus'])}</i>")
             parts.append(f"<i>✦ {html.escape(fallback['reflection_question'])}</i>")
-            text = "\n".join(parts)
-            plain = fallback["plain_text"]
             if not cfg.openrouter_api_key:
                 parts.append(html.escape(t(lang, "template_note")))
+            text = "\n".join(parts)
+            plain = fallback["plain_text"]
+            share_summary = fallback["share_summary"]
             await analytics.track(user.id, "llm_fallback_used", spread=spread_id)
             voice_text = html.unescape(fallback["voice_text"])
         await message.answer(text)
@@ -186,22 +194,35 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
         await analytics.track(user.id, "spread_failed", spread=spread_id, error=type(exc).__name__)
         return
 
-    audio = await synthesize_reading_voice(voice_text, lang)
-    if audio:
-        await _send_voice_or_audio(message, audio, lang)
-
     reading_id = 0
-    async with get_session() as session:
-        row = Reading(
-            user_id=user.id,
-            spread=spread_id,
-            cards_json=",".join(f"{d.card.id}{'R' if d.reversed else ''}" for d in drawn),
-            question=question[:500] if question and question != "-" else None,
-            interpretation=(plain)[:3900],
-        )
-        session.add(row)
-        await session.commit()
-        reading_id = row.id
+    try:
+        async with get_session() as session:
+            row = Reading(
+                user_id=user.id,
+                spread=spread_id,
+                cards_json=",".join(f"{d.card.id}{'R' if d.reversed else ''}" for d in drawn),
+                question=question[:500] if question and question != "-" else None,
+                interpretation=(plain)[:3900],
+                share_summary=share_summary[:300] or None,
+                response_mode=response_mode,
+            )
+            session.add(row)
+            await session.commit()
+            reading_id = row.id
+    except Exception as exc:  # noqa: BLE001
+        # The interpretation was delivered; a journal outage must not make an
+        # optional voice/share path fail or charge a second credit.
+        logger.exception("reading journal save failed for user %s: %s", user.id, exc)
+        await analytics.track(user.id, "reading_journal_failed", spread=spread_id, error=type(exc).__name__)
+
+    try:
+        audio = await synthesize_reading_voice(voice_text, lang)
+        if audio:
+            await _send_voice_or_audio(message, audio, lang)
+    except Exception as exc:  # noqa: BLE001
+        # Text and the saved reading are the primary flow; TTS is best-effort.
+        logger.warning("voice generation failed for user %s: %s", user.id, exc)
+        await analytics.track(user.id, "voice_failed", spread=spread_id, error=type(exc).__name__)
     await analytics.track(user.id, "spread_completed", spread=spread_id, ai=bool(result))
 
     footer_lines = []
@@ -215,7 +236,7 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
 
     if reading_id:
         await message.answer(
-            t(lang, "reading_actions"), reply_markup=reading_footer_kb(lang, reading_id)
+            t(lang, "reading_actions"), reply_markup=reading_footer_kb(lang, reading_id, spread_id)
         )
 
 
@@ -246,7 +267,10 @@ async def cb_share(callback: CallbackQuery, cfg: Config, analytics: Analytics) -
         else:
             label = str(i + 1)
         cards_info.append({"label": label, "card": card, "reversed": rev, "name": card.name(lang)})
-    summary = (reading.interpretation or "").strip().replace("\n", " ")[:180]
+    # New readings persist a summary that is explicitly screened not to echo a
+    # private question. Older rows use a generic line instead of their raw
+    # interpretation, which may predate that guarantee.
+    summary = (reading.share_summary or t(lang, "share_summary_legacy")).strip().replace("\n", " ")[:180]
     me = await callback.bot.me()
     bot_username = me.username or ""
     link = f"https://t.me/{bot_username}?start=ref_{user.id}" if bot_username else ""
@@ -257,6 +281,77 @@ async def cb_share(callback: CallbackQuery, cfg: Config, analytics: Analytics) -
     )
     await analytics.track(user.id, "share_created", spread=reading.spread)
     await callback.answer()
+
+
+@router.callback_query(F.data.startswith("follow:"))
+async def cb_followup(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
+    """Continue a saved reading without drawing unrelated new cards."""
+    parts = callback.data.split(":")
+    if len(parts) != 3 or parts[2] not in {"hidden", "next", "deeper"}:
+        await callback.answer("?")
+        return
+    try:
+        reading_id = int(parts[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    lang = user.language
+    async with get_session() as session:
+        reading = await session.get(Reading, reading_id)
+    if reading is None or reading.user_id != user.id:
+        await callback.answer(t(lang, "history_empty"))
+        return
+
+    positions = SPREADS.get(reading.spread, {}).get("positions", [])
+    from ..tarot.spreads import DrawnCard
+
+    drawn = [
+        DrawnCard(position_id=positions[index][0], position_label=positions[index][1], card=card, reversed=reversed_)
+        for index, (card, reversed_) in enumerate(cards_from_codes(reading.cards_json.split(",")))
+        if index < len(positions)
+    ]
+    text = compose_followup(lang, reading.spread, drawn, reading.question, parts[2])
+    await callback.message.answer(text, reply_markup=reading_footer_kb(lang, reading.id, reading.spread))
+    await analytics.track(
+        user.id,
+        "reading_followup",
+        reading_id=reading.id,
+        spread=reading.spread,
+        mode=reading.response_mode or "legacy",
+        followup_kind=parts[2],
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("feedback:"))
+async def cb_feedback(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
+    """Store small, privacy-safe product feedback in the existing event stream."""
+    parts = callback.data.split(":")
+    if len(parts) != 3 or parts[2] not in {"yes", "no"}:
+        await callback.answer("?")
+        return
+    try:
+        reading_id = int(parts[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    lang = user.language
+    async with get_session() as session:
+        reading = await session.get(Reading, reading_id)
+    if reading is None or reading.user_id != user.id:
+        await callback.answer("?")
+        return
+    await analytics.track(
+        user.id,
+        "reading_feedback",
+        reading_id=reading.id,
+        feedback="positive" if parts[2] == "yes" else "negative",
+        spread=reading.spread,
+        mode=reading.response_mode or "legacy",
+    )
+    await callback.answer(t(lang, "feedback_thanks"))
 
 
 async def _send_voice_or_audio(message: Message, audio: bytes, lang: str) -> None:

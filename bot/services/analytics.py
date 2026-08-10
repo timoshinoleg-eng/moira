@@ -42,6 +42,10 @@ class Analytics:
         "error",
         "error_category",
         "reason",
+        "reading_id",
+        "feedback",
+        "mode",
+        "followup_kind",
     }
 
     def __init__(self, cfg: Config) -> None:

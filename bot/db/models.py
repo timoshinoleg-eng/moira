@@ -44,6 +44,8 @@ class Reading(Base):
     cards_json: Mapped[str] = mapped_column(Text, default="[]")
     question: Mapped[str | None] = mapped_column(Text, nullable=True)
     interpretation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    share_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    response_mode: Mapped[str] = mapped_column(String(16), default="fallback", server_default="fallback")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
