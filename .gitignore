@@ -9,7 +9,6 @@ __pycache__/
 *.sqlite3
 .cache/
 .pytest_cache/
-assets/cards/
 bot.log
 bot.pid
 .bot.lock

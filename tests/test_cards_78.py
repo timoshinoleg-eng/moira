@@ -2,7 +2,12 @@
 from __future__ import annotations
 
 import os
+import hashlib
+import json
 import sys
+from pathlib import Path
+
+from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -57,6 +62,19 @@ def test_no_empty_meanings() -> None:
             assert m.get("reversed"), f"{c.id}: missing reversed for {lang}"
 
 
+def test_all_runtime_light_shadow_advice_are_complete_and_not_placeholders() -> None:
+    forbidden = ("todo", "tbd", "placeholder", "заполнить позже")
+    for card in build_deck():
+        for lang in ("ru", "en"):
+            for orientation in (card.localized(lang).upright, card.localized(lang).reversed):
+                for field in ("essence", "light", "shadow", "advice"):
+                    value = getattr(orientation, field)
+                    assert value.strip(), f"{card.id} {lang} {field}: empty"
+                    assert not any(mark in value.lower() for mark in forbidden), (
+                        f"{card.id} {lang} {field}: placeholder text"
+                    )
+
+
 def test_upright_differs_from_reversed() -> None:
     deck = build_deck()
     for c in deck:
@@ -73,6 +91,25 @@ def test_all_assets_exist() -> None:
         if card_image_path(c) is None:
             missing.append(c.id)
     assert not missing, f"Missing assets: {missing}"
+
+
+def test_assets_are_readable_unique_and_manifested() -> None:
+    deck = build_deck()
+    cards_dir = Path(__file__).resolve().parents[1] / "assets" / "cards"
+    manifest = json.loads((cards_dir / "manifest.json").read_text(encoding="utf-8"))
+    entries = manifest["cards"]
+    assert len(entries) == 78
+    assert {entry["card_id"] for entry in entries} == {card.id for card in deck}
+    assert len({entry["local_filename"] for entry in entries}) == 78
+    assert len({entry["sha256"] for entry in entries}) == 78
+    assert len({entry["source_sha1"] for entry in entries}) == 78
+    for entry in entries:
+        path = cards_dir / entry["local_filename"]
+        with Image.open(path) as image:
+            image.verify()
+        with Image.open(path) as image:
+            assert image.size == (350, 600)
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"]
 
 
 def test_major_arcana_count() -> None:
@@ -95,6 +132,7 @@ def run_all() -> None:
         test_all_have_keywords,
         test_major_have_symbols,
         test_no_empty_meanings,
+        test_all_runtime_light_shadow_advice_are_complete_and_not_placeholders,
         test_upright_differs_from_reversed,
         test_all_assets_exist,
         test_major_arcana_count,
