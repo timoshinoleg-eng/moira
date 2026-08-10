@@ -84,11 +84,7 @@ def reading_footer_kb(
     lang: str, reading_id: int, spread_id: str = "", faved: bool = False
 ) -> InlineKeyboardMarkup:
     fav_text = t(lang, "btn_unfav") if faved else t(lang, "btn_fav")
-    followups = {
-        "situation": [("hidden", "btn_follow_hidden"), ("next", "btn_follow_next")],
-        "love": [("hidden", "btn_follow_dynamic"), ("next", "btn_follow_focus")],
-        "choice": [("hidden", "btn_follow_compare"), ("next", "btn_follow_criterion")],
-    }.get(spread_id, [("deeper", "btn_follow_deeper")])
+    followup_buttons = _followup_buttons(lang, reading_id, spread_id)
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -99,10 +95,30 @@ def reading_footer_kb(
                 InlineKeyboardButton(text=t(lang, "btn_feedback_yes"), callback_data=f"feedback:{reading_id}:yes"),
                 InlineKeyboardButton(text=t(lang, "btn_feedback_no"), callback_data=f"feedback:{reading_id}:no"),
             ],
-            [
-                InlineKeyboardButton(text=t(lang, key), callback_data=f"follow:{reading_id}:{kind}")
-                for kind, key in followups
-            ],
+            followup_buttons,
+            [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
+        ]
+    )
+
+
+def _followup_buttons(lang: str, reading_id: int, spread_id: str) -> list[InlineKeyboardButton]:
+    followups = {
+        "situation": [("hidden", "btn_follow_hidden"), ("next", "btn_follow_next")],
+        "love": [("hidden", "btn_follow_dynamic"), ("next", "btn_follow_focus")],
+        "choice": [("hidden", "btn_follow_compare"), ("next", "btn_follow_criterion")],
+    }.get(spread_id, [("deeper", "btn_follow_deeper")])
+    return [
+        InlineKeyboardButton(text=t(lang, key), callback_data=f"follow:{reading_id}:{kind}")
+        for kind, key in followups
+    ]
+
+
+def feedback_reengagement_kb(lang: str, reading_id: int, spread_id: str) -> InlineKeyboardMarkup:
+    """Offer the most relevant next action immediately after feedback."""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            _followup_buttons(lang, reading_id, spread_id),
+            [InlineKeyboardButton(text=t(lang, "btn_share"), callback_data=f"share:{reading_id}")],
             [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
         ]
     )
@@ -132,12 +148,17 @@ def back_menu_kb(lang: str) -> InlineKeyboardMarkup:
     )
 
 
-def question_input_kb(lang: str, spread_id: str) -> InlineKeyboardMarkup:
+def question_input_kb(
+    lang: str, spread_id: str, *, voice_enabled: bool = False
+) -> InlineKeyboardMarkup:
+    rows = []
+    if voice_enabled:
+        rows.append(
+            [InlineKeyboardButton(text=t(lang, "btn_voice_question"), callback_data=f"voice:start:{spread_id}")]
+        )
+    rows.append([InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")])
     return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text=t(lang, "btn_voice_question"), callback_data=f"voice:start:{spread_id}")],
-            [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
-        ]
+        inline_keyboard=rows
     )
 
 

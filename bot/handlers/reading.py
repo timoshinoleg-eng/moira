@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import html
 import logging
 
@@ -9,13 +10,19 @@ from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import BufferedInputFile, CallbackQuery, Message, User as TelegramUser
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 
 from ..config import Config
 from ..db.database import get_session
 from ..db.models import Reading, User
 from ..i18n import t
-from ..keyboards import main_menu_kb, paywall_kb, question_input_kb, reading_footer_kb
+from ..keyboards import (
+    feedback_reengagement_kb,
+    main_menu_kb,
+    paywall_kb,
+    question_input_kb,
+    reading_footer_kb,
+)
 from ..llm import interpret_reading
 from ..services.analytics import Analytics
 from ..tarot import SPREADS, draw
@@ -29,6 +36,7 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 CANCEL_TOKENS = {"/start", "start", "меню", "menu", "-cancel"}
+SHARE_CAPTION_VARIANTS = ("a", "b")
 
 SAFETY_PATTERNS = [
     # medical
@@ -51,6 +59,23 @@ SAFETY_PATTERNS = [
 ]
 
 
+def share_caption_variant(user_id: int) -> str:
+    """Return a stable, balanced experiment assignment for one referrer."""
+    digest = hashlib.blake2s(str(user_id).encode("utf-8"), digest_size=1).digest()[0]
+    return SHARE_CAPTION_VARIANTS[digest % len(SHARE_CAPTION_VARIANTS)]
+
+
+def _share_caption_key(input_mode: str, variant: str) -> str:
+    prefix = "share_caption_voice" if input_mode == "voice" else "share_caption"
+    return f"{prefix}_{variant}"
+
+
+def _share_referral_link(bot_username: str, user_id: int, variant: str) -> str:
+    if not bot_username:
+        return ""
+    return f"https://t.me/{bot_username}?start=ref_{user_id}_{variant}"
+
+
 def _is_safety_refusal_required(question: str) -> bool:
     low = question.lower()
     return any(p in low for p in SAFETY_PATTERNS)
@@ -68,9 +93,10 @@ async def cb_spread(callback: CallbackQuery, state: FSMContext, cfg: Config, ana
         return
     user = await get_or_create_user(callback.from_user, cfg)
     await analytics.track(user.id, "spread_started", spread=spread_id)
+    voice_enabled = bool(cfg.deepgram_stt_enabled and cfg.deepgram_api_key)
     await callback.message.answer(
         t(user.language, f"ask_question_{spread_id}"),
-        reply_markup=question_input_kb(user.language, spread_id),
+        reply_markup=question_input_kb(user.language, spread_id, voice_enabled=voice_enabled),
     )
     await state.set_state(ReadingStates.waiting_question)
     await state.update_data(spread_id=spread_id)
@@ -95,9 +121,10 @@ async def prompt_text_or_voice(message: Message, state: FSMContext, cfg: Config)
         await state.clear()
         return
     user = await get_or_create_user(message.from_user, cfg)
+    voice_enabled = bool(cfg.deepgram_stt_enabled and cfg.deepgram_api_key)
     await message.answer(
-        t(user.language, "question_text_or_voice"),
-        reply_markup=question_input_kb(user.language, spread_id),
+        t(user.language, "question_text_or_voice" if voice_enabled else "question_text_only"),
+        reply_markup=question_input_kb(user.language, spread_id, voice_enabled=voice_enabled),
     )
 
 
@@ -224,8 +251,12 @@ async def run_reading(
         return
 
     reading_id = 0
+    is_first_referred_reading = False
     try:
         async with get_session() as session:
+            previous_readings = await session.scalar(
+                select(func.count()).select_from(Reading).where(Reading.user_id == user.id)
+            )
             row = Reading(
                 user_id=user.id,
                 spread=spread_id,
@@ -239,6 +270,7 @@ async def run_reading(
             session.add(row)
             await session.commit()
             reading_id = row.id
+            is_first_referred_reading = bool(user.referred_by and previous_readings == 0)
     except Exception as exc:  # noqa: BLE001
         # The interpretation was delivered; a journal outage must not make an
         # optional voice/share path fail or charge a second credit.
@@ -254,6 +286,13 @@ async def run_reading(
         logger.warning("voice generation failed for user %s: %s", user.id, exc)
         await analytics.track(user.id, "voice_failed", spread=spread_id, error=type(exc).__name__)
     await analytics.track(user.id, "spread_completed", spread=spread_id, ai=bool(result), source=input_mode)
+    if is_first_referred_reading:
+        await analytics.track(
+            user.id,
+            "referral_first_reading",
+            caption_variant=user.referral_variant or "legacy",
+            source=input_mode,
+        )
 
     footer_lines = []
     if reason == "unlimited":
@@ -303,14 +342,21 @@ async def cb_share(callback: CallbackQuery, cfg: Config, analytics: Analytics) -
     summary = (reading.share_summary or t(lang, "share_summary_legacy")).strip().replace("\n", " ")[:180]
     me = await callback.bot.me()
     bot_username = me.username or ""
-    link = f"https://t.me/{bot_username}?start=ref_{user.id}" if bot_username else ""
+    caption_variant = share_caption_variant(user.id)
+    link = _share_referral_link(bot_username, user.id, caption_variant)
     photo = await asyncio.to_thread(make_share_image, spread_title, cards_info, summary, cfg.bot_display_name, lang)
-    caption_key = "share_caption_voice" if reading.input_mode == "voice" else "share_caption"
+    caption_key = _share_caption_key(reading.input_mode, caption_variant)
     await callback.message.answer_photo(
         BufferedInputFile(photo, filename="share.jpg"),
         caption=html.escape(t(lang, caption_key, link=link)),
     )
-    await analytics.track(user.id, "share_created", spread=reading.spread, source=reading.input_mode)
+    await analytics.track(
+        user.id,
+        "share_created",
+        spread=reading.spread,
+        source=reading.input_mode,
+        caption_variant=caption_variant,
+    )
     await callback.answer()
 
 
@@ -381,6 +427,18 @@ async def cb_feedback(callback: CallbackQuery, cfg: Config, analytics: Analytics
         feedback="positive" if parts[2] == "yes" else "negative",
         spread=reading.spread,
         mode=reading.response_mode or "legacy",
+    )
+    message_key = "feedback_next_positive" if parts[2] == "yes" else "feedback_next_negative"
+    await callback.message.answer(
+        t(lang, message_key),
+        reply_markup=feedback_reengagement_kb(lang, reading.id, reading.spread),
+    )
+    await analytics.track(
+        user.id,
+        "feedback_reengagement_shown",
+        reading_id=reading.id,
+        feedback="positive" if parts[2] == "yes" else "negative",
+        spread=reading.spread,
     )
     await callback.answer(t(lang, "feedback_thanks"))
 

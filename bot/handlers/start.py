@@ -12,14 +12,24 @@ from ..db.models import Event, LlmUsage, Payment, PromoRedemption, Reading, Read
 from ..i18n import t
 from ..keyboards import back_menu_kb, main_menu_kb
 from ..services.analytics import Analytics
-from .helpers import get_or_create_user, is_unlimited, parse_referral_param
+from .helpers import (
+    get_or_create_user,
+    get_or_create_user_with_status,
+    is_unlimited,
+    parse_referral_attribution,
+)
 
 router = Router()
 
 
-async def _respond_start(message: Message, cfg: Config, param: str | None = None) -> None:
-    ref_id = parse_referral_param(param, message.from_user.id) if param else None
-    user = await get_or_create_user(message.from_user, cfg, referred_by=ref_id)
+async def _respond_start(
+    message: Message, cfg: Config, param: str | None = None
+) -> tuple[User, bool, str | None]:
+    attribution = parse_referral_attribution(param, message.from_user.id) if param else None
+    ref_id, variant = attribution if attribution else (None, None)
+    user, created = await get_or_create_user_with_status(
+        message.from_user, cfg, referred_by=ref_id, referral_variant=variant
+    )
     lang = user.language
     free_total = user.free_readings + user.promo_readings
     text = t(lang, "greeting", name=cfg.bot_display_name, free=free_total)
@@ -28,15 +38,17 @@ async def _respond_start(message: Message, cfg: Config, param: str | None = None
         text += "\n\n" + t(lang, "premium_active", date=until.strftime(t(lang, "date_fmt")))
     text += "\n\n" + t(lang, "disclaimer")
     await message.answer(text, reply_markup=main_menu_kb(lang))
+    return user, created, variant
 
 
 @router.message(CommandStart(deep_link=True))
 async def cmd_start_ref(message: Message, cfg: Config, analytics: Analytics) -> None:
     param = message.text.split(maxsplit=1)[1] if message.text and " " in message.text else None
-    ref_id = parse_referral_param(param, message.from_user.id)
-    if ref_id:
-        await analytics.track(message.from_user.id, "referral_signup", referrer=ref_id)
-    await _respond_start(message, cfg, param)
+    user, created, variant = await _respond_start(message, cfg, param)
+    if created and user.referred_by:
+        await analytics.track(
+            user.id, "referral_signup", caption_variant=variant or "legacy"
+        )
 
 
 @router.message(CommandStart())

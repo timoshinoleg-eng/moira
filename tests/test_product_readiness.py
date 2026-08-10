@@ -53,6 +53,8 @@ def test_new_product_copy_has_ru_en_parity() -> None:
         "btn_feedback_yes",
         "btn_feedback_no",
         "feedback_thanks",
+        "feedback_next_positive",
+        "feedback_next_negative",
         "btn_follow_hidden",
         "btn_follow_next",
         "btn_follow_dynamic",
@@ -65,6 +67,10 @@ def test_new_product_copy_has_ru_en_parity() -> None:
         "history_cards",
         "history_interpretation_unavailable",
         "share_summary_legacy",
+        "share_caption_a",
+        "share_caption_b",
+        "share_caption_voice_a",
+        "share_caption_voice_b",
     }
     assert keys <= ru.keys()
     assert keys <= en.keys()

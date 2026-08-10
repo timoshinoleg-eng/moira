@@ -27,7 +27,8 @@ def _callbacks(keyboard) -> set[str]:
 
 
 def test_voice_keyboard_keeps_spread_context_and_editable_confirmation() -> None:
-    assert "voice:start:love" in _callbacks(question_input_kb("en", "love"))
+    assert "voice:start:love" in _callbacks(question_input_kb("en", "love", voice_enabled=True))
+    assert "voice:start:love" not in _callbacks(question_input_kb("en", "love"))
     assert {"voice:confirm", "voice:edit", "voice:repeat", "voice:cancel"} <= _callbacks(
         voice_transcript_kb("ru")
     )

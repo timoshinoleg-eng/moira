@@ -31,6 +31,7 @@ class User(Base):
     daily_push: Mapped[bool] = mapped_column(Boolean, default=True)
     last_push_date: Mapped[str | None] = mapped_column(String(10), nullable=True)
     referred_by: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    referral_variant: Mapped[str | None] = mapped_column(String(8), nullable=True)
     last_mirror_week: Mapped[str | None] = mapped_column(String(8), nullable=True)  # YYYY-Www
     voice_transcription_consent: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="0"

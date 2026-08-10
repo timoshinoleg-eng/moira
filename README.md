@@ -35,11 +35,29 @@
   Работает, но качество LLM-резюме зависит от модели.
 - 🎤 **Голос**: edge-tts озвучивает краткий результат. Опциональный Deepgram
   voice-to-question flow принимает короткое голосовое, показывает редактируемый
-  текст и запускает тот же расклад только после подтверждения пользователя;
-  rollout и pilot gates — в `docs/DEEPGRAM_VOICE_POC.md`.
+  текст и запускает тот же расклад только после подтверждения пользователя. Для
+  включения нужны `DEEPGRAM_API_KEY` и `DEEPGRAM_STT_ENABLED=true`; rollout и
+  pilot gates — в `docs/DEEPGRAM_VOICE_POC.md`.
 - 🌟 **Реферальная программа**: ссылка `https://t.me/<bot>?start=ref_<id>`,
   награда за первый платёж приглашённого. Проверка подписки на канал пока не
   реализована.
+
+## Growth-pilot: share → referral → first reading
+
+Каждая share-карточка получает стабильный вариант caption A или B и передаёт
+вариант в referral deep link. События хранят только псевдонимный идентификатор,
+вариант и этап воронки — без вопроса, имени или Telegram ID. После feedback
+бот сразу предлагает два контекстных follow-up действия, поэтому пользователь
+может продолжить расклад одним нажатием.
+
+После запуска invite-only пилота собери первые 20 attributed referral signups:
+
+```powershell
+.venv\Scripts\python.exe scripts\growth_pilot_report.py --min-signups 20
+```
+
+Сравни A и B сначала по `signup_per_share`, затем по `reading_per_signup`.
+Не меняй вариант во время сбора — иначе воронка станет несопоставимой.
 
 ## Известные ограничения
 
@@ -119,7 +137,7 @@ python -m bot.main
 .venv\Scripts\python.exe -m alembic check
 ```
 
-Текущая версия: `0002_growth`.
+Текущая версия: `0005_growth_attribution`.
 
 Перед любыми миграциями на production:
 

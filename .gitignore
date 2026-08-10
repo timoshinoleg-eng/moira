@@ -12,6 +12,7 @@ __pycache__/
 bot.log
 bot.pid
 .bot.lock
+logs/
 chat-export-*.json
 *_prompt_dump.txt
 moira_prompt_dump.txt
