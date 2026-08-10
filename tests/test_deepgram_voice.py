@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
 from pathlib import Path
 
 import httpx
 import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from bot.keyboards import question_input_kb, voice_transcript_kb
 from bot.voice.transcribe import DeepgramTranscriber, VoiceTranscriptionError, parse_transcription
@@ -99,3 +102,7 @@ def test_deepgram_rate_limit_becomes_a_user_safe_category() -> None:
             await client.transcribe(b"audio", language="en", content_type="audio/ogg")
 
     asyncio.run(run())
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__]))
