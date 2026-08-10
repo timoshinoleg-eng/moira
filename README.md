@@ -133,8 +133,12 @@ cp moira.db moira.db.$(Get-Date -Format yyyyMMdd-HHmmss).bak
 OPENROUTER_API_KEY=sk-or-...
 # или любой OpenAI-compatible endpoint:
 LLM_BASE_URL=https://api.aigate.shop/v1
-LLM_MODEL=deepseek/deepseek-chat
+LLM_MODEL=deepseek/deepseek-v4-flash
 ```
+
+Для нативного API DeepSeek используй `LLM_BASE_URL=https://api.deepseek.com` и
+`LLM_MODEL=deepseek-v4-flash` (без префикса провайдера). Для шлюзов с каталогом
+моделей модель остаётся `deepseek/deepseek-v4-flash`.
 
 Без ключа бот работает на встроенных трактовках карт (режим MVP).
 
