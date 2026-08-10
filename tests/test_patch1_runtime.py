@@ -8,7 +8,8 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-os.environ.setdefault("DB_PATH", os.path.join(tempfile.gettempdir(), "moira_patch1.db"))
+if __name__ == "__main__":
+    os.environ["DB_PATH"] = os.path.join(tempfile.gettempdir(), "moira_patch1.db")
 
 from aiogram.exceptions import TelegramBadRequest
 

@@ -8,10 +8,11 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-os.environ.setdefault("DB_PATH", os.path.join(tempfile.gettempdir(), "moira_patch3.db"))
-db_path = os.environ["DB_PATH"]
-if os.path.exists(db_path):
-    os.remove(db_path)
+db_path = os.path.join(tempfile.gettempdir(), "moira_patch3.db")
+if __name__ == "__main__":
+    os.environ["DB_PATH"] = db_path
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
 from bot.config import Config, load_config
 from bot.db.database import init_db
