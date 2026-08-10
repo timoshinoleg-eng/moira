@@ -32,6 +32,9 @@ class User(Base):
     last_push_date: Mapped[str | None] = mapped_column(String(10), nullable=True)
     referred_by: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     last_mirror_week: Mapped[str | None] = mapped_column(String(8), nullable=True)  # YYYY-Www
+    voice_transcription_consent: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="0"
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
@@ -46,6 +49,7 @@ class Reading(Base):
     interpretation: Mapped[str | None] = mapped_column(Text, nullable=True)
     share_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     response_mode: Mapped[str] = mapped_column(String(16), default="fallback", server_default="fallback")
+    input_mode: Mapped[str] = mapped_column(String(16), default="text", server_default="text")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 

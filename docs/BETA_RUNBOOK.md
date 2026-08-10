@@ -30,6 +30,9 @@ ADMIN_IDS=<operator Telegram numeric ID>
 DB_PATH=moira.db
 FREE_READINGS=10
 # OPENROUTER_API_KEY may stay empty: the local fallback is a supported beta mode.
+# Keep voice input off until its short pilot starts. Then set the key and flag
+# described in docs/DEEPGRAM_VOICE_POC.md.
+DEEPGRAM_STT_ENABLED=false
 ~~~
 
 Never paste the token into a chat, command history, or a Git remote URL.
@@ -62,7 +65,10 @@ With a non-paid test account, verify in both RU and EN:
    question-aware fallback, follow-up, favourite, feedback, Journal reopen and
    share card.
 3. Altar, daily card, quiz, voice-to-audio fallback, and /delete_my_data.
-4. A normal LLM reading if a provider key is intentionally configured.
+4. If DEEPGRAM_STT_ENABLED=true: the one-time voice notice, RU and EN
+   voice/audio transcript, edit, repeat, typed fallback, confirmed reading and
+   voice-origin share caption/referral link.
+5. A normal LLM reading if a provider key is intentionally configured.
 
 Record a live Telegram result as PASS only when the actual Bot API conversation
 was completed. Unit tests and mocked messages do not replace this smoke.
@@ -75,12 +81,18 @@ critical error, and feedback plus qualitative comments to review. Keep
 questions out of analytics; events retain only the reading ID, spread,
 response mode, and positive/negative feedback.
 
+For a voice-enabled pilot, also review the opt-in funnel: entry → transcript
+→ confirm → completed reading → share. Keep the voice path only if it improves
+completed-reading and share rates without degrading the typed path.
+
 ## Failure handling
 
 - LLM unavailable: deliver the deterministic fallback; do not consume another
   credit.
 - TTS unavailable or Telegram voice forbidden: the text and saved reading
   continue, then the bot tries audio and finally sends a localized notice.
+- Deepgram unavailable, busy or out of quota: keep the user in the voice step
+  to retry, or let them type the same question; no reading is consumed.
 - Optional analytics unavailable: the reading continues; event persistence is
   best-effort.
 - Missing assets or failed migrations: do not launch; repair the repository or

@@ -15,7 +15,7 @@ from sqlalchemy import or_, select
 from .config import Config, load_config
 from .db import User, init_db
 from .db.database import get_session
-from .handlers import admin, features, payment, reading, start
+from .handlers import admin, features, payment, reading, start, voice
 from .handlers.features import send_daily_push, send_weekly_mirror
 from .services.analytics import Analytics
 
@@ -185,7 +185,7 @@ async def main() -> None:
     dp["cfg"] = cfg
     dp["analytics"] = analytics
 
-    dp.include_routers(start.router, reading.router, payment.router, admin.router, features.router)
+    dp.include_routers(start.router, voice.router, reading.router, payment.router, admin.router, features.router)
 
     await set_commands(bot)
     await bot.delete_webhook(drop_pending_updates=True)

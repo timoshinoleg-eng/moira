@@ -79,6 +79,13 @@ async def _test_no_api_key_fallback() -> None:
         posthog_host=cfg.posthog_host,
         sentry_dsn=cfg.sentry_dsn,
         referral_reward=cfg.referral_reward,
+        deepgram_api_key=cfg.deepgram_api_key,
+        deepgram_stt_enabled=cfg.deepgram_stt_enabled,
+        deepgram_stt_model=cfg.deepgram_stt_model,
+        deepgram_stt_endpoint=cfg.deepgram_stt_endpoint,
+        deepgram_stt_max_duration_sec=cfg.deepgram_stt_max_duration_sec,
+        deepgram_stt_max_bytes=cfg.deepgram_stt_max_bytes,
+        deepgram_stt_timeout_sec=cfg.deepgram_stt_timeout_sec,
     )
     drawn = draw("situation")
     result = await interpret_reading(

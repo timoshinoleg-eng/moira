@@ -23,6 +23,10 @@ Create /etc/moira/moira.env with BOT_TOKEN, ADMIN_IDS,
 DB_PATH=/var/lib/moira/moira.db, the chosen FREE_READINGS, and optional
 provider/observability credentials. This file is never committed.
 
+Deepgram voice input remains optional. Enable it only with the exact settings
+and live acceptance path in `docs/DEEPGRAM_VOICE_POC.md`; the rest of Moira
+continues to work with `DEEPGRAM_STT_ENABLED=false`.
+
 ## Migrate and launch
 
 ~~~bash
@@ -105,5 +109,6 @@ guessing: use the paired backup instead.
 Run the full preflight in BETA_RUNBOOK.md, then perform the real Telegram
 smoke: /start; RU and EN readings; a real card image; LLM-off fallback;
 follow-up, Journal, favourite and share; Altar; quiz; voice/audio fallback;
-and /delete_my_data. Record NOT TESTED — external credential required if
+and /delete_my_data. If enabled, also smoke voice question → transcript edit
+→ confirmed reading → voice-origin share. Record NOT TESTED — external credential required if
 no safe bot token or test account is available.

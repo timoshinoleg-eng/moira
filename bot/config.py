@@ -8,6 +8,13 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 
+def _env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @dataclass(frozen=True)
 class Config:
     bot_token: str
@@ -24,6 +31,13 @@ class Config:
     posthog_host: str
     sentry_dsn: str | None
     referral_reward: int
+    deepgram_api_key: str | None
+    deepgram_stt_enabled: bool
+    deepgram_stt_model: str
+    deepgram_stt_endpoint: str
+    deepgram_stt_max_duration_sec: int
+    deepgram_stt_max_bytes: int
+    deepgram_stt_timeout_sec: int
 
 
 def load_config(require_token: bool = True) -> Config:
@@ -50,4 +64,11 @@ def load_config(require_token: bool = True) -> Config:
         posthog_host=os.getenv("POSTHOG_HOST", "https://eu.i.posthog.com"),
         sentry_dsn=os.getenv("SENTRY_DSN", "").strip() or None,
         referral_reward=int(os.getenv("REFERRAL_REWARD", "2")),
+        deepgram_api_key=os.getenv("DEEPGRAM_API_KEY", "").strip() or None,
+        deepgram_stt_enabled=_env_bool("DEEPGRAM_STT_ENABLED"),
+        deepgram_stt_model=os.getenv("DEEPGRAM_STT_MODEL", "nova-3"),
+        deepgram_stt_endpoint=os.getenv("DEEPGRAM_STT_ENDPOINT", "https://api.deepgram.com/v1/listen"),
+        deepgram_stt_max_duration_sec=int(os.getenv("DEEPGRAM_STT_MAX_DURATION_SEC", "60")),
+        deepgram_stt_max_bytes=int(os.getenv("DEEPGRAM_STT_MAX_BYTES", "10485760")),
+        deepgram_stt_timeout_sec=int(os.getenv("DEEPGRAM_STT_TIMEOUT_SEC", "25")),
     )

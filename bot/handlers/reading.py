@@ -8,14 +8,14 @@ from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import BufferedInputFile, CallbackQuery, Message
+from aiogram.types import BufferedInputFile, CallbackQuery, Message, User as TelegramUser
 from sqlalchemy import select, update
 
 from ..config import Config
 from ..db.database import get_session
 from ..db.models import Reading, User
 from ..i18n import t
-from ..keyboards import back_menu_kb, main_menu_kb, paywall_kb, reading_footer_kb
+from ..keyboards import main_menu_kb, paywall_kb, question_input_kb, reading_footer_kb
 from ..llm import interpret_reading
 from ..services.analytics import Analytics
 from ..tarot import SPREADS, draw
@@ -70,24 +70,53 @@ async def cb_spread(callback: CallbackQuery, state: FSMContext, cfg: Config, ana
     await analytics.track(user.id, "spread_started", spread=spread_id)
     await callback.message.answer(
         t(user.language, f"ask_question_{spread_id}"),
-        reply_markup=back_menu_kb(user.language),
+        reply_markup=question_input_kb(user.language, spread_id),
     )
     await state.set_state(ReadingStates.waiting_question)
     await state.update_data(spread_id=spread_id)
     await callback.answer()
 
 
-@router.message(ReadingStates.waiting_question)
+@router.message(ReadingStates.waiting_question, F.text)
 async def process_reading(message: Message, state: FSMContext, cfg: Config, analytics: Analytics) -> None:
     data = await state.get_data()
     await state.clear()
     spread_id = data.get("spread_id")
     if spread_id not in SPREADS:
         return
+    await run_reading(message, spread_id, (message.text or "").strip(), cfg, analytics)
 
+
+@router.message(ReadingStates.waiting_question)
+async def prompt_text_or_voice(message: Message, state: FSMContext, cfg: Config) -> None:
+    data = await state.get_data()
+    spread_id = data.get("spread_id")
+    if spread_id not in SPREADS:
+        await state.clear()
+        return
     user = await get_or_create_user(message.from_user, cfg)
+    await message.answer(
+        t(user.language, "question_text_or_voice"),
+        reply_markup=question_input_kb(user.language, spread_id),
+    )
+
+
+async def run_reading(
+    message: Message,
+    spread_id: str,
+    question: str,
+    cfg: Config,
+    analytics: Analytics,
+    *,
+    input_mode: str = "text",
+    actor: TelegramUser | None = None,
+) -> None:
+    """Run the canonical reading path for typed and user-confirmed voice questions."""
+    if spread_id not in SPREADS:
+        return
+
+    user = await get_or_create_user(actor or message.from_user, cfg)
     lang = user.language
-    question = (message.text or "").strip()
 
     if question.lower() in CANCEL_TOKENS:
         await message.answer(t(lang, "menu_help"), reply_markup=main_menu_kb(lang))
@@ -205,6 +234,7 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
                 interpretation=(plain)[:3900],
                 share_summary=share_summary[:300] or None,
                 response_mode=response_mode,
+                input_mode=input_mode,
             )
             session.add(row)
             await session.commit()
@@ -223,7 +253,7 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
         # Text and the saved reading are the primary flow; TTS is best-effort.
         logger.warning("voice generation failed for user %s: %s", user.id, exc)
         await analytics.track(user.id, "voice_failed", spread=spread_id, error=type(exc).__name__)
-    await analytics.track(user.id, "spread_completed", spread=spread_id, ai=bool(result))
+    await analytics.track(user.id, "spread_completed", spread=spread_id, ai=bool(result), source=input_mode)
 
     footer_lines = []
     if reason == "unlimited":
@@ -275,11 +305,12 @@ async def cb_share(callback: CallbackQuery, cfg: Config, analytics: Analytics) -
     bot_username = me.username or ""
     link = f"https://t.me/{bot_username}?start=ref_{user.id}" if bot_username else ""
     photo = await asyncio.to_thread(make_share_image, spread_title, cards_info, summary, cfg.bot_display_name, lang)
+    caption_key = "share_caption_voice" if reading.input_mode == "voice" else "share_caption"
     await callback.message.answer_photo(
         BufferedInputFile(photo, filename="share.jpg"),
-        caption=html.escape(t(lang, "share_caption", link=link)),
+        caption=html.escape(t(lang, caption_key, link=link)),
     )
-    await analytics.track(user.id, "share_created", spread=reading.spread)
+    await analytics.track(user.id, "share_created", spread=reading.spread, source=reading.input_mode)
     await callback.answer()
 
 

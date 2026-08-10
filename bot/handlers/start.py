@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy import delete, or_
 
@@ -75,7 +76,8 @@ async def cmd_delete_my_data(message: Message, cfg: Config, analytics: Analytics
 
 
 @router.callback_query(F.data == "menu")
-async def cb_menu(callback: CallbackQuery, cfg: Config) -> None:
+async def cb_menu(callback: CallbackQuery, state: FSMContext, cfg: Config) -> None:
+    await state.clear()
     user = await get_or_create_user(callback.from_user, cfg)
     await callback.message.answer(t(user.language, "menu_help"), reply_markup=main_menu_kb(user.language))
     await callback.answer()

@@ -46,6 +46,7 @@ class Analytics:
         "feedback",
         "mode",
         "followup_kind",
+        "duration_bucket",
     }
 
     def __init__(self, cfg: Config) -> None:

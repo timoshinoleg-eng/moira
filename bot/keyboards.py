@@ -130,3 +130,40 @@ def back_menu_kb(lang: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[[InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")]]
     )
+
+
+def question_input_kb(lang: str, spread_id: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t(lang, "btn_voice_question"), callback_data=f"voice:start:{spread_id}")],
+            [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
+        ]
+    )
+
+
+def voice_consent_kb(lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t(lang, "btn_voice_consent"), callback_data="voice:consent:yes")],
+            [InlineKeyboardButton(text=t(lang, "btn_text_instead"), callback_data="voice:cancel")],
+        ]
+    )
+
+
+def voice_waiting_kb(lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text=t(lang, "btn_voice_cancel"), callback_data="voice:cancel")]]
+    )
+
+
+def voice_transcript_kb(lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=t(lang, "btn_voice_confirm"), callback_data="voice:confirm")],
+            [
+                InlineKeyboardButton(text=t(lang, "btn_voice_edit"), callback_data="voice:edit"),
+                InlineKeyboardButton(text=t(lang, "btn_voice_repeat"), callback_data="voice:repeat"),
+            ],
+            [InlineKeyboardButton(text=t(lang, "btn_voice_cancel"), callback_data="voice:cancel")],
+        ]
+    )
