@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -13,6 +14,18 @@ def _env_bool(name: str, default: bool = False) -> bool:
     if value is None:
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _optional_secret(env_name: str, file_env_name: str) -> str | None:
+    """Load an optional secret from an environment variable or a local text file."""
+    secret_file = os.getenv(file_env_name, "").strip()
+    if secret_file:
+        try:
+            value = Path(secret_file).expanduser().read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise RuntimeError(f"{file_env_name} cannot be read") from exc
+        return value or None
+    return os.getenv(env_name, "").strip() or None
 
 
 @dataclass(frozen=True)
@@ -52,7 +65,7 @@ def load_config(require_token: bool = True) -> Config:
     return Config(
         bot_token=token,
         admin_ids=admins,
-        openrouter_api_key=os.getenv("OPENROUTER_API_KEY", "").strip() or None,
+        openrouter_api_key=_optional_secret("OPENROUTER_API_KEY", "LLM_API_KEY_FILE"),
         llm_model=os.getenv("LLM_MODEL", "deepseek/deepseek-v4-flash"),
         llm_base_url=os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1"),
         db_path=os.getenv("DB_PATH", "moira.db"),

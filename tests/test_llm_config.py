@@ -15,3 +15,14 @@ def test_default_llm_model_is_current_deepseek_flash(monkeypatch) -> None:
     cfg = load_config(require_token=False)
 
     assert cfg.llm_model == "deepseek/deepseek-v4-flash"
+
+
+def test_llm_key_file_overrides_environment_key(monkeypatch, tmp_path) -> None:
+    key_file = tmp_path / "llm-key.txt"
+    key_file.write_text("file-key\n", encoding="utf-8")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "environment-key")
+    monkeypatch.setenv("LLM_API_KEY_FILE", str(key_file))
+
+    cfg = load_config(require_token=False)
+
+    assert cfg.openrouter_api_key == "file-key"

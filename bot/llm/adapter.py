@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import time
 from datetime import datetime
@@ -15,8 +16,8 @@ from ..tarot.spreads import DrawnCard, POSITION_MEANINGS, position_meaning
 
 logger = logging.getLogger(__name__)
 
-PROMPT_VERSION = "v3-content"
-SCHEMA_VERSION = "v3"
+PROMPT_VERSION = "v4-grounded"
+SCHEMA_VERSION = "v4"
 MAX_LLM_ATTEMPTS = 2  # one initial + one format/network retry
 
 # --- agent-core integration ---------------------------------------
@@ -98,10 +99,13 @@ FORMAT_RU = (
     "card_interpretations (массив объектов с полями: position, card_name, orientation, "
     "core_message, symbolic_detail, context_connection), synthesis, practical_focus, "
     "reflection_question, voice_summary, share_summary. "
+    "Каждая мысль должна опираться на конкретную карту, её позицию или явный смысл вопроса. "
+    "Не заменяй трактовку общей психологией, не выдумывай обстоятельств и не повторяй одну мысль. "
+    "Для каждой карты сначала назови её напряжение в этой позиции, затем один ясный фокус для человека. "
     "Все тексты — живые, связные, без заголовков и списков. Ориентиры длины в символах: "
-"headline до 90; opening 120–250; интерпретация каждой карты 300–550; synthesis 500–900; "
-"practical_focus 180–350; reflection_question до 220; voice_summary 500–800 — отдельный "
-"устный пересказ, не копия synthesis; share_summary 180–300 — итог для пересылки, "
+"headline до 90; opening 80–180; интерпретация каждой карты 170–420; synthesis 320–600; "
+"practical_focus 100–220; reflection_question до 180; voice_summary 220–420 — отдельный "
+"устный пересказ, не копия synthesis; share_summary 100–220 — итог для пересылки, "
 "не упоминай вопрос пользователя."
 )
 FORMAT_EN = (
@@ -109,10 +113,13 @@ FORMAT_EN = (
     "card_interpretations (array of objects with fields: position, card_name, orientation, "
     "core_message, symbolic_detail, context_connection), synthesis, practical_focus, "
     "reflection_question, voice_summary, share_summary. "
+    "Every idea must be grounded in a specific card, its position, or the explicit meaning of the question. "
+    "Do not replace interpretation with generic psychology, invent circumstances, or repeat the same idea. "
+    "For each card, name the tension in that position first, then give one clear focus for the querent. "
     "All texts should be natural and flowing, without headings or bullet lists. Length guidance "
-"in characters: headline up to 90; opening 120–250; each card interpretation 300–550; "
-"synthesis 500–900; practical_focus 180–350; reflection_question up to 220; voice_summary "
-"500–800 — a separate spoken summary, not a copy of synthesis; share_summary 180–300 — a "
+"in characters: headline up to 90; opening 80–180; each card interpretation 170–420; "
+"synthesis 320–600; practical_focus 100–220; reflection_question up to 180; voice_summary "
+"220–420 — a separate spoken summary, not a copy of synthesis; share_summary 100–220 — a "
 "shareable takeaway, do not mention the user's question."
 )
 
@@ -121,20 +128,20 @@ class CardInterpretation(BaseModel):
     position: str = Field(min_length=1, max_length=64)
     card_name: str = Field(min_length=1, max_length=64)
     orientation: str = Field(min_length=1, max_length=16)  # "upright" or "reversed"
-    core_message: str = Field(min_length=300, max_length=550)  # 300-550 chars per card
+    core_message: str = Field(min_length=170, max_length=420)  # 170-420 chars per card
     symbolic_detail: str = Field(min_length=0, max_length=200)
     context_connection: str = Field(min_length=0, max_length=200)
 
 
 class TarotReadingResult(BaseModel):
     headline: str = Field(min_length=1, max_length=90)
-    opening: str = Field(min_length=120, max_length=250)
+    opening: str = Field(min_length=80, max_length=180)
     card_interpretations: list[CardInterpretation] = Field(min_length=1)
-    synthesis: str = Field(min_length=500, max_length=900)
-    practical_focus: str = Field(min_length=180, max_length=350)
-    reflection_question: str = Field(min_length=1, max_length=220)
-    voice_summary: str = Field(min_length=500, max_length=800)
-    share_summary: str = Field(min_length=180, max_length=300)
+    synthesis: str = Field(min_length=320, max_length=600)
+    practical_focus: str = Field(min_length=100, max_length=220)
+    reflection_question: str = Field(min_length=1, max_length=180)
+    voice_summary: str = Field(min_length=220, max_length=420)
+    share_summary: str = Field(min_length=100, max_length=220)
 
     @model_validator(mode="after")
     def _voice_must_not_copy_synthesis(self) -> "TarotReadingResult":
@@ -159,6 +166,47 @@ def assert_share_summary_privacy(share_summary: str, question: str | None) -> No
         return
     if q.lower() in (share_summary or "").lower():
         raise ValueError("share_summary contains the querent's private question")
+
+
+def _clip_text(value: object, max_length: int) -> object:
+    """Keep provider verbosity within the product limit without splitting words."""
+    if not isinstance(value, str) or len(value) <= max_length:
+        return value
+    clipped = value[: max_length - 1].rstrip()
+    boundary = clipped.rfind(" ")
+    if boundary >= max_length // 2:
+        clipped = clipped[:boundary].rstrip(" ,;:")
+    return f"{clipped}…"
+
+
+def parse_reading_json(content: str) -> TarotReadingResult:
+    """Validate a normal OpenAI-compatible JSON response from an LLM provider."""
+    cleaned = (content or "").strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else ""
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3].rstrip()
+    if not cleaned:
+        raise ValueError("empty LLM response")
+    payload = json.loads(cleaned)
+    if not isinstance(payload, dict):
+        raise ValueError("LLM response must be a JSON object")
+    limits = {
+        "headline": 90,
+        "opening": 180,
+        "synthesis": 600,
+        "practical_focus": 220,
+        "reflection_question": 180,
+        "voice_summary": 420,
+        "share_summary": 220,
+    }
+    for field, max_length in limits.items():
+        if field in payload:
+            payload[field] = _clip_text(payload[field], max_length)
+    for interpretation in payload.get("card_interpretations", []):
+        if isinstance(interpretation, dict) and "core_message" in interpretation:
+            interpretation["core_message"] = _clip_text(interpretation["core_message"], 420)
+    return TarotReadingResult.model_validate(payload)
 
 
 def _provider_from_url(base_url: str) -> str:
@@ -392,15 +440,14 @@ async def interpret_reading(
     """Return structured LLM interpretation or None when unavailable/failed (fallback path).
 
     Policy: one primary request + at most one format/network retry, then fallback.
-    Instructor's own retries are disabled to avoid nested retry loops.
+    The provider returns a plain JSON response; no tool-call protocol is required.
     """
     if not cfg.openrouter_api_key:
         return None
     try:
-        import instructor
         from openai import AsyncOpenAI
     except ImportError:
-        logger.warning("instructor/openai missing — falling back to embedded meanings")
+        logger.warning("openai client missing — falling back to embedded meanings")
         return None
 
     # --- agent-core: attention transition → FOCUS ---
@@ -418,34 +465,22 @@ async def interpret_reading(
         {"role": "system", "content": "You are Moira, a tarot oracle. Follow the user's instructions exactly."},
         {"role": "user", "content": user_message},
     ]
-    client = instructor.from_openai(
-        AsyncOpenAI(base_url=cfg.llm_base_url, api_key=cfg.openrouter_api_key, timeout=90.0)
-    )
-    create_fn = getattr(client.chat.completions, "create_with_completion", None)
+    client = AsyncOpenAI(base_url=cfg.llm_base_url, api_key=cfg.openrouter_api_key, timeout=90.0)
 
     started = time.monotonic()
     last_exc: Exception | None = None
     for attempt in range(1, MAX_LLM_ATTEMPTS + 1):
         try:
-            if create_fn is not None:
-                result, completion = await create_fn(
-                    model=cfg.llm_model,
-                    response_model=TarotReadingResult,
-                    max_retries=0,
-                    temperature=0.8,
-                    max_tokens=2000,
-                    messages=messages,
-                )
-            else:
-                result = await client.chat.completions.create(
-                    model=cfg.llm_model,
-                    response_model=TarotReadingResult,
-                    max_retries=0,
-                    temperature=0.8,
-                    max_tokens=2000,
-                    messages=messages,
-                )
-                completion = None
+            completion = await client.chat.completions.create(
+                model=cfg.llm_model,
+                temperature=0.65,
+                # DeepSeek V4 Flash spends part of its completion budget on
+                # hidden reasoning before emitting the JSON response.
+                max_tokens=6000,
+                messages=messages,
+            )
+            content = completion.choices[0].message.content if completion.choices else ""
+            result = parse_reading_json(content or "")
             if len(result.card_interpretations) != len(drawn):
                 logger.warning(
                     "LLM returned %d interpretations for %d cards (attempt %d)",
@@ -461,7 +496,7 @@ async def interpret_reading(
                     last_exc = privacy_exc
                     continue
             latency = int((time.monotonic() - started) * 1000)
-            usage = getattr(completion, "usage", None) if completion is not None else None
+            usage = getattr(completion, "usage", None)
             await _log_usage(
                 user_id=user_id or 0,
                 spread=spread_id,

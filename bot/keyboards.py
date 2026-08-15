@@ -71,14 +71,17 @@ def tariffs_kb(lang: str) -> InlineKeyboardMarkup:
     )
 
 
-def invite_menu_kb(lang: str) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
+def invite_menu_kb(lang: str, share_url: str = "") -> InlineKeyboardMarkup:
+    rows = []
+    if share_url:
+        rows.append([InlineKeyboardButton(text=t(lang, "btn_invite_share"), url=share_url)])
+    rows.extend(
+        [
             [InlineKeyboardButton(text=t(lang, "btn_tariffs"), callback_data="tariffs")],
             [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
         ]
     )
-
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 def reading_footer_kb(
     lang: str, reading_id: int, spread_id: str = "", faved: bool = False

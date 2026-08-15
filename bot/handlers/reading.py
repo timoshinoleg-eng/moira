@@ -195,6 +195,7 @@ async def run_reading(
             BufferedInputFile(photo_bytes, filename="spread.jpg"),
             caption="\n".join(caption_lines),
         )
+        await status_msg.edit_text(t(lang, "reading_interpreting"))
 
         result = await interpret_reading(
             cfg, lang, spread_title, question or None, drawn, user_id=user.id, spread_id=spread_id

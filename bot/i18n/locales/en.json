@@ -36,6 +36,7 @@
   "ask_question_love": "Ask about your role or the relationship dynamic, not about reading another person's mind. For example: “what would be helpful to clarify with care?”.\nOr send '-' for a general reading.",
   "ask_question_choice": "Describe path A and path B and what matters to you. The cards can compare potential and criteria, while the decision remains yours.\nOr send '-' for a general reading.",
   "shuffling": "Shuffling the deck… 🔮",
+  "reading_interpreting": "🕯 Moira is reading the cards…\nGathering the threads of the past, the present, and the next turn in your path.",
   "question_line": "Question: {q}",
   "rev_mark": " (reversed)",
   "free_left": "🎁 Free readings left: {n}",
@@ -44,11 +45,9 @@
   "spread_interpretation_header": "Interpretation (tap to reveal):",
   "spread_synthesis_header": "Synthesis:",
   "reading_actions": "Reading saved to your diary 📖",
-  "paywall_text": "Free readings are over 💫\nUnlock full access:",
   "tariffs_title": "💎 Pricing\n\nPaid with Telegram Stars ⭐",
   "tariff_one": "🃏 1 reading — 25 ⭐",
   "tariff_week": "🌙 7 days unlimited — 99 ⭐",
-  "tariff_month": "👑 30 days unlimited — 150 ⭐ (subscription)",
   "inv_title_reading": "1 tarot reading",
   "inv_desc_reading": "One reading of your choice: Situation, Love or Choice.",
   "inv_label_reading": "Reading",
@@ -126,5 +125,12 @@
   "reading_failed": "⚠️ Could not prepare the reading. Please try again — no credit was charged.",
   "data_deleted": "✅ Your data and reading history have been deleted. If you want to start over — /start.",
   "safety_refusal": "⚠️ I can't give medical, legal or financial advice, or claim anything as an inevitable fate. In difficult situations, please reach out to a qualified professional.",
-  "date_fmt": "%Y-%m-%d"
+  "date_fmt": "%Y-%m-%d",
+  "btn_invite_share": "📤 Send invite",
+  "invite_title": "🎁 Invite a friend",
+  "invite_link_unavailable": "I could not prepare your personal link. Please try again in a minute.",
+  "invite_share_copy": "Try a private Tarot reflection with Moira — a thoughtful AI Tarot guide in Telegram. Start with the question that truly matters.",
+  "invite_body": "Send a private link to someone who could use a thoughtful reading. Your friend starts in a private chat; after their first purchase, you receive {reward} extra readings.",
+  "tariff_month": "👑 30 days unlimited — 150 ⭐",
+  "paywall_text": "Your free readings are complete 💫`n`nKeep exploring the question that matters and return to the cards saved in your reading diary.`n`nChoose the access that feels right:"
 }
