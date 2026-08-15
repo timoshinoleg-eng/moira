@@ -1,0 +1,746 @@
+[
+  {
+    "case_id": "ru-situation-decision",
+    "lang": "ru",
+    "spread": "situation",
+    "profile": "decision",
+    "question": "Как яснее подойти к решению о следующем шаге?",
+    "cards": [
+      {
+        "id": "major_0",
+        "name": "Шут",
+        "reversed": false
+      },
+      {
+        "id": "major_1",
+        "name": "Маг",
+        "reversed": true
+      },
+      {
+        "id": "major_2",
+        "name": "Верховная Жрица",
+        "reversed": false
+      }
+    ],
+    "positions": "Суть ситуации Скрытый фактор Следующий шаг",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2468
+  },
+  {
+    "case_id": "ru-situation-relationship",
+    "lang": "ru",
+    "spread": "situation",
+    "profile": "relationship",
+    "question": "Что мне важно понять о динамике этих отношений?",
+    "cards": [
+      {
+        "id": "major_3",
+        "name": "Императрица",
+        "reversed": true
+      },
+      {
+        "id": "major_4",
+        "name": "Император",
+        "reversed": false
+      },
+      {
+        "id": "major_5",
+        "name": "Иерофант",
+        "reversed": false
+      }
+    ],
+    "positions": "Суть ситуации Скрытый фактор Следующий шаг",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2558
+  },
+  {
+    "case_id": "ru-situation-work",
+    "lang": "ru",
+    "spread": "situation",
+    "profile": "work",
+    "question": "На что обратить внимание в ближайшем рабочем выборе?",
+    "cards": [
+      {
+        "id": "major_6",
+        "name": "Влюблённые",
+        "reversed": false
+      },
+      {
+        "id": "major_7",
+        "name": "Колесница",
+        "reversed": false
+      },
+      {
+        "id": "major_8",
+        "name": "Сила",
+        "reversed": true
+      }
+    ],
+    "positions": "Суть ситуации Скрытый фактор Следующий шаг",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2558
+  },
+  {
+    "case_id": "ru-situation-inner_change",
+    "lang": "ru",
+    "spread": "situation",
+    "profile": "inner_change",
+    "question": "Что помогает мне пройти период внутренних перемен?",
+    "cards": [
+      {
+        "id": "major_9",
+        "name": "Отшельник",
+        "reversed": false
+      },
+      {
+        "id": "major_10",
+        "name": "Колесо Фортуны",
+        "reversed": true
+      },
+      {
+        "id": "major_11",
+        "name": "Справедливость",
+        "reversed": false
+      }
+    ],
+    "positions": "Суть ситуации Скрытый фактор Следующий шаг",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2569
+  },
+  {
+    "case_id": "ru-love-decision",
+    "lang": "ru",
+    "spread": "love",
+    "profile": "decision",
+    "question": "Как яснее подойти к решению о следующем шаге?",
+    "cards": [
+      {
+        "id": "major_12",
+        "name": "Повешенный",
+        "reversed": true
+      },
+      {
+        "id": "major_13",
+        "name": "Смерть",
+        "reversed": false
+      },
+      {
+        "id": "major_14",
+        "name": "Умеренность",
+        "reversed": false
+      }
+    ],
+    "positions": "Твоё состояние Динамика связи Полезный фокус",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2519
+  },
+  {
+    "case_id": "ru-love-relationship",
+    "lang": "ru",
+    "spread": "love",
+    "profile": "relationship",
+    "question": "Что мне важно понять о динамике этих отношений?",
+    "cards": [
+      {
+        "id": "major_15",
+        "name": "Дьявол",
+        "reversed": false
+      },
+      {
+        "id": "major_16",
+        "name": "Башня",
+        "reversed": false
+      },
+      {
+        "id": "major_17",
+        "name": "Звезда",
+        "reversed": true
+      }
+    ],
+    "positions": "Твоё состояние Динамика связи Полезный фокус",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2594
+  },
+  {
+    "case_id": "ru-love-work",
+    "lang": "ru",
+    "spread": "love",
+    "profile": "work",
+    "question": "На что обратить внимание в ближайшем рабочем выборе?",
+    "cards": [
+      {
+        "id": "major_18",
+        "name": "Луна",
+        "reversed": false
+      },
+      {
+        "id": "major_19",
+        "name": "Солнце",
+        "reversed": true
+      },
+      {
+        "id": "major_20",
+        "name": "Суд",
+        "reversed": false
+      }
+    ],
+    "positions": "Твоё состояние Динамика связи Полезный фокус",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2562
+  },
+  {
+    "case_id": "ru-love-inner_change",
+    "lang": "ru",
+    "spread": "love",
+    "profile": "inner_change",
+    "question": "Что помогает мне пройти период внутренних перемен?",
+    "cards": [
+      {
+        "id": "major_21",
+        "name": "Мир",
+        "reversed": true
+      },
+      {
+        "id": "wands_ace",
+        "name": "Туз Жезлов",
+        "reversed": false
+      },
+      {
+        "id": "wands_two",
+        "name": "Двойка Жезлов",
+        "reversed": false
+      }
+    ],
+    "positions": "Твоё состояние Динамика связи Полезный фокус",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2555
+  },
+  {
+    "case_id": "ru-choice-decision",
+    "lang": "ru",
+    "spread": "choice",
+    "profile": "decision",
+    "question": "Как яснее подойти к решению о следующем шаге?",
+    "cards": [
+      {
+        "id": "wands_three",
+        "name": "Тройка Жезлов",
+        "reversed": false
+      },
+      {
+        "id": "wands_four",
+        "name": "Четвёрка Жезлов",
+        "reversed": false
+      },
+      {
+        "id": "wands_five",
+        "name": "Пятёрка Жезлов",
+        "reversed": true
+      }
+    ],
+    "positions": "Путь А Путь Б Критерий решения",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2544
+  },
+  {
+    "case_id": "ru-choice-relationship",
+    "lang": "ru",
+    "spread": "choice",
+    "profile": "relationship",
+    "question": "Что мне важно понять о динамике этих отношений?",
+    "cards": [
+      {
+        "id": "wands_six",
+        "name": "Шестёрка Жезлов",
+        "reversed": false
+      },
+      {
+        "id": "wands_seven",
+        "name": "Семёрка Жезлов",
+        "reversed": true
+      },
+      {
+        "id": "wands_eight",
+        "name": "Восьмёрка Жезлов",
+        "reversed": false
+      }
+    ],
+    "positions": "Путь А Путь Б Критерий решения",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2538
+  },
+  {
+    "case_id": "ru-choice-work",
+    "lang": "ru",
+    "spread": "choice",
+    "profile": "work",
+    "question": "На что обратить внимание в ближайшем рабочем выборе?",
+    "cards": [
+      {
+        "id": "wands_nine",
+        "name": "Девятка Жезлов",
+        "reversed": true
+      },
+      {
+        "id": "wands_ten",
+        "name": "Десятка Жезлов",
+        "reversed": false
+      },
+      {
+        "id": "wands_page",
+        "name": "Паж Жезлов",
+        "reversed": false
+      }
+    ],
+    "positions": "Путь А Путь Б Критерий решения",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2592
+  },
+  {
+    "case_id": "ru-choice-inner_change",
+    "lang": "ru",
+    "spread": "choice",
+    "profile": "inner_change",
+    "question": "Что помогает мне пройти период внутренних перемен?",
+    "cards": [
+      {
+        "id": "wands_knight",
+        "name": "Рыцарь Жезлов",
+        "reversed": false
+      },
+      {
+        "id": "wands_queen",
+        "name": "Королева Жезлов",
+        "reversed": false
+      },
+      {
+        "id": "wands_king",
+        "name": "Король Жезлов",
+        "reversed": true
+      }
+    ],
+    "positions": "Путь А Путь Б Критерий решения",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2638
+  },
+  {
+    "case_id": "en-situation-decision",
+    "lang": "en",
+    "spread": "situation",
+    "profile": "decision",
+    "question": "How can I approach my next decision with more clarity?",
+    "cards": [
+      {
+        "id": "cups_ace",
+        "name": "Ace of Cups",
+        "reversed": false
+      },
+      {
+        "id": "cups_two",
+        "name": "Two of Cups",
+        "reversed": true
+      },
+      {
+        "id": "cups_three",
+        "name": "Three of Cups",
+        "reversed": false
+      }
+    ],
+    "positions": "The essence Hidden factor Next step",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2707
+  },
+  {
+    "case_id": "en-situation-relationship",
+    "lang": "en",
+    "spread": "situation",
+    "profile": "relationship",
+    "question": "What matters for me to understand about this relationship dynamic?",
+    "cards": [
+      {
+        "id": "cups_four",
+        "name": "Four of Cups",
+        "reversed": true
+      },
+      {
+        "id": "cups_five",
+        "name": "Five of Cups",
+        "reversed": false
+      },
+      {
+        "id": "cups_six",
+        "name": "Six of Cups",
+        "reversed": false
+      }
+    ],
+    "positions": "The essence Hidden factor Next step",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2736
+  },
+  {
+    "case_id": "en-situation-work",
+    "lang": "en",
+    "spread": "situation",
+    "profile": "work",
+    "question": "What should I notice in my next work-related choice?",
+    "cards": [
+      {
+        "id": "cups_seven",
+        "name": "Seven of Cups",
+        "reversed": false
+      },
+      {
+        "id": "cups_eight",
+        "name": "Eight of Cups",
+        "reversed": false
+      },
+      {
+        "id": "cups_nine",
+        "name": "Nine of Cups",
+        "reversed": true
+      }
+    ],
+    "positions": "The essence Hidden factor Next step",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2766
+  },
+  {
+    "case_id": "en-situation-inner_change",
+    "lang": "en",
+    "spread": "situation",
+    "profile": "inner_change",
+    "question": "What can support me through this period of inner change?",
+    "cards": [
+      {
+        "id": "cups_ten",
+        "name": "Ten of Cups",
+        "reversed": false
+      },
+      {
+        "id": "cups_page",
+        "name": "Page of Cups",
+        "reversed": true
+      },
+      {
+        "id": "cups_knight",
+        "name": "Knight of Cups",
+        "reversed": false
+      }
+    ],
+    "positions": "The essence Hidden factor Next step",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2744
+  },
+  {
+    "case_id": "en-love-decision",
+    "lang": "en",
+    "spread": "love",
+    "profile": "decision",
+    "question": "How can I approach my next decision with more clarity?",
+    "cards": [
+      {
+        "id": "cups_queen",
+        "name": "Queen of Cups",
+        "reversed": true
+      },
+      {
+        "id": "cups_king",
+        "name": "King of Cups",
+        "reversed": false
+      },
+      {
+        "id": "swords_ace",
+        "name": "Ace of Swords",
+        "reversed": false
+      }
+    ],
+    "positions": "Your state Relationship dynamic Helpful focus",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2695
+  },
+  {
+    "case_id": "en-love-relationship",
+    "lang": "en",
+    "spread": "love",
+    "profile": "relationship",
+    "question": "What matters for me to understand about this relationship dynamic?",
+    "cards": [
+      {
+        "id": "swords_two",
+        "name": "Two of Swords",
+        "reversed": false
+      },
+      {
+        "id": "swords_three",
+        "name": "Three of Swords",
+        "reversed": false
+      },
+      {
+        "id": "swords_four",
+        "name": "Four of Swords",
+        "reversed": true
+      }
+    ],
+    "positions": "Your state Relationship dynamic Helpful focus",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2649
+  },
+  {
+    "case_id": "en-love-work",
+    "lang": "en",
+    "spread": "love",
+    "profile": "work",
+    "question": "What should I notice in my next work-related choice?",
+    "cards": [
+      {
+        "id": "swords_five",
+        "name": "Five of Swords",
+        "reversed": false
+      },
+      {
+        "id": "swords_six",
+        "name": "Six of Swords",
+        "reversed": true
+      },
+      {
+        "id": "swords_seven",
+        "name": "Seven of Swords",
+        "reversed": false
+      }
+    ],
+    "positions": "Your state Relationship dynamic Helpful focus",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2667
+  },
+  {
+    "case_id": "en-love-inner_change",
+    "lang": "en",
+    "spread": "love",
+    "profile": "inner_change",
+    "question": "What can support me through this period of inner change?",
+    "cards": [
+      {
+        "id": "swords_eight",
+        "name": "Eight of Swords",
+        "reversed": true
+      },
+      {
+        "id": "swords_nine",
+        "name": "Nine of Swords",
+        "reversed": false
+      },
+      {
+        "id": "swords_ten",
+        "name": "Ten of Swords",
+        "reversed": false
+      }
+    ],
+    "positions": "Your state Relationship dynamic Helpful focus",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2691
+  },
+  {
+    "case_id": "en-choice-decision",
+    "lang": "en",
+    "spread": "choice",
+    "profile": "decision",
+    "question": "How can I approach my next decision with more clarity?",
+    "cards": [
+      {
+        "id": "swords_page",
+        "name": "Page of Swords",
+        "reversed": false
+      },
+      {
+        "id": "swords_knight",
+        "name": "Knight of Swords",
+        "reversed": false
+      },
+      {
+        "id": "swords_queen",
+        "name": "Queen of Swords",
+        "reversed": true
+      }
+    ],
+    "positions": "Path A Path B Decision criterion",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2719
+  },
+  {
+    "case_id": "en-choice-relationship",
+    "lang": "en",
+    "spread": "choice",
+    "profile": "relationship",
+    "question": "What matters for me to understand about this relationship dynamic?",
+    "cards": [
+      {
+        "id": "swords_king",
+        "name": "King of Swords",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_ace",
+        "name": "Ace of Pentacles",
+        "reversed": true
+      },
+      {
+        "id": "pentacles_two",
+        "name": "Two of Pentacles",
+        "reversed": false
+      }
+    ],
+    "positions": "Path A Path B Decision criterion",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2612
+  },
+  {
+    "case_id": "en-choice-work",
+    "lang": "en",
+    "spread": "choice",
+    "profile": "work",
+    "question": "What should I notice in my next work-related choice?",
+    "cards": [
+      {
+        "id": "pentacles_three",
+        "name": "Three of Pentacles",
+        "reversed": true
+      },
+      {
+        "id": "pentacles_four",
+        "name": "Four of Pentacles",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_five",
+        "name": "Five of Pentacles",
+        "reversed": false
+      }
+    ],
+    "positions": "Path A Path B Decision criterion",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2669
+  },
+  {
+    "case_id": "en-choice-inner_change",
+    "lang": "en",
+    "spread": "choice",
+    "profile": "inner_change",
+    "question": "What can support me through this period of inner change?",
+    "cards": [
+      {
+        "id": "pentacles_six",
+        "name": "Six of Pentacles",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_seven",
+        "name": "Seven of Pentacles",
+        "reversed": false
+      },
+      {
+        "id": "pentacles_eight",
+        "name": "Eight of Pentacles",
+        "reversed": true
+      }
+    ],
+    "positions": "Path A Path B Decision criterion",
+    "has_card_grounding": true,
+    "has_synthesis": true,
+    "has_reflection": true,
+    "has_question_lens": true,
+    "hard_fail": false,
+    "output_chars": 2723
+  }
+]
