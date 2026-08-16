@@ -147,7 +147,19 @@ def _place_card(img: Image.Image, draw: ImageDraw.ImageDraw, card, x: int, y: in
         if reversed_:
             card_img = card_img.rotate(180)
         _add_glow(img, (x, y, x + w, y + h))
-        img.paste(_fit(card_img, w, h), (x, y))
+        matte = T.CARD_MATTE_PADDING
+        draw.rounded_rectangle(
+            [x - matte, y - matte, x + w + matte, y + h + matte],
+            radius=T.CARD_MATTE_RADIUS, fill=T.CARD_MATTE_FILL,
+            outline=T.CARD_MATTE_OUTLINE, width=T.CARD_MATTE_WIDTH,
+        )
+        inset = T.CARD_INSET
+        img.paste(_fit(card_img, w - inset * 2, h - inset * 2), (x + inset, y + inset))
+        outline = T.CARD_FRAME_REVERSED_OUTLINE if reversed_ else T.CARD_FRAME_OUTLINE
+        draw.rounded_rectangle(
+            [x, y, x + w, y + h], radius=T.CARD_FRAME_RADIUS,
+            outline=outline, width=T.CARD_FRAME_WIDTH,
+        )
     else:
         draw.rounded_rectangle(
             [x, y, x + w, y + h], radius=T.PLACEHOLDER_RADIUS,

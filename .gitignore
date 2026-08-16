@@ -35,3 +35,12 @@ run.bat
 run.ps1
 agent_core_tests/
 .agent_state/
+
+# Runtime lock and local-only analysis artifacts
+.bot.runtime.lock
+.moira-video-analysis/
+Манус Мойра/
+Moira.png
+
+# Owner-private review material (never publish)
+docs/*PRIVATE*.json

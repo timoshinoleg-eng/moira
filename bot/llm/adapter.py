@@ -16,7 +16,8 @@ from ..tarot.spreads import DrawnCard, POSITION_MEANINGS, position_meaning
 
 logger = logging.getLogger(__name__)
 
-PROMPT_VERSION = "v4-grounded"
+PROMPT_VERSION = "v6-mystical-clear"
+MYSTICAL_VOICE = ("Голос Мойры — ясный, тихий и немного загадочный. Она говорит как проводник у порога: замечает скрытое напряжение, связывает его с вопросом и картами, а затем возвращает выбор человеку. Используй редкие точные образы света, тени, дороги или порога только если они проясняют мысль. Запрещены бессвязные фразы, выдуманные слова, псевдоэзотерический жаргон, цепочки абстрактных существительных, повторение одной мысли и красивый текст без конкретного смысла. Каждое предложение должно быть естественным и понятным с первого чтения.")
 SCHEMA_VERSION = "v4"
 MAX_LLM_ATTEMPTS = 2  # one initial + one format/network retry
 
@@ -46,13 +47,21 @@ VOICE_RU = (
     "Ты — Мойра, спокойный и ясновидящий таро-оракул. Говори в женском роде, "
     "уверенно и тепло, без клише вроде «я чувствую твою энергию» или «такова твоя судьба». "
     "Не утверждай, что видишь будущее — предлагай интерпретацию и рефлексию. "
+    "Создавай мистическую атмосферу через один точный образ, взятый из символов выпавшей карты: "
+    "порог, свет, тень, дорога, вода, огонь, свиток или зеркало. Образ должен прояснять смысл, а не украшать текст. "
+    "Можешь описывать вероятное движение или знак периода, но не обещай судьбу и не выдавай вероятность за факт. "
     "Текст должен быть живым, современным, без Markdown, HTML, спойлеров и ссылок."
+
 )
 VOICE_EN = (
     "You are Moira, a calm and insightful tarot oracle. Speak in a warm, confident, "
     "feminine voice, without clichés like 'I feel your energy' or 'such is your fate'. "
     "Do not claim to see the future — offer interpretation and reflection. "
+    "Create a mystical atmosphere through one precise image drawn from the card symbols: "
+    "a threshold, light, shadow, road, water, fire, scroll, or mirror. The image must clarify meaning, not decorate the text. "
+    "You may describe a likely movement or sign for the period, but never promise fate or present probability as fact. "
     "The text should be lively, modern, without Markdown, HTML, spoilers, or links."
+
 )
 
 # Spread-specific rules — Level 2
@@ -102,11 +111,15 @@ FORMAT_RU = (
     "Каждая мысль должна опираться на конкретную карту, её позицию или явный смысл вопроса. "
     "Не заменяй трактовку общей психологией, не выдумывай обстоятельств и не повторяй одну мысль. "
     "Для каждой карты сначала назови её напряжение в этой позиции, затем один ясный фокус для человека. "
+    "В opening или synthesis обязательно используй один ясный образ из символов карт — например, порог, свет, тень, дорогу, воду, огонь, свиток или зеркало — и объясни, что он означает для вопроса. "
+    "Перед JSON молча вычитай все поля: только естественный русский язык, без обрывков, англицизмов, повторов и искусственной эзотерической лексики. "
     "Все тексты — живые, связные, без заголовков и списков. Ориентиры длины в символах: "
-"headline до 90; opening 80–180; интерпретация каждой карты 170–420; synthesis 320–600; "
-"practical_focus 100–220; reflection_question до 180; voice_summary 220–420 — отдельный "
-"устный пересказ, не копия synthesis; share_summary 100–220 — итог для пересылки, "
+
+"headline до 90; opening 60–240; интерпретация каждой карты 40–420; synthesis 180–650; "
+"practical_focus 60–260; reflection_question до 220; voice_summary 140–450 — отдельный "
+"устный пересказ, не копия synthesis; share_summary 60–240 — итог для пересылки, "
 "не упоминай вопрос пользователя."
+
 )
 FORMAT_EN = (
     "Return the result strictly as a JSON object with fields: headline, opening, "
@@ -116,11 +129,15 @@ FORMAT_EN = (
     "Every idea must be grounded in a specific card, its position, or the explicit meaning of the question. "
     "Do not replace interpretation with generic psychology, invent circumstances, or repeat the same idea. "
     "For each card, name the tension in that position first, then give one clear focus for the querent. "
+    "In opening or synthesis, include one clear image taken from the card symbols — for example a threshold, light, shadow, road, water, fire, scroll, or mirror — and explain what it means for the question. "
+    "Before JSON, silently proofread every field: use natural English only, with no fragments, foreign-language words, repetition, or artificial occult jargon. "
     "All texts should be natural and flowing, without headings or bullet lists. Length guidance "
-"in characters: headline up to 90; opening 80–180; each card interpretation 170–420; "
-"synthesis 320–600; practical_focus 100–220; reflection_question up to 180; voice_summary "
-"220–420 — a separate spoken summary, not a copy of synthesis; share_summary 100–220 — a "
+
+"in characters: headline up to 90; opening 60–240; each card interpretation 40–420; "
+"synthesis 180–650; practical_focus 60–260; reflection_question up to 220; voice_summary "
+"140–450 — a separate spoken summary, not a copy of synthesis; share_summary 60–240 — a "
 "shareable takeaway, do not mention the user's question."
+
 )
 
 
@@ -128,20 +145,26 @@ class CardInterpretation(BaseModel):
     position: str = Field(min_length=1, max_length=64)
     card_name: str = Field(min_length=1, max_length=64)
     orientation: str = Field(min_length=1, max_length=16)  # "upright" or "reversed"
-    core_message: str = Field(min_length=170, max_length=420)  # 170-420 chars per card
+    core_message: str = Field(min_length=40, max_length=420)  # one meaningful sentence or more per card
+
     symbolic_detail: str = Field(min_length=0, max_length=200)
     context_connection: str = Field(min_length=0, max_length=200)
 
 
 class TarotReadingResult(BaseModel):
     headline: str = Field(min_length=1, max_length=90)
-    opening: str = Field(min_length=80, max_length=180)
+    opening: str = Field(min_length=60, max_length=240)
+
     card_interpretations: list[CardInterpretation] = Field(min_length=1)
-    synthesis: str = Field(min_length=320, max_length=600)
-    practical_focus: str = Field(min_length=100, max_length=220)
-    reflection_question: str = Field(min_length=1, max_length=180)
-    voice_summary: str = Field(min_length=220, max_length=420)
-    share_summary: str = Field(min_length=100, max_length=220)
+    synthesis: str = Field(min_length=180, max_length=650)
+
+    practical_focus: str = Field(min_length=60, max_length=260)
+
+    reflection_question: str = Field(min_length=1, max_length=220)
+
+    voice_summary: str = Field(min_length=140, max_length=450)
+
+    share_summary: str = Field(min_length=60, max_length=240)
 
     @model_validator(mode="after")
     def _voice_must_not_copy_synthesis(self) -> "TarotReadingResult":
@@ -203,9 +226,19 @@ def parse_reading_json(content: str) -> TarotReadingResult:
     for field, max_length in limits.items():
         if field in payload:
             payload[field] = _clip_text(payload[field], max_length)
+
+    interpretation_limits = {
+        "core_message": 420,
+        "symbolic_detail": 200,
+        "context_connection": 200,
+    }
     for interpretation in payload.get("card_interpretations", []):
-        if isinstance(interpretation, dict) and "core_message" in interpretation:
-            interpretation["core_message"] = _clip_text(interpretation["core_message"], 420)
+        if not isinstance(interpretation, dict):
+            continue
+        for field, max_length in interpretation_limits.items():
+            if field in interpretation:
+                interpretation[field] = _clip_text(interpretation[field], max_length)
+
     return TarotReadingResult.model_validate(payload)
 
 
@@ -300,7 +333,7 @@ def _build_user_message(
         parts.append("")
 
     # Level 5: Format
-    parts.append(FORMAT_RU if lang == "ru" else FORMAT_EN)
+    parts.append(FORMAT_RU + "".join(QUALITY_RU) if lang == "ru" else FORMAT_EN + "".join(QUALITY_EN))
 
     return "\n".join(parts)
 
@@ -469,16 +502,24 @@ async def interpret_reading(
 
     started = time.monotonic()
     last_exc: Exception | None = None
+    backup_model = getattr(cfg, "llm_backup_model", None)
     for attempt in range(1, MAX_LLM_ATTEMPTS + 1):
         try:
+            use_backup = attempt > 1 and bool(backup_model and backup_model != cfg.llm_model)
+            model = backup_model if use_backup else cfg.llm_model
+            request_kwargs: dict = {}
+            # JSON mode is opt-in. Both configured free models are smoke-verified for it,
+            # which prevents malformed plain-JSON output on the fallback attempt.
+            if getattr(cfg, "llm_json_mode", False):
+                request_kwargs["response_format"] = {"type": "json_object"}
             completion = await client.chat.completions.create(
-                model=cfg.llm_model,
+                model=model,
                 temperature=0.65,
-                # DeepSeek V4 Flash spends part of its completion budget on
-                # hidden reasoning before emitting the JSON response.
                 max_tokens=6000,
                 messages=messages,
+                **request_kwargs,
             )
+
             content = completion.choices[0].message.content if completion.choices else ""
             result = parse_reading_json(content or "")
             if len(result.card_interpretations) != len(drawn):
@@ -500,7 +541,7 @@ async def interpret_reading(
             await _log_usage(
                 user_id=user_id or 0,
                 spread=spread_id,
-                model=cfg.llm_model,
+                model=model,
                 provider=provider,
                 status="ok",
                 latency_ms=latency,
@@ -557,7 +598,7 @@ async def weekly_mirror_text(cfg: Config, lang: str, top_cards: list[str], readi
         question: str = Field(min_length=1, max_length=250)
 
     system = (
-        "Ты — Мойра, спокойный таро-оракул. Кратко (до 5 предложений) и тепло подведи итог недели "
+        MYSTICAL_VOICE + "\n\n" +
         "человека по выпавшим картам: общая тема недели и один глубокий вопрос для размышления. "
         "Без предсказаний и гарантий. Язык ответа: русский."
         if lang == "ru"
@@ -587,3 +628,21 @@ async def weekly_mirror_text(cfg: Config, lang: str, top_cards: list[str], readi
     except Exception as exc:  # noqa: BLE001
         logger.warning("mirror LLM failed: %s", exc)
         return None
+QUALITY_RU = (
+    "Сначала определи практический смысл вопроса: что человек пытается понять, выбрать, изменить или прояснить. Не пересказывай вопрос дословно.",
+    "Для каждой карты соблюдай порядок: позиция -> название и прямая или перевёрнутая ориентация -> значение карты в этой позиции -> связь именно с вопросом. Не подменяй карту общей психологией.",
+    "Перевёрнутая карта может означать внутренний процесс, блокировку, избыток, задержку или искажённое проявление смысла; не называй её просто плохой и не стирай её ядро.",
+    "Синтез должен ответить на вопрос через взаимодействие карт и позиций, а не повторять карточные абзацы. Покажи одну главную линию и одну оговорку или напряжение.",
+    "Практический фокус должен содержать одно небольшое проверяемое действие на ближайшее время. Reflection question должна быть открытой, не внушать ответ и не обещать будущего.",
+    "Не заявляй факты о мыслях или действиях третьих лиц. Не давай детерминированных медицинских, юридических или финансовых указаний. Не используй эзотерический жаргон, пустые метафоры и повторяющиеся клише.",
+    "Пиши связно и понятно: конкретные глаголы, короткие абзацы, естественный современный язык. Каждый раздел должен добавлять новую мысль.",
+)
+QUALITY_EN = (
+    "First identify the practical intent of the question: what the person is trying to understand, choose, change, or clarify. Do not repeat the question verbatim.",
+    "For every card use this order: position -> card name and upright or reversed orientation -> the card meaning in this position -> a direct bridge to this question. Do not replace card grounding with generic psychology.",
+    "A reversed card may show an internal process, blockage, excess, delay, or distorted expression of the card meaning; never reduce it to simply bad and never erase its core meaning.",
+    "The synthesis must answer the question through the interaction of cards and positions instead of repeating card paragraphs. Show one main line and one tension or qualification.",
+    "The practical focus must contain one small, checkable action for the near term. The reflection question must be open-ended, non-leading, and make no promise about the future.",
+    "Do not claim facts about another person thoughts or actions. Do not give deterministic medical, legal, or financial instructions. Avoid occult jargon, empty metaphors, and repeated cliches.",
+    "Write in clear connected prose with concrete verbs, short paragraphs, and natural modern language. Every field must add a new idea.",
+)

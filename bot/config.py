@@ -18,6 +18,9 @@ def _env_bool(name: str, default: bool = False) -> bool:
 
 def _optional_secret(env_name: str, file_env_name: str) -> str | None:
     """Load an optional secret from an environment variable or a local text file."""
+    direct_value = os.getenv(env_name, "").strip()
+    if direct_value:
+        return direct_value
     secret_file = os.getenv(file_env_name, "").strip()
     if secret_file:
         try:
@@ -25,7 +28,7 @@ def _optional_secret(env_name: str, file_env_name: str) -> str | None:
         except OSError as exc:
             raise RuntimeError(f"{file_env_name} cannot be read") from exc
         return value or None
-    return os.getenv(env_name, "").strip() or None
+    return None
 
 
 @dataclass(frozen=True)
@@ -51,6 +54,8 @@ class Config:
     deepgram_stt_max_duration_sec: int
     deepgram_stt_max_bytes: int
     deepgram_stt_timeout_sec: int
+    llm_backup_model: str | None = None
+    llm_json_mode: bool = False
 
 
 def load_config(require_token: bool = True) -> Config:
@@ -68,6 +73,8 @@ def load_config(require_token: bool = True) -> Config:
         openrouter_api_key=_optional_secret("OPENROUTER_API_KEY", "LLM_API_KEY_FILE"),
         llm_model=os.getenv("LLM_MODEL", "deepseek/deepseek-v4-flash"),
         llm_base_url=os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1"),
+        llm_backup_model=os.getenv("LLM_BACKUP_MODEL", "").strip() or None,
+        llm_json_mode=_env_bool("LLM_JSON_MODE"),
         db_path=os.getenv("DB_PATH", "moira.db"),
         bot_display_name=os.getenv("BOT_DISPLAY_NAME", "Мойра"),
         free_readings=int(os.getenv("FREE_READINGS", "3")),

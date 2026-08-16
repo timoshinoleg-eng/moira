@@ -1,8 +1,8 @@
 """Block 5: LLM schema length & semantic validators (bot/llm/adapter.py).
 
-Covers the reading length table (headline<=90, opening 80-180, per-card 170-420,
-synthesis 320-600, practical_focus 100-220, reflection<=180, voice 220-420,
-share 100-220), the "voice_summary is not a copy of synthesis" rule, and the
+Covers the reading length table (headline<=90, opening 60-240, per-card 40-420,
+synthesis 180-650, practical_focus 60-260, reflection<=220, voice 140-450,
+share 60-240), the "voice_summary is not a copy of synthesis" rule, and the
 share_summary privacy guard (no user question inside).
 """
 from __future__ import annotations
@@ -60,51 +60,51 @@ def test_headline_max_90() -> None:
         _valid(headline="x" * 91)
 
 
-def test_opening_range_80_180() -> None:
+def test_opening_range_60_240() -> None:
     with pytest.raises(ValidationError):
         _valid(opening="too short")
     with pytest.raises(ValidationError):
-        _valid(opening="x" * 181)
+        _valid(opening="x" * 241)
 
 
-def test_card_interpretation_range_170_420() -> None:
+def test_card_interpretation_range_40_420() -> None:
     with pytest.raises(ValidationError):
         _valid(card_interpretations=_card("short"))
     with pytest.raises(ValidationError):
         _valid(card_interpretations=_card("x" * 421))
 
 
-def test_synthesis_range_320_600() -> None:
+def test_synthesis_range_180_650() -> None:
     with pytest.raises(ValidationError):
         _valid(synthesis="short")
     with pytest.raises(ValidationError):
-        _valid(synthesis="x" * 601)
+        _valid(synthesis="x" * 651)
 
 
-def test_practical_focus_range_100_220() -> None:
+def test_practical_focus_range_60_260() -> None:
     with pytest.raises(ValidationError):
         _valid(practical_focus="short")
     with pytest.raises(ValidationError):
-        _valid(practical_focus="x" * 221)
+        _valid(practical_focus="x" * 261)
 
 
-def test_reflection_question_max_180() -> None:
+def test_reflection_question_max_220() -> None:
     with pytest.raises(ValidationError):
-        _valid(reflection_question="x" * 181)
+        _valid(reflection_question="x" * 221)
 
 
-def test_voice_summary_range_220_420() -> None:
+def test_voice_summary_range_140_450() -> None:
     with pytest.raises(ValidationError):
         _valid(voice_summary="short")
     with pytest.raises(ValidationError):
-        _valid(voice_summary="x" * 421)
+        _valid(voice_summary="x" * 451)
 
 
-def test_share_summary_range_100_220() -> None:
+def test_share_summary_range_60_240() -> None:
     with pytest.raises(ValidationError):
         _valid(share_summary="short")
     with pytest.raises(ValidationError):
-        _valid(share_summary="x" * 221)
+        _valid(share_summary="x" * 241)
 
 
 def test_voice_summary_must_not_copy_synthesis() -> None:
@@ -134,8 +134,12 @@ def test_parse_reading_json_clips_provider_overflow_at_word_boundary() -> None:
     payload = _valid().model_dump()
     payload["opening"] = "Слово " * 50
     payload["card_interpretations"][0]["core_message"] = "Слово " * 100
+    payload["card_interpretations"][0]["symbolic_detail"] = "Символ " * 50
+    payload["card_interpretations"][0]["context_connection"] = "Контекст " * 50
     result = parse_reading_json(json.dumps(payload, ensure_ascii=False))
 
-    assert len(result.opening) <= 180
+    assert len(result.opening) <= 240
     assert result.opening.endswith("…")
     assert len(result.card_interpretations[0].core_message) <= 420
+    assert len(result.card_interpretations[0].symbolic_detail) <= 200
+    assert len(result.card_interpretations[0].context_connection) <= 200

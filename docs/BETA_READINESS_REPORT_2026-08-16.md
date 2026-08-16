@@ -36,3 +36,18 @@ The release candidate now has a cleanly traceable local commit history, a reprod
 2. Fix or replace the configured LLM provider path until a single synthetic structured response is returned. Then run the same 24 fixtures against LLM and fallback, blind the mode labels, and complete owner rubric review.
 3. Run backup/restore and single-instance evidence before considering TASK 7 PASS.
 4. Re-evaluate the beta gate only after TASK 0–4, TASK 5, TASK 7 and TASK 9 satisfy their acceptance criteria. The beta cohort must remain limited to 10–20 controlled users; no public launch is authorized by this report.
+Continuation 2026-08-16: Gate A remains NO-GO. TASK 3 is BLOCKED pending controlled Telegram test account; TASK 4 is BLOCKED pending provider availability. Gate B and TASK 12 remain deferred.
+Fallback continuation 2026-08-16: provider resilience improved with primary-first backup model routing. This does not by itself close TASK 3 or TASK 4; no beta/public launch was performed.
+Telegram runtime continuation: no local duplicate process or stale lock remains. Current polling process is alive with bounded retry, but Telegram Bot API returns HTTP 502 Bad Gateway; live E2E and beta remain blocked.
+Additional local evidence: TASK 2 fresh install/regression rechecked after latest changes; isolated pytest 116 passed and ASCII-path fresh migrations/check passed. TASK 3 remains dependent on stable Telegram Bot API and controlled account evidence.
+Current decision remains NO-GO. Local gates are green, but Telegram Bot API availability is intermittent from the runtime host and live E2E is not repeatably evidenced. TASK 11 draft and TASK 6 checklist are prepared; no publication or cohort launch occurred.
+Quality improvement continuation: Oracle prompt v6 now explicitly requires clear natural prose with restrained mystical imagery and rejects gibberish/pseudo-esoteric filler. Regression is green, but live quality evaluation and Telegram E2E remain blocked by unstable external Bot API/provider evidence.
+Oracle v6 continuation: provider key precedence, JSON-mode routing, mystical voice contract, schema alignment and representative synthetic checks were repaired and validated. Full 24-case live-provider gate remains BLOCKED; no beta decision changes.
+
+## Continuation — final runtime and quality recheck
+
+The bot was restarted successfully after recovery from an unreleasable legacy Windows lock. A single current polling process is alive under the versioned `.bot.runtime.lock`, with prompt `v6-mystical-clear`, JSON-mode primary/backup routing, and the configured OpenRouter key available without disclosure. This is runtime availability evidence only and does not replace user-flow E2E evidence.
+
+The complete regression suite now returns **119 passed**. A post-restart sequential synthetic questionnaire completed successfully: the RU base result and RU/EN question-lens results were structured; the recorded non-content checks confirm card grounding, restrained mystical imagery, and absence of gibberish markers. No real user content was captured.
+
+A new full 24-case blind run at concurrency two was attempted. The free provider repeatedly returned malformed JSON, empty replies, truncated JSON, and a schema-overlength field during retries. The run was stopped after sustained transient failure; no partial result is treated as a completed comparison. **TASK 4 remains BLOCKED_EXTERNAL_PROVIDER** for the full provider-evidence criterion. **TASK 3 remains BLOCKED** until the owner supplies the requested controlled Telegram E2E PASS/FAIL checklist. Accordingly, **TASK 12 remains NO-GO** and no publication or invite-only cohort has been started.

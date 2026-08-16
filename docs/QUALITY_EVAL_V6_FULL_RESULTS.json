@@ -1,0 +1,52 @@
+{
+  "prompt_version": "v6-mystical-clear",
+  "fixture_cases": 1,
+  "structured_cases": 1,
+  "fallback_or_none_cases": 0,
+  "hard_fail_cases": [],
+  "check_failures": {
+    "card_count": 0,
+    "all_cards_have_core_and_context": 0,
+    "has_synthesis": 0,
+    "has_practical_focus": 0,
+    "has_reflection_question": 0,
+    "share_safe_no_question_echo": 0,
+    "natural_output_length": 0,
+    "mystical_imagery_present": 0,
+    "no_gibberish_markers": 0
+  },
+  "results": [
+    {
+      "case_id": "ru-choice-work",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "work",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 40,
+        "opening": 105,
+        "synthesis": 596,
+        "practical_focus": 138,
+        "reflection_question": 108,
+        "voice_summary": 417,
+        "share_summary": 125
+      },
+      "text_hash": "0b04f54f26fe38eb"
+    }
+  ],
+  "note": "Inputs are synthetic. Public output excludes raw questions and readings; private owner review is synthetic only."
+}

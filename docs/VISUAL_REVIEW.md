@@ -85,3 +85,5 @@ mode — RGB, вес > 10 КБ. Плюс в каталоге сохранены 
   эмодзи-шрифт (Noto Color Emoji) и отдельная отрисовка.
 - Реальный вид на телефоне (Telegram-сжатие JPEG, тёмная тема) — ручная проверка.
 - Отрисовка на Windows-машине пользователя пойдёт через тот же project-local шрифт. 
+Continuation 2026-08-16: preserved the existing 78-card source artwork and provenance, added a restrained gold frame to card placements, and retained the existing font-safe glyph sanitization. Real-device Telegram visual review remains required after Telegram API availability is restored.
+Continuation 2026-08-16 visual polish: source deck remains 78/78 unchanged. Renderer now adds a dark altar matte, modest inset, gold upright frame and rose reversed frame around source artwork. Spread card group moved downward (y=330) and footer lifted for a more balanced 1080x1500 composition. Reviewed RU spread, RU share and reversed single-card representative outputs; typography, Cyrillic labels, orientation and share-safe content are readable at renderer level. Real Telegram compression/device checks remain BLOCKED.
