@@ -13,6 +13,9 @@ Example Linux layout:
 ~~~bash
 sudo useradd --system --create-home --home-dir /opt/moira --shell /usr/sbin/nologin moira
 sudo -u moira git clone https://github.com/timoshinoleg-eng/moira.git /opt/moira/app
+: "${MOIRA_RELEASE_SHA:?set the approved terminal-CI commit SHA}"
+sudo -u moira git -C /opt/moira/app switch --detach "$MOIRA_RELEASE_SHA"
+test "$(sudo -u moira git -C /opt/moira/app rev-parse HEAD)" = "$MOIRA_RELEASE_SHA"
 sudo -u moira python3 -m venv /opt/moira/app/.venv
 sudo -u moira /opt/moira/app/.venv/bin/pip install -r /opt/moira/app/requirements.txt
 sudo install -o moira -g moira -m 700 -d /var/lib/moira /etc/moira /var/backups/moira
@@ -27,7 +30,16 @@ Deepgram voice input remains optional. Enable it only with the exact settings
 and live acceptance path in `docs/DEEPGRAM_VOICE_POC.md`; the rest of Moira
 continues to work with `DEEPGRAM_STT_ENABLED=false`.
 
+Release defaults keep `LLM_RETRY_POLICY_V2=false`,
+`LLM_CONTROLLED_REPAIR_ENABLED=false`, and `DEEPGRAM_STT_ENABLED=false` until
+their deterministic and live capability gates pass. TTS and Stars also remain
+unapproved capabilities until their independent live gates pass.
+
 ## Migrate and launch
+
+The release schema head is `0008_push_delivery_foundation`. Application startup
+verifies that exact revision and never uses SQLAlchemy `create_all()` as a
+substitute for Alembic. Back up first, then run both commands before starting.
 
 ~~~bash
 sudo -u moira bash -c 'set -a; . /etc/moira/moira.env; set +a; /opt/moira/app/.venv/bin/python -m alembic upgrade head'
@@ -103,6 +115,11 @@ For rollback, first stop the service, restore the matching database backup,
 switch to the previous approved code revision, reinstall that revision's
 requirements, then start and smoke-test. Do not downgrade a live database by
 guessing: use the paired backup instead.
+
+Only a reviewed exact commit SHA with terminal CI and matching sanitized
+artifact/Candidate manifests is deployable. A local branch, dirty snapshot, or
+an old local RC name is not a release source. Verify `git rev-parse HEAD`
+against the approved SHA before migrations and service start.
 
 ## Required release verification
 

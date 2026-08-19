@@ -7,7 +7,8 @@
 ## Что работает и проверено
 
 - 🃏 **Расклады «Ситуация / Любовь / Выбор»**: картинка расклада + текстовая
-  трактовка под Telegram-spoiler + голос оракула (TTS fallback).
+  трактовка под Telegram-spoiler; голос оракула остаётся экспериментальной
+  capability до отдельной live-приёмки.
 - 🔮 **ИИ-трактовки**: OpenAI-compatible endpoint (OpenRouter/AIGate/другой);
   без ключа — встроенные трактовки карт. Структурированный вывод через Instructor
   с лимитами длины, safety-фильтром и одним retry.
@@ -137,7 +138,9 @@ python -m bot.main
 .venv\Scripts\python.exe -m alembic check
 ```
 
-Текущая версия: `0005_growth_attribution`.
+Текущая версия: `0008_push_delivery_foundation`. Запуск приложения требует,
+чтобы база уже находилась на этом Alembic head; `create_all()` не заменяет
+миграции. Сначала всегда выполняй `alembic upgrade head` и `alembic check`.
 
 Перед любыми миграциями на production:
 
@@ -159,6 +162,17 @@ LLM_MODEL=deepseek/deepseek-v4-flash
 моделей модель остаётся `deepseek/deepseek-v4-flash`.
 
 Без ключа бот работает на встроенных трактовках карт (режим MVP).
+
+Release-default feature flags остаются закрытыми до независимых gates:
+
+```env
+LLM_RETRY_POLICY_V2=false
+LLM_CONTROLLED_REPAIR_ENABLED=false
+DEEPGRAM_STT_ENABLED=false
+```
+
+TTS и Telegram Stars нельзя считать production-enabled только по наличию кода:
+для них требуются отдельные live capability gates из production roadmap.
 
 ## Команды
 
@@ -211,3 +225,11 @@ LLM_MODEL=deepseek/deepseek-v4-flash
 - Invite-only beta: [docs/BETA_RUNBOOK.md](docs/BETA_RUNBOOK.md)
 - Single-instance production: [docs/PRODUCTION_RUNBOOK.md](docs/PRODUCTION_RUNBOOK.md)
 - Product decisions informed by Sibyl research: [docs/SIBYL_PRODUCT_COMPARISON.md](docs/SIBYL_PRODUCT_COMPARISON.md)
+
+## Deployment source policy
+
+Развёртывается только exact commit SHA, для которого завершились terminal CI
+gates и совпали sanitized artifact manifest и reviewed Candidate manifest.
+Локальные ветки, dirty snapshots и старое имя `v6-rc2` не являются доступным
+release source. До подтверждённой ротации ранее скомпрометированного GitHub
+credential push запрещён; remote URL не должен содержать userinfo или token.

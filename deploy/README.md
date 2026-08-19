@@ -16,7 +16,10 @@
 
 ```bash
 sudo useradd --system --create-home --home-dir /opt/moira --shell /usr/sbin/nologin moira
-sudo -u moira git clone <repo-url> /opt/moira/app && cd /opt/moira/app && sudo -u moira git switch --detach v6-rc2
+: "${MOIRA_RELEASE_SHA:?set the approved terminal-CI commit SHA}"
+sudo -u moira git clone https://github.com/timoshinoleg-eng/moira.git /opt/moira/app
+sudo -u moira git -C /opt/moira/app switch --detach "$MOIRA_RELEASE_SHA"
+test "$(sudo -u moira git -C /opt/moira/app rev-parse HEAD)" = "$MOIRA_RELEASE_SHA"
 sudo -u moira python3 -m venv /opt/moira/app/.venv
 sudo -u moira /opt/moira/app/.venv/bin/pip install -r /opt/moira/app/requirements.txt
 sudo install -o moira -g moira -m 700 -d /var/lib/moira /etc/moira /var/backups/moira
@@ -64,5 +67,7 @@ sudo -u moira /opt/moira/app/deploy/moira-restore-drill.sh /var/backups/moira/mo
 ## Важно
 
 - Никогда не запускай второй инстанс против той же БД (SQLite, один writer).
+- Разворачивай только reviewed exact SHA с terminal CI и совпавшим artifact
+  manifest; branch name, dirty snapshot и старые локальные RC-имена не подходят.
 - Перед `alembic upgrade` на живой базе — свежий бэкап и остановленный сервис.
 - `.env` на VPS не существует — только `/etc/moira/moira.env` (root:moira 640).
