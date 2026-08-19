@@ -124,6 +124,16 @@ def test_share_summary_privacy() -> None:
     assert_share_summary_privacy(_pad("Итог без вопроса.", 180, 300), "-") is None
 
 
+def test_share_summary_privacy_rejects_exact_recent_reading_memory() -> None:
+    memory = "Недавняя трактовка описывает личную ситуацию человека и её детали."
+    leak = _pad(f"Итог: {memory} Карты предлагают наблюдать за ходом событий.", 180, 300)
+
+    with pytest.raises(ValueError, match="recent-reading context"):
+        assert_share_summary_privacy(leak, None, memory)
+
+    assert_share_summary_privacy(_pad("Итог о текущих картах без прошлого контекста.", 180, 300), None, memory) is None
+
+
 def test_parse_reading_json_accepts_plain_and_fenced_json() -> None:
     raw = _valid().model_dump_json()
     assert parse_reading_json(raw).headline == "Трактовка расклада на сегодня"

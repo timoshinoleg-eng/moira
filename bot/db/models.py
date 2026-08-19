@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import BigInteger, Boolean, DateTime, Integer, String, Text, UniqueConstraint
+from sqlalchemy import BigInteger, Boolean, DateTime, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -30,6 +30,11 @@ class User(Base):
     birth_date: Mapped[str | None] = mapped_column(String(10), nullable=True)  # YYYY-MM-DD
     daily_push: Mapped[bool] = mapped_column(Boolean, default=True)
     last_push_date: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    # V2 preferences remain opt-in until the M-08 confirmation flow is released.
+    push_enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    push_timezone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    push_local_time: Mapped[str | None] = mapped_column(String(5), nullable=True)
+    next_push_at_utc: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     referred_by: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     referral_variant: Mapped[str | None] = mapped_column(String(8), nullable=True)
     last_mirror_week: Mapped[str | None] = mapped_column(String(8), nullable=True)  # YYYY-Www
@@ -111,17 +116,57 @@ class ReadingFavorite(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class PushDelivery(Base):
+    """Durable, idempotent state for one user-visible push delivery.
+
+    Message text, question content and reading payload deliberately do not live in
+    this table. A unique local-period key is the source of truth against duplicates.
+    """
+
+    __tablename__ = "push_deliveries"
+    __table_args__ = (
+        UniqueConstraint("user_id", "kind", "local_period", name="uq_push_delivery_user_kind_period"),
+        Index("ix_push_deliveries_status_scheduled_at", "status", "scheduled_at"),
+        Index("ix_push_deliveries_status_lease_until", "status", "lease_until"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, index=True)
+    kind: Mapped[str] = mapped_column(String(32))  # daily_altar | weekly_mirror
+    local_period: Mapped[str] = mapped_column(String(16))  # YYYY-MM-DD or YYYY-Www
+    scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    status: Mapped[str] = mapped_column(String(16), default="planned", server_default="planned")
+    claimed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    attempt_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    last_error_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
 class LlmUsage(Base):
     __tablename__ = "llm_usage"
+    __table_args__ = (
+        Index("ix_llm_usage_status_created_at", "status", "created_at"),
+        Index("ix_llm_usage_model_created_at", "model", "created_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(BigInteger, index=True)
     spread: Mapped[str | None] = mapped_column(String(32), nullable=True)
     model: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    provider: Mapped[str | None] = mapped_column(String(128), nullable=True)
     prompt_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
     prompt_tokens: Mapped[int] = mapped_column(Integer, default=0)
     completion_tokens: Mapped[int] = mapped_column(Integer, default=0)
     latency_ms: Mapped[int] = mapped_column(Integer, default=0)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    fallback_used: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    repair_used: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    error_category: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    timeout_stage: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    request_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     status: Mapped[str] = mapped_column(String(16), default="ok")  # ok | fallback | error
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 

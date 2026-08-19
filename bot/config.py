@@ -56,6 +56,11 @@ class Config:
     deepgram_stt_timeout_sec: int
     llm_backup_model: str | None = None
     llm_json_mode: bool = False
+    llm_retry_policy_v2: bool = False
+    llm_controlled_repair_enabled: bool = False
+    llm_v2_primary_timeout_sec: float = 12.0
+    llm_v2_total_timeout_sec: float = 18.0
+    llm_v2_max_attempts: int = 2
 
 
 def load_config(require_token: bool = True) -> Config:
@@ -75,6 +80,11 @@ def load_config(require_token: bool = True) -> Config:
         llm_base_url=os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1"),
         llm_backup_model=os.getenv("LLM_BACKUP_MODEL", "").strip() or None,
         llm_json_mode=_env_bool("LLM_JSON_MODE"),
+        llm_retry_policy_v2=_env_bool("LLM_RETRY_POLICY_V2"),
+        llm_controlled_repair_enabled=_env_bool("LLM_CONTROLLED_REPAIR_ENABLED"),
+        llm_v2_primary_timeout_sec=float(os.getenv("LLM_V2_PRIMARY_TIMEOUT_SEC", "12")),
+        llm_v2_total_timeout_sec=float(os.getenv("LLM_V2_TOTAL_TIMEOUT_SEC", "18")),
+        llm_v2_max_attempts=max(1, min(2, int(os.getenv("LLM_V2_MAX_ATTEMPTS", "2")))),
         db_path=os.getenv("DB_PATH", "moira.db"),
         bot_display_name=os.getenv("BOT_DISPLAY_NAME", "Мойра"),
         free_readings=int(os.getenv("FREE_READINGS", "3")),

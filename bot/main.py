@@ -14,7 +14,8 @@ from aiogram.types import BotCommand
 from sqlalchemy import or_, select
 
 from .config import Config, load_config
-from .db import User, init_db
+from .db import User, close_db, init_db
+
 from .db.database import get_session
 from .handlers import admin, features, payment, reading, start, voice
 from .handlers.features import send_daily_push, send_weekly_mirror
@@ -223,6 +224,7 @@ async def main() -> None:
         except Exception:  # noqa: BLE001
             pass
         await bot.session.close()
+        await close_db()
 
 
 if __name__ == "__main__":
