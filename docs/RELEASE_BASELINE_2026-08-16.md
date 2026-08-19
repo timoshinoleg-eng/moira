@@ -2,8 +2,8 @@
 
 ## Status
 
-**Status:** PASS for baseline normalization; release candidate is not yet sealed.  
-**Evidence date:** 2026-08-16.  
+**Status:** PASS for baseline normalization; release candidate is not yet sealed.
+**Evidence date:** 2026-08-16.
 **Current HEAD:** `ea9dea0dd694bd934bc958d67fbb34482ef0641f`.
 
 This report is based on the current local worktree, not on the historical `c13ae5d` checkout. Historical findings are treated as resolved only where current evidence reproduces the resolution.

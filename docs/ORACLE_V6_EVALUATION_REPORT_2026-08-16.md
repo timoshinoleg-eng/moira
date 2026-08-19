@@ -1,7 +1,7 @@
 # Oracle v6 — Synthetic Quality Evaluation
 
-**Date:** 2026-08-16  
-**Scope:** Prompt v6, OpenRouter routing, structured-output reliability, and synthetic RU/EN tarot readings.  
+**Date:** 2026-08-16
+**Scope:** Prompt v6, OpenRouter routing, structured-output reliability, and synthetic RU/EN tarot readings.
 **Privacy:** All provider inputs used only synthetic questions and synthetic card combinations. This report contains no real user questions, identifiers, tokens, or raw readings.
 
 ## 1. Scope of visual updates

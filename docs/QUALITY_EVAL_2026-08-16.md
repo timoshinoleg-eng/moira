@@ -2,7 +2,7 @@
 
 ## Status
 
-**Status:** BLOCKED for the full LLM-vs-fallback acceptance gate; fallback fixture gate passes, while the live LLM provider smoke returned an empty response on two adapter attempts. No LLM score is invented.  
+**Status:** BLOCKED for the full LLM-vs-fallback acceptance gate; fallback fixture gate passes, while the live LLM provider smoke returned an empty response on two adapter attempts. No LLM score is invented.
 **Evaluation scope:** 24 unique synthetic cases, with no production questions or user-owned data.
 
 ## Coverage
@@ -50,10 +50,10 @@ The live failure also emitted a non-blocking telemetry warning because the isola
 3. Once provider access is corrected, run both outputs with the same 24 fixtures, hide the mode labels, and conduct owner review. An independent judge is optional and must be labelled independent only if it is actually independent.
 4. Do not add a second LLM, RAG stack or agent framework to solve this gate.
 
-**TASK 4:** `IN_PROGRESS / BLOCKED_EXTERNAL_PROVIDER`.  
-**Evidence:** 24-case fixture, fallback output checks, live one-case smoke output above.  
-**Files changed:** `tests/fixtures/quality_eval_24.json`, this report.  
-**Regression:** clean RC suite 115 passed; card/content subset 61 passed.  
+**TASK 4:** `IN_PROGRESS / BLOCKED_EXTERNAL_PROVIDER`.
+**Evidence:** 24-case fixture, fallback output checks, live one-case smoke output above.
+**Files changed:** `tests/fixtures/quality_eval_24.json`, this report.
+**Regression:** clean RC suite 115 passed; card/content subset 61 passed.
 **Blocker:** configured live LLM endpoint returned empty response twice; provider configuration/response requires owner or provider-side investigation.
 Continuation 2026-08-16: provider /models probe timed out; no live LLM output or blinded 24-case quality score is asserted. TASK 4 remains BLOCKED.
 Provider continuation 2026-08-16: OpenRouter free model openai/gpt-oss-20b:free returned a non-empty smoke response. This unblocks provider availability, but the 24-case blinded quality evaluation is still pending real execution.

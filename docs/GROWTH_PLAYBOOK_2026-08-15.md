@@ -1,6 +1,6 @@
 # Moira Growth Playbook — organic growth, retention and monetization
 
-**Версия:** 15 августа 2026  
+**Версия:** 15 августа 2026
 **Цель:** построить повторяемый органический цикл роста вокруг частного Tarot Journal, а не вокруг одноразовых предсказаний.
 
 ## 1. Product Thesis

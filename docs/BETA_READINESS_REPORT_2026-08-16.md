@@ -4,8 +4,8 @@
 
 **Decision: NO-GO for invite-only beta at this time.** The current release candidate is traceable and its automated gates are green, but the beta prerequisites require real Telegram E2E and a valid live LLM-vs-fallback quality gate. Those two external gates are not complete.
 
-**Current RC SHA:** `a1ed7767e615d03d31858f3e2897432b3f9755b9`.  
-**Automated regression:** `116 passed`.  
+**Current RC SHA:** `a1ed7767e615d03d31858f3e2897432b3f9755b9`.
+**Automated regression:** `116 passed`.
 **Fresh RC regression before quality-evidence commit:** `115 passed`; the one-test difference is explicitly explained in `RELEASE_BASELINE_2026-08-16.md` because the obsolete duplicate-router keyboard test was removed during active-routing normalization and a quality-fixture regression test was then added.
 
 ## Gate summary

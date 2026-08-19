@@ -2,9 +2,9 @@
 
 ## Status
 
-**Status:** BLOCKED — controlled Telegram E2E is not completed.  
-**Bot credential probe:** PASS for read-only identity check.  
-**Public deployment:** not performed.  
+**Status:** BLOCKED — controlled Telegram E2E is not completed.
+**Bot credential probe:** PASS for read-only identity check.
+**Public deployment:** not performed.
 **Evidence policy:** no personal test questions, usernames or reading text are included.
 
 ## Evidence obtained

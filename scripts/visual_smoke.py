@@ -24,4 +24,3 @@ info_en = [
 (out / "share_ru.jpg").write_bytes(make_share_image("Три нити момента", info_ru, "Здесь есть направление, которое стоит заметить.", lang="ru"))
 (out / "single_reversed.jpg").write_bytes(make_single_image("Карта дня", "Заметь паузу, прежде чем действовать.", chosen[1], reversed_=True, lang="ru"))
 print("generated", sorted(path.name for path in out.glob("*.jpg")))
-
