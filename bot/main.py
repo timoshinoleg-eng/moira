@@ -14,7 +14,7 @@ from aiogram.types import BotCommand
 from sqlalchemy import or_, select
 
 from .config import Config, load_config
-from .db import User, close_db, init_db
+from .db import ALEMBIC_HEAD, User, close_db, init_db
 
 from .db.database import get_session
 from .handlers import admin, features, payment, reading, start, voice
@@ -174,7 +174,7 @@ async def main() -> None:
         return
     cfg: Config = load_config(require_token=True)
     _init_sentry(cfg)
-    await init_db(cfg.db_path)
+    await init_db(cfg.db_path, require_revision=ALEMBIC_HEAD)
 
     # --- agent-core: initialize HarnessState ---
     try:
