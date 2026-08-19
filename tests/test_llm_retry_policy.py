@@ -147,6 +147,25 @@ def _valid_completion(drawn) -> object:
     )
 
 
+def _wrong_orientation_completion(drawn) -> object:
+    from types import SimpleNamespace
+
+    valid = _valid_completion(drawn)
+    payload = json.loads(valid.choices[0].message.content)
+    expected = payload["card_interpretations"][0]["orientation"]
+    payload["card_interpretations"][0]["orientation"] = (
+        "reversed" if expected == "upright" else "upright"
+    )
+    return SimpleNamespace(
+        choices=[
+            SimpleNamespace(
+                message=SimpleNamespace(content=json.dumps(payload, ensure_ascii=False))
+            )
+        ],
+        usage=SimpleNamespace(prompt_tokens=11, completion_tokens=22),
+    )
+
+
 def test_v2_path_retries_once_uses_backup_and_persists_safe_usage(tmp_path) -> None:
     from dataclasses import replace
 
@@ -244,6 +263,56 @@ def test_v2_path_does_not_retry_auth_and_records_controlled_fallback(tmp_path) -
         assert usage.error_category == "auth"
         assert usage.timeout_stage is None
         assert "private question" not in str(usage.__dict__)
+        await close_db()
+
+    asyncio.run(run())
+
+
+def test_wrong_orientation_retries_once_then_uses_controlled_fallback(tmp_path) -> None:
+    from dataclasses import replace
+
+    from sqlalchemy import select
+
+    from bot.config import load_config
+    from bot.db.database import close_db, get_session, init_db
+    from bot.db.models import LlmUsage
+    from bot.llm.adapter import _interpret_reading_v2
+    from bot.tarot import draw
+
+    async def run() -> None:
+        cfg = replace(
+            load_config(require_token=False),
+            openrouter_api_key="test-key",
+            llm_retry_policy_v2=True,
+            llm_controlled_repair_enabled=False,
+            db_path=str(tmp_path / "moira-v2-orientation.db"),
+        )
+        await init_db(cfg.db_path)
+        drawn = draw("situation")
+        client = FakeClient(
+            [_wrong_orientation_completion(drawn), _wrong_orientation_completion(drawn)]
+        )
+        result = await _interpret_reading_v2(
+            cfg,
+            client,
+            provider="provider.example",
+            lang="ru",
+            question=None,
+            memory="",
+            drawn=drawn,
+            user_id=45,
+            spread_id="situation",
+            messages=[{"role": "system", "content": "contract"}],
+        )
+
+        assert result is None
+        assert len(client.completions.calls) == 2
+        async with get_session() as session:
+            usage = (await session.execute(select(LlmUsage))).scalar_one()
+        assert usage.status == "fallback"
+        assert usage.attempts == 2
+        assert usage.fallback_used is True
+        assert usage.error_category == "validation"
         await close_db()
 
     asyncio.run(run())

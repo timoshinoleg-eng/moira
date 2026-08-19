@@ -8,6 +8,7 @@ import time
 import unicodedata
 import uuid
 from datetime import datetime
+from typing import Literal
 
 from urllib.parse import urlparse
 
@@ -22,7 +23,7 @@ from ..tarot.spreads import DrawnCard, POSITION_MEANINGS, position_meaning
 
 logger = logging.getLogger(__name__)
 
-PROMPT_VERSION = "v6-mystical-clear"
+PROMPT_VERSION = "v6.1-canonical-orientation"
 MYSTICAL_VOICE = ("Голос Мойры — ясный, тихий и немного загадочный. Она говорит как проводник у порога: замечает скрытое напряжение, связывает его с вопросом и картами, а затем возвращает выбор человеку. Используй редкие точные образы света, тени, дороги или порога только если они проясняют мысль. Запрещены бессвязные фразы, выдуманные слова, псевдоэзотерический жаргон, цепочки абстрактных существительных, повторение одной мысли и красивый текст без конкретного смысла. Каждое предложение должно быть естественным и понятным с первого чтения.")
 SCHEMA_VERSION = "v4"
 MAX_LLM_ATTEMPTS = 2  # one initial + one format/network retry
@@ -212,6 +213,9 @@ FORMAT_RU = (
     "card_interpretations (массив объектов с полями: position, card_name, orientation, "
     "core_message, symbolic_detail, context_connection), synthesis, practical_focus, "
     "reflection_question, voice_summary, share_summary. "
+    "В каждом JSON-объекте карты поле orientation — строго машинное enum-значение "
+    "\"upright\" или \"reversed\"; русские слова «прямая» и «перевёрнутая» "
+    "используй только в пользовательском тексте, но не в поле orientation. "
     "Каждая мысль должна опираться на конкретную карту, её позицию или явный смысл вопроса. "
     "Не заменяй трактовку общей психологией, не выдумывай обстоятельств и не повторяй одну мысль. "
     "Для каждой карты сначала назови её напряжение в этой позиции, затем один ясный фокус для человека. "
@@ -239,6 +243,8 @@ FORMAT_EN = (
     "card_interpretations (array of objects with fields: position, card_name, orientation, "
     "core_message, symbolic_detail, context_connection), synthesis, practical_focus, "
     "reflection_question, voice_summary, share_summary. "
+    "In every card JSON object, orientation must be exactly the machine enum value "
+    "\"upright\" or \"reversed\". "
     "Every idea must be grounded in a specific card, its position, or the explicit meaning of the question. "
     "Do not replace interpretation with generic psychology, invent circumstances, or repeat the same idea. "
     "For each card, name the tension in that position first, then give one clear focus for the querent. "
@@ -257,7 +263,7 @@ FORMAT_EN = (
 class CardInterpretation(BaseModel):
     position: str = Field(min_length=1, max_length=64)
     card_name: str = Field(min_length=1, max_length=64)
-    orientation: str = Field(min_length=1, max_length=16)  # "upright" or "reversed"
+    orientation: Literal["upright", "reversed"]
     core_message: str = Field(min_length=40, max_length=420)  # one meaningful sentence or more per card
 
     symbolic_detail: str = Field(min_length=0, max_length=200)
