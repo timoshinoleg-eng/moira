@@ -248,3 +248,9 @@ gates и совпали sanitized artifact manifest и reviewed Candidate manife
 Локальные ветки, dirty snapshots и старое имя `v6-rc2` не являются доступным
 release source. До подтверждённой ротации ранее скомпрометированного GitHub
 credential push запрещён; remote URL не должен содержать userinfo или token.
+
+Перед каждым release обязателен SHA-bound online backup через
+`deploy/moira-backup.sh`; `deploy/moira-restore-drill.sh` проверяет его только в
+новом изолированном каталоге, выполняя integrity/schema census, Alembic
+upgrade/check, application startup и representative reads. Rollback использует
+backup, связанный с предыдущим exact SHA; in-place Alembic downgrade запрещён.

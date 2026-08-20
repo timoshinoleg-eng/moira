@@ -90,24 +90,58 @@ process holds the lock and that no second instance targets the same database.
 
 ## Backup and restore
 
+The existing deploy kit uses `deploy/backup_restore.py` as the single
+implementation for Linux and the interim Windows wrapper. On Linux,
+`/var/backups/moira` must be owned by `moira:moira` with mode 700; backup and
+manifest files are mode 600. Backups inside the source checkout or a symlinked
+backup directory fail closed.
+
 Back up before every update and nightly with the SQLite online backup API:
 
 ~~~bash
-sudo -u moira /opt/moira/app/.venv/bin/python -c "import sqlite3, pathlib, datetime; src=sqlite3.connect('/var/lib/moira/moira.db'); out=pathlib.Path('/var/backups/moira') / f'moira-{datetime.datetime.now():%Y%m%d-%H%M%S}.db'; dst=sqlite3.connect(out); src.backup(dst); dst.close(); src.close(); print(out)"
+CURRENT_SHA="$(sudo -u moira git -C /opt/moira/app rev-parse HEAD)"
+sudo -u moira env \
+  MOIRA_APP_DIR=/opt/moira/app \
+  MOIRA_DB_PATH=/var/lib/moira/moira.db \
+  MOIRA_RELEASE_SHA="$CURRENT_SHA" \
+  MOIRA_BACKUP_KEEP=14 \
+  MOIRA_BACKUP_RPO_SECONDS=86400 \
+  /opt/moira/app/deploy/moira-backup.sh /var/backups/moira
 ~~~
 
-Keep the backup directory on persistent storage and test a restore on an
-isolated copy. To restore after a confirmed incident: stop the service, retain
-the broken database as evidence, copy the chosen known-good backup to
-/var/lib/moira/moira.db, preserve ownership (moira:moira, mode 600), then
-start the service and run the Telegram smoke. Restore database and code from
-the same known-good release when a migration was involved.
+Each backup is accompanied by a required `.manifest.json` binding the full
+release SHA, database SHA-256, size, Alembic revision, backup duration, RPO
+policy and privacy-safe row census. Creation verifies SQLite integrity and
+foreign keys before the pair becomes eligible for retention.
+
+Restore only to a new isolated directory first:
+
+~~~bash
+BACKUP=/var/backups/moira/moira-<stamp>.db
+DRILL=/var/lib/moira-restore-drills/<run-id>
+sudo -u moira /opt/moira/app/deploy/moira-restore-drill.sh \
+  "$BACKUP" "$CURRENT_SHA" "$DRILL"
+~~~
+
+The drill verifies the backup hash/release binding, copies it without touching
+the live database, runs SQLite integrity and schema census, Alembic upgrade and
+check, application database startup, and representative Journal/payment/
+entitlement reads. Its report records recovery-point age and measured RTO.
+Normal restore fails if recovery-point age exceeds the configured RPO. A
+rollback drill records that breach but remains executable for incident
+recovery. Neither drill starts Telegram polling; the controlled Telegram smoke
+is an explicit external gate.
+
+For an actual restore after a confirmed incident: stop the service, retain the
+broken database as evidence, complete an isolated drill, copy the verified
+restored database into `/var/lib/moira/moira.db`, preserve owner `moira:moira`
+and mode 600, then start the service and perform the authorized Telegram smoke.
 
 ## Update and rollback
 
 ~~~bash
 sudo systemctl stop moira
-# run the backup command above
+# run and verify the SHA-bound backup command above
 sudo -u moira git -C /opt/moira/app fetch origin --tags
 sudo -u moira git -C /opt/moira/app switch --detach <approved-commit-or-tag>
 sudo -u moira /opt/moira/app/.venv/bin/pip install -r /opt/moira/app/requirements.txt
@@ -117,10 +151,28 @@ sudo systemctl start moira
 sudo journalctl -u moira -n 100 --no-pager
 ~~~
 
-For rollback, first stop the service, restore the matching database backup,
-switch to the previous approved code revision, reinstall that revision's
-requirements, then start and smoke-test. Do not downgrade a live database by
-guessing: use the paired backup instead.
+For rollback, use the backup created immediately before the failed update. Its
+manifest release SHA must match the previous approved code checkout. First run
+`rollback-drill` against an isolated checkout and directory:
+
+~~~bash
+PREVIOUS_SHA=<full-previous-approved-sha>
+PREVIOUS_APP=/opt/moira/releases/$PREVIOUS_SHA
+ROLLBACK_DRILL=/var/lib/moira-restore-drills/rollback-<run-id>
+sudo -u moira env \
+  MOIRA_TOOL_APP_DIR=/opt/moira/app \
+  MOIRA_APP_DIR="$PREVIOUS_APP" \
+  MOIRA_PYTHON="$PREVIOUS_APP/.venv/bin/python" \
+  MOIRA_RESTORE_OPERATION=rollback-drill \
+  /opt/moira/app/deploy/moira-restore-drill.sh \
+  /var/backups/moira/moira-<pre-release-stamp>.db \
+  "$PREVIOUS_SHA" "$ROLLBACK_DRILL"
+~~~
+
+Only after that PASS: stop the service, preserve the failed database, install
+the verified rollback copy, switch to the previous exact SHA, reinstall its
+requirements, start and smoke-test. Never downgrade a live database by
+guessing or run Alembic downgrade in place.
 
 Only a reviewed exact commit SHA with terminal CI and matching sanitized
 artifact/Candidate manifests is deployable. A local branch, dirty snapshot, or

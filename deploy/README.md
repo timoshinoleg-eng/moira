@@ -9,8 +9,9 @@
 | Файл | Назначение |
 |---|---|
 | `moira.service` | systemd-unit: один polling-процесс, restart on-failure |
-| `moira-backup.sh` | online-backup SQLite (backup API) + retention 14 копий |
-| `moira-restore-drill.sh` | восстановление в изолированную папку + integrity-check |
+| `backup_restore.py` | единое fail-closed ядро backup/verify/restore/rollback |
+| `moira-backup.sh` | online-backup + hash manifest + release SHA + retention |
+| `moira-restore-drill.sh` | изолированный restore/rollback + Alembic/app/read checks |
 
 ## Bootstrap VPS (однократно)
 
@@ -37,14 +38,36 @@ sudo systemctl status moira --no-pager
 Ночной бэкап — строка в `/etc/cron.d/moira-backup`:
 
 ```
-30 3 * * * moira MOIRA_DB_PATH=/var/lib/moira/moira.db /opt/moira/app/deploy/moira-backup.sh
+30 3 * * * moira MOIRA_DB_PATH=/var/lib/moira/moira.db MOIRA_APP_DIR=/opt/moira/app MOIRA_BACKUP_RPO_SECONDS=86400 /opt/moira/app/deploy/moira-backup.sh
 ```
 
-Раз в месяц (и перед каждым обновлением) — drill:
+Перед каждым обновлением сначала выполнить backup от SHA текущего deployed
+release. Команда создаёт `.db` и обязательный `.manifest.json`, проверяет hash,
+integrity, foreign keys, Alembic revision, `payments`, Journal и entitlement
+reads, затем применяет retention только к валидным именованным парам:
 
 ```bash
-sudo -u moira /opt/moira/app/deploy/moira-restore-drill.sh /var/backups/moira/moira-<stamp>.db
+CURRENT_SHA="$(sudo -u moira git -C /opt/moira/app rev-parse HEAD)"
+sudo -u moira env MOIRA_RELEASE_SHA="$CURRENT_SHA" \
+  /opt/moira/app/deploy/moira-backup.sh /var/backups/moira
 ```
+
+Раз в месяц и перед release — restore drill в новый каталог:
+
+```bash
+BACKUP=/var/backups/moira/moira-<stamp>.db
+sudo -u moira /opt/moira/app/deploy/moira-restore-drill.sh \
+  "$BACKUP" "$CURRENT_SHA" /var/lib/moira-restore-drills/<run-id>
+```
+
+Rollback drill использует backup, созданный **до обновления** и связанный с
+предыдущим SHA. Подготовить отдельный exact checkout предыдущего SHA и запустить
+тот же wrapper с `MOIRA_RESTORE_OPERATION=rollback-drill` и соответствующими
+`MOIRA_APP_DIR`/`MOIRA_PYTHON`; `MOIRA_TOOL_APP_DIR` указывает на current
+recovery tooling, поэтому предыдущий checkout не обязан содержать новый script.
+Live database и service drill не затрагивает.
+Report содержит измеренные recovery-point age и RTO; controlled Telegram smoke
+остаётся отдельной внешней проверкой.
 
 ## Чек-лист после первого запуска
 
@@ -52,7 +75,7 @@ sudo -u moira /opt/moira/app/deploy/moira-restore-drill.sh /var/backups/moira/mo
 2. Ровно один процесс `bot.main`; lock-файл `.bot.runtime.lock` принадлежит ему.
 3. Живой Telegram smoke из `docs/PRODUCTION_RUNBOOK.md` (RU+EN расклад, fallback,
    journal, share, delete).
-4. `moira-backup.sh` отработал вручную хотя бы раз; drill прошёл.
+4. `moira-backup.sh` создал hash-bound manifest; restore и rollback drills прошли.
 
 ## Переходный вариант до VPS (локальная Windows-машина)
 
@@ -71,3 +94,7 @@ sudo -u moira /opt/moira/app/deploy/moira-restore-drill.sh /var/backups/moira/mo
   manifest; branch name, dirty snapshot и старые локальные RC-имена не подходят.
 - Перед `alembic upgrade` на живой базе — свежий бэкап и остановленный сервис.
 - `.env` на VPS не существует — только `/etc/moira/moira.env` (root:moira 640).
+- `/var/backups/moira` должен принадлежать `moira:moira` и иметь mode `700`;
+  backup/manifest — `600`. Production command fail-closed при более широком mode.
+- Backup и restore reports содержат только counts/hashes/timing, но сами `.db`
+  являются private data и никогда не входят в Git/CI artifacts.
