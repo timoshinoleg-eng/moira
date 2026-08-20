@@ -23,9 +23,9 @@ from ..tarot.spreads import DrawnCard, POSITION_MEANINGS, position_meaning
 
 logger = logging.getLogger(__name__)
 
-PROMPT_VERSION = "v6.1-canonical-orientation"
+PROMPT_VERSION = "v6.2-reflection-question-contract"
 MYSTICAL_VOICE = ("Голос Мойры — ясный, тихий и немного загадочный. Она говорит как проводник у порога: замечает скрытое напряжение, связывает его с вопросом и картами, а затем возвращает выбор человеку. Используй редкие точные образы света, тени, дороги или порога только если они проясняют мысль. Запрещены бессвязные фразы, выдуманные слова, псевдоэзотерический жаргон, цепочки абстрактных существительных, повторение одной мысли и красивый текст без конкретного смысла. Каждое предложение должно быть естественным и понятным с первого чтения.")
-SCHEMA_VERSION = "v4"
+SCHEMA_VERSION = "v5"
 MAX_LLM_ATTEMPTS = 2  # one initial + one format/network retry
 
 # New retry policy is deliberately narrow: authentication, configuration and
@@ -221,6 +221,7 @@ FORMAT_RU = (
     "Для каждой карты сначала назови её напряжение в этой позиции, затем один ясный фокус для человека. "
     "В opening или synthesis обязательно используй один ясный образ из символов карт — например, порог, свет, тень, дорогу, воду, огонь, свиток или зеркало — и объясни, что он означает для вопроса. "
     "Перед JSON молча вычитай все поля: только естественный русский язык, без обрывков, англицизмов, повторов и искусственной эзотерической лексики. "
+    "Поле reflection_question должно быть одним прямым открытым вопросом и заканчиваться знаком «?». "
     "Все тексты — живые, связные, без заголовков и списков. Ориентиры длины в символах: "
 
 "headline до 90; opening 60–240; интерпретация каждой карты 40–420; synthesis 180–650; "
@@ -250,6 +251,7 @@ FORMAT_EN = (
     "For each card, name the tension in that position first, then give one clear focus for the querent. "
     "In opening or synthesis, include one clear image taken from the card symbols — for example a threshold, light, shadow, road, water, fire, scroll, or mirror — and explain what it means for the question. "
     "Before JSON, silently proofread every field: use natural English only, with no fragments, foreign-language words, repetition, or artificial occult jargon. "
+    "The reflection_question field must be one direct open question and must end with \"?\". "
     "All texts should be natural and flowing, without headings or bullet lists. Length guidance "
 
 "in characters: headline up to 90; opening 60–240; each card interpretation 40–420; "
@@ -284,6 +286,13 @@ class TarotReadingResult(BaseModel):
     voice_summary: str = Field(min_length=140, max_length=450)
 
     share_summary: str = Field(min_length=60, max_length=240)
+
+    @model_validator(mode="after")
+    def _reflection_must_be_a_question(self) -> "TarotReadingResult":
+        """Reject statements mislabeled as the required reflection question."""
+        if not self.reflection_question.strip().endswith("?"):
+            raise ValueError("reflection_question must end with a question mark")
+        return self
 
     @model_validator(mode="after")
     def _voice_must_not_copy_synthesis(self) -> "TarotReadingResult":

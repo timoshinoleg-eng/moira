@@ -16,7 +16,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pytest
 from pydantic import ValidationError
 
-from bot.llm.adapter import TarotReadingResult, assert_share_summary_privacy, parse_reading_json
+from bot.llm.adapter import (
+    FORMAT_EN,
+    FORMAT_RU,
+    TarotReadingResult,
+    assert_share_summary_privacy,
+    parse_reading_json,
+)
 
 
 def _pad(base: str, min_len: int, max_len: int) -> str:
@@ -91,6 +97,23 @@ def test_practical_focus_range_60_260() -> None:
 def test_reflection_question_max_220() -> None:
     with pytest.raises(ValidationError):
         _valid(reflection_question="x" * 221)
+
+
+def test_reflection_question_must_end_with_question_mark() -> None:
+    with pytest.raises(ValidationError, match="must end with a question mark"):
+        _valid(reflection_question="Сделайте один наблюдаемый шаг.")
+    with pytest.raises(ValidationError, match="must end with a question mark"):
+        _valid(reflection_question="Choose one observable next step.")
+
+    result = _valid(reflection_question="Что можно проверить следующим шагом?   ")
+    assert result.reflection_question
+
+
+def test_reflection_question_contract_is_explicit_in_both_languages() -> None:
+    assert "reflection_question" in FORMAT_RU
+    assert "заканчиваться знаком «?»" in FORMAT_RU
+    assert "reflection_question" in FORMAT_EN
+    assert 'must end with "?"' in FORMAT_EN
 
 
 def test_voice_summary_range_140_450() -> None:

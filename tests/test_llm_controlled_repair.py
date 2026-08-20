@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import sys
 from dataclasses import replace
@@ -135,6 +136,50 @@ def test_controlled_repair_uses_safe_second_payload_and_never_exceeds_two_calls(
         assert question not in repair_payload
         assert memory not in repair_payload
         assert "TOP_SECRET_RAW_OUTPUT" not in repair_payload
+        await close_db()
+
+    asyncio.run(run())
+
+
+def test_reflection_statement_enters_controlled_repair(tmp_path) -> None:
+    async def run() -> None:
+        cfg = replace(
+            load_config(require_token=False),
+            openrouter_api_key="test-key",
+            llm_retry_policy_v2=True,
+            llm_controlled_repair_enabled=True,
+            db_path=str(tmp_path / "repair-reflection.db"),
+        )
+        await init_db(cfg.db_path)
+        drawn = draw("situation")
+        repaired = _completion_for(drawn)
+        invalid_payload = json.loads(repaired.choices[0].message.content)
+        invalid_payload["reflection_question"] = "Сделайте один наблюдаемый шаг."
+        invalid = _raw_completion(json.dumps(invalid_payload, ensure_ascii=False))
+        client = FakeClient([invalid, repaired])
+
+        result = await _interpret_reading_v2(
+            cfg,
+            client,
+            provider="provider.example",
+            lang="ru",
+            question="TOP_SECRET_QUESTION",
+            memory="TOP_SECRET_MEMORY",
+            drawn=drawn,
+            user_id=3,
+            spread_id="situation",
+            messages=[{"role": "user", "content": "TOP_SECRET_QUESTION"}],
+        )
+
+        assert result is not None
+        assert result.reflection_question.endswith("?")
+        assert len(client.completions.calls) == 2
+        repair_payload = "\n".join(
+            message["content"] for message in client.completions.calls[1]["messages"]
+        )
+        assert "Сделайте один наблюдаемый шаг." not in repair_payload
+        assert "TOP_SECRET_QUESTION" not in repair_payload
+        assert "TOP_SECRET_MEMORY" not in repair_payload
         await close_db()
 
     asyncio.run(run())
