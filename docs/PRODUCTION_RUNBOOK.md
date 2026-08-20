@@ -26,6 +26,12 @@ Create /etc/moira/moira.env with BOT_TOKEN, ADMIN_IDS,
 DB_PATH=/var/lib/moira/moira.db, the chosen FREE_READINGS, and optional
 provider/observability credentials. This file is never committed.
 
+For a native Mistral endpoint, set `LLM_BASE_URL=https://api.mistral.ai/v1`,
+`LLM_MODEL=mistral-small-latest`, `LLM_JSON_MODE=true`, and reference an
+external one-line key file through `LLM_API_KEY_FILE`. Leave
+`OPENROUTER_API_KEY` empty so the file-backed provider key is selected. The
+secret file must remain outside the source tree and release artifacts.
+
 Deepgram voice input remains optional. Enable it only with the exact settings
 and live acceptance path in `docs/DEEPGRAM_VOICE_POC.md`; the rest of Moira
 continues to work with `DEEPGRAM_STT_ENABLED=false`.

@@ -161,6 +161,21 @@ LLM_MODEL=deepseek/deepseek-v4-flash
 `LLM_MODEL=deepseek-v4-flash` (без префикса провайдера). Для шлюзов с каталогом
 моделей модель остаётся `deepseek/deepseek-v4-flash`.
 
+Для Mistral оставь `OPENROUTER_API_KEY` пустым и используй внешний secret-файл,
+который содержит только ключ:
+
+```env
+OPENROUTER_API_KEY=
+LLM_API_KEY_FILE=C:\secure\mistral-api-key.txt
+LLM_BASE_URL=https://api.mistral.ai/v1
+LLM_MODEL=mistral-small-latest
+LLM_JSON_MODE=true
+```
+
+Secret-файл должен находиться вне репозитория и не включаться в release
+artifacts. Governing provider evaluation использует только синтетическую
+24-case fixture; реальные вопросы пользователей не являются test data.
+
 Без ключа бот работает на встроенных трактовках карт (режим MVP).
 
 Release-default feature flags остаются закрытыми до независимых gates:
