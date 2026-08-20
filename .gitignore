@@ -6,6 +6,7 @@ __pycache__/
 *.db-wal
 *.db-shm
 *.db.baseline.bak
+/backups/
 *.sqlite3
 .cache/
 .pytest_cache/

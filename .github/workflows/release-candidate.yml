@@ -45,6 +45,11 @@ jobs:
       - name: Verify fresh and 0005-to-head migrations and application startup
         run: python -m pytest -vv -p no:cacheprovider tests/test_release_migrations.py
 
+      - name: Verify backup, restore, retention, RPO, RTO, and rollback contracts
+        run: |
+          bash -n deploy/moira-backup.sh deploy/moira-restore-drill.sh
+          python -m pytest -vv -p no:cacheprovider tests/test_backup_restore.py
+
       - name: Verify 78 cards, assets, fonts, glyphs, and renderers
         run: python -m pytest -vv -p no:cacheprovider tests/test_cards_78.py tests/test_release_assets.py
 
