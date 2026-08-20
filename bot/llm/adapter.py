@@ -630,7 +630,6 @@ async def _recent_reads_memory(user_id: int, limit: int = 3) -> str:
 
 async def _log_usage(
     *,
-    user_id: int,
     spread: str | None,
     model: str | None,
     provider: str,
@@ -651,7 +650,6 @@ async def _log_usage(
         async with get_session() as session:
             session.add(
                 LlmUsage(
-                    user_id=user_id,
                     spread=spread,
                     model=model,
                     provider=provider,
@@ -679,12 +677,11 @@ async def _log_usage(
             chain = get_evidence()
             chain.add(
                 EvidenceRecord(
-                    id=f"llm:{user_id}:{int(datetime.now().timestamp())}",
+                    id=f"llm:{request_id or _new_request_id()}",
                     action=f"llm_interpret status={status} spread={spread}",
                     actor="agent:moira",
                     timestamp=datetime.now(),
                     inputs={
-                        "user_id": user_id,
                         "spread": spread,
                         "model": model,
                         "provider": provider,
@@ -781,7 +778,6 @@ async def _interpret_reading_v2(
                     latency = int((time.monotonic() - started) * 1000)
                     usage = getattr(completion, "usage", None)
                     await _log_usage(
-                        user_id=user_id or 0,
                         spread=spread_id,
                         model=selected_model,
                         provider=provider,
@@ -808,7 +804,6 @@ async def _interpret_reading_v2(
     latency = int((time.monotonic() - started) * 1000)
     category = _error_category(last_exc) if last_exc else "unknown"
     await _log_usage(
-        user_id=user_id or 0,
         spread=spread_id,
         model=selected_model,
         provider=provider,
@@ -927,7 +922,6 @@ async def interpret_reading(
             latency = int((time.monotonic() - started) * 1000)
             usage = getattr(completion, "usage", None)
             await _log_usage(
-                user_id=user_id or 0,
                 spread=spread_id,
                 model=model,
                 provider=provider,
@@ -952,7 +946,6 @@ async def interpret_reading(
 
     latency = int((time.monotonic() - started) * 1000)
     await _log_usage(
-        user_id=user_id or 0,
         spread=spread_id,
         model=cfg.llm_model,
         provider=provider,

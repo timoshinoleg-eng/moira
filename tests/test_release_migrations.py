@@ -79,6 +79,15 @@ def test_real_0005_schema_copy_upgrades_to_head_without_losing_rows(tmp_path: Pa
             """,
             (7001, "reading_1", 25, "migration-charge", now, "paid"),
         )
+        connection.execute(
+            """
+            INSERT INTO llm_usage (
+                user_id, spread, model, prompt_version, prompt_tokens,
+                completion_tokens, latency_ms, status, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (7001, "situation", "legacy-model", "legacy", 10, 20, 300, "ok", now),
+        )
         connection.commit()
 
     _assert_command(_alembic(db_path, "upgrade", "head"))
@@ -99,6 +108,11 @@ def test_real_0005_schema_copy_upgrades_to_head_without_losing_rows(tmp_path: Pa
             ).fetchall()
         }
         assert "push_deliveries" in tables
+        llm_usage_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(llm_usage)").fetchall()
+        }
+        assert "user_id" not in llm_usage_columns
+        assert connection.execute("SELECT COUNT(*) FROM llm_usage").fetchone()[0] == 1
 
 
 def test_application_startup_rejects_0005_without_repairing_schema(

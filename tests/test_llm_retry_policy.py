@@ -214,6 +214,7 @@ def test_v2_path_retries_once_uses_backup_and_persists_safe_usage(tmp_path) -> N
         assert usage.fallback_used is False
         assert usage.error_category is None
         assert usage.request_id and len(usage.request_id) == 32
+        assert not hasattr(usage, "user_id")
         assert "private question" not in str(usage.__dict__)
         await close_db()
 

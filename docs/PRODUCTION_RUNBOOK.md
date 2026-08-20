@@ -37,7 +37,7 @@ unapproved capabilities until their independent live gates pass.
 
 ## Migrate and launch
 
-The release schema head is `0008_push_delivery_foundation`. Application startup
+The release schema head is `0009_llm_usage_privacy`. Application startup
 verifies that exact revision and never uses SQLAlchemy `create_all()` as a
 substitute for Alembic. Back up first, then run both commands before starting.
 

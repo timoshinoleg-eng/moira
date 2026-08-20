@@ -138,7 +138,7 @@ python -m bot.main
 .venv\Scripts\python.exe -m alembic check
 ```
 
-Текущая версия: `0008_push_delivery_foundation`. Запуск приложения требует,
+Текущая версия: `0009_llm_usage_privacy`. Запуск приложения требует,
 чтобы база уже находилась на этом Alembic head; `create_all()` не заменяет
 миграции. Сначала всегда выполняй `alembic upgrade head` и `alembic check`.
 

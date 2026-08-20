@@ -10,7 +10,7 @@ from .models import Base
 
 _engine = None
 _session_factory = None
-ALEMBIC_HEAD = "0008_push_delivery_foundation"
+ALEMBIC_HEAD = "0009_llm_usage_privacy"
 
 
 def _sqlite_pragmas(dbapi_conn, _connection_record) -> None:
