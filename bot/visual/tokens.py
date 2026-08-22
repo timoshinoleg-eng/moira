@@ -119,3 +119,8 @@ CARD_FRAME_REVERSED_OUTLINE = (183, 104, 132)
 CARD_FRAME_OUTLINE = (214, 182, 118)
 CARD_FRAME_WIDTH = 3
 CARD_FRAME_RADIUS = 18
+
+# ------------------------------------------------------ readability masks ---
+READABILITY_SHADE = (6, 4, 14, 78)
+SPREAD_TOP_SHADE = (0, 0, 1080, 360)
+SINGLE_TOP_SHADE = (0, 0, 1080, 250)

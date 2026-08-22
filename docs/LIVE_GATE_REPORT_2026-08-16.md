@@ -44,3 +44,13 @@ An owner-controlled Telegram test confirmed that `@MoiraOraclebot` replied to on
 ## UI label correction from owner screenshot (2026-08-16)
 
 The owner-provided privacy-safe screenshot shows that the Russian main-menu label exposed to the user is **«Мои расклады»**, not «История». This is the user-facing entry point for saved readings and should be used in the E2E checklist. The same screenshot visibly shows result actions for **sharing**, **removing from favorites**, **positive/negative feedback**, two follow-up actions, and **Menu**. The screenshot itself is not copied into the evidence report and no reading text or personal identifier is retained.
+
+## Continuation — saved readings reopen after polling recovery (2026-08-17)
+
+The owner confirmed that the visible main-menu action **«Мои расклады»** opened successfully after the stale-lock recovery and controlled bot restart. No question, reading text, username, user ID, referral code, or screenshot content is retained in this evidence.
+
+| Check | Result | Scope boundary |
+|---|---|---|
+| «Мои расклады» → saved readings list/reopen entry point | PASS | Confirms the owner-observed menu path after recovery; does not independently verify favorite, follow-up, share, delete, referral, payment, voice, or mobile delivery |
+
+**Decision:** The live chain now has minimal RU reply PASS, minimal EN reply PASS, and saved-readings entry PASS. TASK 3 remains open because the broader controlled sequence has not yet been completed end-to-end.

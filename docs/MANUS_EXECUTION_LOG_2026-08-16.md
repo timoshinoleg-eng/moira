@@ -152,3 +152,65 @@ Oracle v6 continuation: fixed explicit OpenRouter key precedence over legacy key
 **Verification:** Targeted LLM schema/voice/config tests: **18 passed**. Full regression after the repair: **119 passed** in 11.74 seconds; `git diff --check` clean. The bot was restarted once to apply the repair and is polling as a single process (PID `14176`) with fresh `Start polling` / `Run polling` markers.
 
 **Live E2E continuation:** Owner confirmed minimal post-restart replies to both one RU and one EN message. These are correctly recorded as two minimal core-response PASSes only; UI actions and referral remain unverified. The full 24-case quality gate remains blocked by repeated malformed/empty/truncated free-provider responses; this parser repair removes one known avoidable rejection but does not convert the incomplete run into PASS.
+
+## Continuation — global visual overhaul (2026-08-17)
+
+**Status:** VISUAL PASS WITH NON-BLOCKING REFINEMENT NOTES.
+
+**Evidence:** Competitor and user-expectation research was saved to `docs/COMPETITOR_VISUAL_RESEARCH_2026-08-17.md`. The Nocturnal Thread art direction and autonomous production backlog were saved to `docs/MOIRA_VISUAL_ART_DIRECTION_2026-08-17.md`. A generated visual pack was created under `assets/generated_visuals/2026-08-17/`, including portrait altar and square share plates, a clean sigil, a deterministic vector thread overlay, and one private 8-second portrait video draft.
+
+**Files changed:** `bot/visual/render.py`, `bot/visual/tokens.py`, visual QA notes, art direction and visual release package documents, generated visual assets, and refreshed visual smoke outputs. The source card illustration collection was not replaced or edited.
+
+**Regression:** Full pytest suite `119 passed`; `compileall` passed; `git diff --check` passed; visual smoke generated RU/EN spread, share, and single-card outputs. Video draft integrity: H.264/AAC, 720x1280, 8 seconds. The first AI-generated transparent overlays were rejected after visual inspection because of green chroma contamination; the sigil was cleaned deterministically and the thread was recreated as a clean vector overlay.
+
+**Decision:** Renderer-layer visual upgrade is locally ready for human review. No publishing, GitHub push, paid campaign, or beta launch was performed. TASK 12 remains governed by its existing Gate A and provider-quality blockers.
+
+## Continuation — independent production-readiness review (2026-08-17)
+
+**Status:** LOCAL RC HARDENING PASS; BETA NO-GO RETAINED.
+
+**Current-code findings and repairs:** Review against the local worktree confirmed that public share output uses `Reading.share_summary` and a template caption, not raw interpretation; current rows have a direct question-leak guard and old rows use a generic summary. The remaining direct recent-reading-memory leak path was further hardened: share-summary prompt instructions now prohibit both question and recent-reading context, and validation rejects verbatim leakage of either source. The reading system message no longer says to follow user instructions exactly; it now treats question, card data, labels and memory as untrusted interpretation data and preserves system JSON/safety rules. A payment bug was confirmed: refunding one stacked unlimited-duration purchase set `unlimited_until=None` and erased all remaining time. The handler now removes only the refunded duration.
+
+**Regression:** New focused regressions cover trust-boundary contract, exact recent-memory share leakage, and stacked 7/30-day refund arithmetic. Targeted suite: `24 passed`; existing payment idempotency script passed. Full suite after all current changes: **125 passed** in 11.84 seconds; compile checks and `git diff --check` passed.
+
+**Runtime/reliability evidence:** The bot was restarted once to apply validated code as PID `23732`; process and `.bot.runtime.lock` were present and polling startup markers were observed. A separate verifier confirmed that a second process cannot acquire the live lock and releases its local failed-acquisition handle. A fresh online SQLite backup was made using retention `9999` (no retention deletion); an isolated integrity/table-presence verifier returned `BACKUP_SNAPSHOT_INTEGRITY_OK`.
+
+**Gate reconciliation:** `docs/QUALITY_GATE_RUN_2026-08-17.md` supersedes only the old provider-execution blocker: two complete synthetic 24-case runs produced 45/48 structured outputs and zero hard-fail patterns. TASK 4 still needs owner blind-rubric review and a working backup-model smoke before it is considered fully accepted. TASK 3 has minimal RU reply PASS, EN reply PASS and owner-confirmed «Мои расклады» opening, but favorite/follow-up/share/delete/referral/mobile remain unverified. TASK 12 remains **NO-GO**; no public content, deployment, payment or beta cohort was started.
+
+**Report:** `docs/MANUS_3H_PRODUCTION_READINESS_REPORT_2026-08-17.md` contains the full evidence table, fixed findings, residual risks and next actions.
+
+## Correction — quality-evaluation spread-contract harness (2026-08-17)
+
+**Finding:** Independent Sol audit reproduced a material harness omission: `scripts/run_oracle_v6_eval.py::make_reading` and, through it, the parallel runner called `interpret_reading` without `spread_id`. Earlier complete 24-case runs therefore bypassed `SPREAD_RULES_RU/EN` and spread-specific position-meaning context. Their outputs remain valid provider transport/schema/broad-safety evidence but are not complete semantic evidence for Situation/Love/Choice.
+
+**Repair:** The shared helper now passes `spread_id=case["spread"]`; new `tests/test_oracle_eval_spread_contract.py` asserts both forwarding and actual inclusion of all RU/EN spread rules in generated prompt messages. Original output artifacts were preserved with `PRE_SPREAD_FIX_2026-08-17` names before the repaired run overwrote current-output filenames.
+
+**Verification:** Corrected low-concurrency synthetic RU/EN × Situation/Love/Choice coverage completed **5/6 structured**, **1 safe deterministic fallback**, **0 hard fails**; all structured records passed the public metadata checks. Full regression after correction: **127 passed**; `compileall bot scripts` and `git diff --check` passed.
+
+**Decision:** The prior provider-execution PASS wording is retracted. TASK 4 is **OPEN** until a corrected full 24-case run, a working tested backup model and the owner blind rubric review are complete. TASK 12 remains **NO-GO**. Full details: `docs/MANUS_QUALITY_HARNESS_CORRECTION_2026-08-17.md`.
+
+## Continuation — corrected immutable 24-case provider attempt (2026-08-17)
+
+**Status:** BLOCKED_PROVIDER_RELIABILITY; TASK 4 remains OPEN and TASK 12 remains NO-GO.
+
+**Evidence:** The immutable baseline `docs/IMMUTABLE_QUALITY_EVAL_BASELINE_2026-08-17.json` was created before execution (SHA-256 `bd9a11004dc9dea3a2db7a6d89c5876162ce754cd341864edc9c5e378bac4d2e`; commit `d0f442bb42520b3389b3df4475a87ed93de8a6cc`; full synthetic fixture and harness/config hashes recorded). The corrected spread-aware full fixture was started at serial concurrency. It was stopped after sustained empty, malformed and truncated JSON plus schema-invalid short card fields from the free provider. No partial 24-case final artifact was produced or treated as a PASS; the pre-existing corrected six-case metadata remains 5/6 structured, 1 safe fallback and 0 hard fails.
+
+**Files changed:** `docs/IMMUTABLE_QUALITY_RUN_REPORT_2026-08-17.md`, `docs/QUALITY_GATE_RUN_2026-08-17.md`, `docs/BETA_READINESS_REPORT_2026-08-16.md`, and this execution log. The existing public/private coverage artifacts were preserved with `PRE_IMMUTABLE_2026-08-17` names before the attempt.
+
+**Regression/runtime:** No source code changed in this run. The separate bot process PID `23732` remained alive after stopping the evaluation process.
+
+**Decision/blocker:** Do not weaken the schema, declare an incomplete run successful, publish content or open beta. Replace and smoke-test the free backup candidate; generate a new configuration-specific immutable baseline; obtain a completed corrected 24-case artifact; then obtain the owner blind rubric. The privacy-safe baseline, outcome report and updated gate reports were uploaded to Workspace folder 06.
+
+## Continuation — P0-1/P0-2/P0-3 hardening and provider evidence (2026-08-17)
+
+**Status:** P0-1 PASS (bounded backup smoke); P0-2 PASS (deterministic regressions); P0-3 PASS (separate provider-executed contract); P0-4 remains BLOCKED_PROVIDER_RELIABILITY. TASK 4 remains OPEN and TASK 12 remains NO-GO.
+
+**P0-1:** The broken liquid backup was replaced in `.env` with `openai/gpt-oss-20b:free`. Current catalog/one-request checks found stale Mistral unavailable and a named Gemma candidate denied, while GPT-OSS passed synthetic JSON-mode and a complete `interpret_reading` Oracle-schema smoke (three structured card interpretations and share summary) using an isolated smoke database. This does not overstate free-tier batch reliability.
+
+**P0-2:** Fixed `_build_card_block()` so the EN orientation is always `upright` or `reversed`, never a Russian token. Replaced top-level-only scorer flattening with recursive traversal of the passed user-visible reading payload. New regressions prove nested markers are detected while matching strings solely in synthetic question or run metadata are ignored.
+
+**P0-3:** Added the exact 16-case Sol fixture, isolated DB/provider runner, deterministic contract tests and public/private evidence split. Provider execution completed 15 structured outputs, one explicit deterministic fallback and no failed completions. The initial evaluator incorrectly demanded card names in fallback card text even though the product photo caption renders those names from the same draw; a new Q02 regression corrected the check to the actual fallback fields (position label, position meaning and orientation). Preserved outputs were reassessed without new provider calls: 16/16 contract pass; zero prompt/system disclosure, language, canary or draw-contract failures. The fallback remains counted separately.
+
+**Regression:** Full suite after all P0 work: **146 passed**; `compileall bot scripts` and `git diff --check` passed. Bot PID `23732` remained alive.
+
+**Immutable quality gate:** Created version-2 baseline `docs/IMMUTABLE_QUALITY_EVAL_BASELINE_2026-08-17.json`, SHA-256 `00e9922f4ba50261ad9733e91f112526482c2950c31fd03a81f54c6daf4de127`. A corrected serial 24-case run began from the preceding equivalent P0 baseline but was stopped after sustained malformed/truncated/schema-invalid free-provider output. It created no completed final artifact; prior outputs were preserved. Do not begin owner blind rubric or beta. Full report: `docs/MANUS_P0_1_P0_2_P0_3_EVIDENCE_2026-08-17.md`.

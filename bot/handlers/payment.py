@@ -27,6 +27,15 @@ INV_NAME = {"reading_1": "reading", "unlimited_7": "week", "unlimited_30": "mont
 CANCEL_TOKENS = {"/start", "start", "меню", "menu"}
 
 
+def _revoke_unlimited_days(current: datetime | None, amount: int, now: datetime) -> datetime | None:
+    """Remove only the refunded duration from a stacked unlimited entitlement."""
+    until = ensure_utc(current)
+    if until is None or until <= now:
+        return None
+    remaining = until - timedelta(days=amount)
+    return remaining if remaining > now else None
+
+
 class PromoStates(StatesGroup):
     waiting_code = State()
 
@@ -209,7 +218,9 @@ async def on_refund(message: Message, cfg: Config, analytics: Analytics) -> None
                 if product.kind == "readings":
                     u.free_readings = max(0, u.free_readings - product.amount)
                 else:
-                    u.unlimited_until = None
+                    u.unlimited_until = _revoke_unlimited_days(
+                        u.unlimited_until, product.amount, datetime.now(timezone.utc)
+                    )
                 payment.status = "refunded"
                 session.add(payment)
         elif payment is not None:

@@ -17,6 +17,11 @@ chat-export-*.json
 *_prompt_dump.txt
 moira_prompt_dump.txt
 artifacts/
+assets/generated_visuals/
+backups/
+audit_moira_*/
+_moira_*.ps1
+_moira_*.py
 
 # Work archives and extracts
 архивы и доработки/
