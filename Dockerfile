@@ -35,6 +35,6 @@ COPY assets assets/
 USER moira
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD ["/app/.venv/bin/python", "scripts/_docker_healthcheck.py"]
+    CMD ["/app/.venv/bin/python", "-m", "bot._healthcheck"]
 
 ENTRYPOINT ["/app/.venv/bin/python", "-m", "bot.main"]

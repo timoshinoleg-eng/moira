@@ -59,7 +59,7 @@ services:
     volumes:
       - moira-data:/var/lib/moira
     healthcheck:
-      test: ["CMD", "/app/.venv/bin/python", "scripts/_docker_healthcheck.py"]
+      test: ["CMD", "/app/.venv/bin/python", "-m", "bot._healthcheck"]
       interval: 30s
       timeout: 5s
       start_period: 40s
