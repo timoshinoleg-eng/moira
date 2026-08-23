@@ -35,7 +35,30 @@ jobs:
         run: uv sync --frozen
 
       - name: Run pytest (no network; external calls are mocked)
-        run: uv run pytest -q
+        run: uv run pytest -q -m "not postgres"
+
+  pg:
+    name: Tests (PostgreSQL integration)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run PostgreSQL migrations + CRUD (testcontainers)
+        run: uv run pytest -q -m postgres
 
   lint:
     name: Lint (ruff, non-blocking phase 1)
