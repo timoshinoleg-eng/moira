@@ -1,0 +1,16 @@
+{
+  "created_utc": "2026-08-23T10:15:46.577043+00:00",
+  "source_backup_relative_path": "backups\\moira-20260823-131514.db",
+  "isolated_restore_drill": true,
+  "integrity_check": "ok",
+  "alembic_revision": "0008_push_delivery_foundation",
+  "required_tables_missing": [],
+  "table_row_counts": {
+    "llm_usage": 177,
+    "payments": 0,
+    "readings": 7,
+    "users": 2
+  },
+  "result": "pass",
+  "sensitive_row_contents_exported": false
+}

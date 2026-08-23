@@ -1,0 +1,1412 @@
+{
+  "deck": "Rider-Waite-Smith tarot deck (Geldard)",
+  "category": "https://commons.wikimedia.org/wiki/Category:Rider-Waite-Smith_tarot_deck_(Geldard)",
+  "license": "Public Domain Mark / PD-old, as represented on each Wikimedia Commons file page",
+  "processing": "Commons API thumbnail URL -> Pillow contain resize with white padding -> JPEG 350x600; no crop",
+  "cards": [
+    {
+      "card_id": "major_0",
+      "local_filename": "m00.jpg",
+      "commons_filename": "The Fool (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Fool_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/c0/The_Fool_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "07b631d6b5f0399da6d3cdb5fc12f499689f231b",
+      "sha256": "05cec1348239d00161643ce58c275e4fd311085341467917dc27d8bfffb6d582",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_1",
+      "local_filename": "m01.jpg",
+      "commons_filename": "The Magician (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Magician_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/57/The_Magician_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "7f9ff2ce39a7ada374cd39d1c80bd720611efb90",
+      "sha256": "43f9f2bf970bdfe39c1e13709e4929cf4a26e9e9383ee1637d3014e752077761",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_2",
+      "local_filename": "m02.jpg",
+      "commons_filename": "The High Priestess (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_High_Priestess_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/The_High_Priestess_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "a4c1c3b3a3238573031e511be1e4b64b06d7e99f",
+      "sha256": "f5189a02e72b166c0bdb11fd7e16df068cc5836028dc169383b8b94bb4c17afb",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_3",
+      "local_filename": "m03.jpg",
+      "commons_filename": "The Empress (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Empress_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/The_Empress_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "28ccdb185989ec7b78a54d76b8afb8ec5bda292e",
+      "sha256": "76cb6a3c57cbf11693c9decac24e22244525ca4bcfa8a55f182af866416564ba",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_4",
+      "local_filename": "m04.jpg",
+      "commons_filename": "The Emperor (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Emperor_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/The_Emperor_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "eded0289e19630187a705170fae9e513bb262acc",
+      "sha256": "80a975587fa98ac25408b86b333949cf9d6843377986df66413d643da3180bcf",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_5",
+      "local_filename": "m05.jpg",
+      "commons_filename": "The Hierophant (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Hierophant_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/The_Hierophant_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "c1f68a49e712c2f1a4a9ba7ad6598a994d7f6085",
+      "sha256": "249dec7d74efa580089e865b7e94ddd9dc529287a69cb3021a1ea2258c56ce0a",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_6",
+      "local_filename": "m06.jpg",
+      "commons_filename": "The Lovers (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Lovers_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/The_Lovers_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "582218deee2c51ea5921c8eb0a7db1dc3084fed4",
+      "sha256": "1802032447c1f68c1b3a20ddd4310b1211dec434c69bc8644c28bf3f137374af",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_7",
+      "local_filename": "m07.jpg",
+      "commons_filename": "The Chariot (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Chariot_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/The_Chariot_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "39380a187ab9301b7f06c286111500c34a38374e",
+      "sha256": "a9f7c6d63becb43074b7303c66fd20c14240711466f0d8e6253761ecdd2c5ed2",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_8",
+      "local_filename": "m08.jpg",
+      "commons_filename": "Strength (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AStrength_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/7/74/Strength_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "dd0028b27fba1eebd32b7333f928ecf96201756b",
+      "sha256": "e5943ada4192052300c86dc7750945e9cecd8eed08559c0cf938f3bf2b0b3a1d",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_9",
+      "local_filename": "m09.jpg",
+      "commons_filename": "The Hermit (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Hermit_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/The_Hermit_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "378f13a30250fe4b73322b59e8273d6fb686fa4e",
+      "sha256": "1bc698c4f27028ddf672cf1b0749e67f3bd34313787ca3daf558ef35538954b9",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_10",
+      "local_filename": "m10.jpg",
+      "commons_filename": "Wheel of Fortune (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AWheel_of_Fortune_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Wheel_of_Fortune_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "ba0da44ccc971fa8abd8c665212ca3edc620c848",
+      "sha256": "9282424854b4205f7a696cbf5f795cfb2365877366963621498002c162c6ca1f",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_11",
+      "local_filename": "m11.jpg",
+      "commons_filename": "Justice (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AJustice_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Justice_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "ad247bc71ef5f2f3de382590f54201239e26026f",
+      "sha256": "e0c63582a93b2e83e734ace5732555c11547f22a444c7702fc1586ea3d28ecb0",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_12",
+      "local_filename": "m12.jpg",
+      "commons_filename": "The Hanged Man (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Hanged_Man_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/The_Hanged_Man_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "827b9301dc6a7d09fa8956b140963777f02b967d",
+      "sha256": "cef5543cd8f351c19631d2ff50061be07a3ab6609810561b85fbbe1f6fcb6c2b",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_13",
+      "local_filename": "m13.jpg",
+      "commons_filename": "Death (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ADeath_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Death_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "4a16bccb8cdf668c2f0b84b98df29d2da18bdb94",
+      "sha256": "84beb1714a4304cbdd5ce34fc37794f390120b9877c709bb7a988996cd421cd9",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_14",
+      "local_filename": "m14.jpg",
+      "commons_filename": "Temperance (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATemperance_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/6/66/Temperance_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "e2a7be28a16ceeba416ed345c59253efcac1d85e",
+      "sha256": "db73a6e96a78209931d7d4d930ff5c30469de7dab33bba264161537b1cb32bfc",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_15",
+      "local_filename": "m15.jpg",
+      "commons_filename": "The Devil (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Devil_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b5/The_Devil_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "d77dbb69786d01cc88d192f579502c01f91db935",
+      "sha256": "a0a158c988fd37ffe53521e50660a5742cd6db78c44566996e74316c6d5ff5a8",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_16",
+      "local_filename": "m16.jpg",
+      "commons_filename": "The Tower (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Tower_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/The_Tower_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "e55e3cad3a03031c4a0fd1e87775cfc3ee800727",
+      "sha256": "d81a3b29973423a011f2f472f8f25ea6847dbe17b5ef0b88c3bdf683f04e52d0",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_17",
+      "local_filename": "m17.jpg",
+      "commons_filename": "The Star (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Star_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/09/The_Star_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "659b60ca69de4e7c68e1f15da8b66b30ef8cca0a",
+      "sha256": "04cc41576b697d698eb5fedb586eb60922f4027b2f84586d9bbc936a3742911a",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_18",
+      "local_filename": "m18.jpg",
+      "commons_filename": "The Moon (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Moon_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/18/The_Moon_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "f565d060c32ce06c4ad5b6d9eac3938595af0b89",
+      "sha256": "1a2d6489a108072d3be61d4f0db79831e3f7964e39e8eb28a9c46a649c3994a6",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_19",
+      "local_filename": "m19.jpg",
+      "commons_filename": "The Sun (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_Sun_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/The_Sun_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "2a88e848c46f267cbde7d3ed3da17a0ddd793d3c",
+      "sha256": "3edcfdd114ad7ee299d6869e8ead16b31ac820f85d5213486f285095f43d0a66",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_20",
+      "local_filename": "m20.jpg",
+      "commons_filename": "Judgement (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AJudgement_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Judgement_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "86390853595ac05b4215f58b6463c1aaebe36fa9",
+      "sha256": "8cca651f44c1fe7bc38ad96b7d981244166acd047d9a97fa62729ef30f583efd",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "major_21",
+      "local_filename": "m21.jpg",
+      "commons_filename": "The World (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThe_World_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/9/95/The_World_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "ef754216107c2492af2335eda360065346bfed11",
+      "sha256": "04316764a00d89d56f03fb81117a1b50042434d456944d60a82f36d2523facc6",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_ace",
+      "local_filename": "w01.jpg",
+      "commons_filename": "Ace of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AAce_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Ace_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "e11de70fb7dc28b386b48c8932fa23362a723eaf",
+      "sha256": "8dc86ba6455ee417a81da96816f7718cffd8f2cc52f3e165ef672bb8e882dc45",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_two",
+      "local_filename": "w02.jpg",
+      "commons_filename": "Two of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATwo_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/9/97/Two_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "4a6cd5152229c2b213e5c8549cd272467bdf3bc8",
+      "sha256": "7683012836be77ebae381ddaeead5fe3dd9be3b835c5727dacb1ded2a6b5e0d1",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_three",
+      "local_filename": "w03.jpg",
+      "commons_filename": "Three of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThree_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/3/31/Three_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "1227fbea6e7d992fb92602fe5a6e4bc6a39d1882",
+      "sha256": "d6ffb998a9e8c70b8347b053a9ce19da2b01cb241a66c429c6ccca76a862a898",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_four",
+      "local_filename": "w04.jpg",
+      "commons_filename": "Four of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFour_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Four_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "9efa4564fbb213b63e64ff573e4ebda0c0eb66ca",
+      "sha256": "3151cbabae2a2941fd793e18ca7a19a335bf0a2df0e586904992c32d6a971a03",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_five",
+      "local_filename": "w05.jpg",
+      "commons_filename": "Five of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFive_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Five_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "1430b7d78c6ac66d0c6832dfd62e41b4d92405f8",
+      "sha256": "f93b9309f1c754b96fa40d181fe783997913bc6d505c0cb88d4810f205ff8898",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_six",
+      "local_filename": "w06.jpg",
+      "commons_filename": "Six of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASix_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Six_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "1d4f287d366c952e77cc7515c0ebe8727c053d54",
+      "sha256": "6ec360d176763859ae761e6fc448bd5ccf5677230749fab111390daea4660b68",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_seven",
+      "local_filename": "w07.jpg",
+      "commons_filename": "Seven of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASeven_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Seven_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "b89d59322676214e92d845d369b963bdd4a4a05b",
+      "sha256": "c459f4df7661b6a960367c1043b93ccf9574d4e054635b9b127a339bd554f1b3",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_eight",
+      "local_filename": "w08.jpg",
+      "commons_filename": "Eight of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AEight_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Eight_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "817eff773383edf79fe1f764964c090affbbe99d",
+      "sha256": "a1fcf66c5f7d0c5467facc939908ca9fe0d216ca6871170f51c83cda91c52f24",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_nine",
+      "local_filename": "w09.jpg",
+      "commons_filename": "Nine of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ANine_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Nine_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "74735b016ad4f87bdbc0f6679296f26495f746bc",
+      "sha256": "4448b17469ca5f50a9caebc765a0ae9d1d8c407d1bbb3a33e9202b010365b15e",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_ten",
+      "local_filename": "w10.jpg",
+      "commons_filename": "Ten of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATen_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Ten_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "1d7805a1e3bc98d501c9a23e9427314f349794e9",
+      "sha256": "eb83f93ff7ec90d186f736168065d233900cd981b0e927ebd748793a64a96b04",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_page",
+      "local_filename": "w11.jpg",
+      "commons_filename": "Page of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3APage_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Page_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "79cf953983c8059300ca2e09884a3c13f4d66d8c",
+      "sha256": "cd7705d414dd1ad2091a1dcdd6a8179d1d976c5547086d81356da442a7c6d5fd",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_knight",
+      "local_filename": "w12.jpg",
+      "commons_filename": "Knight of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKnight_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Knight_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "886f3971719f64027fd38fbc31a12479b59ec2a1",
+      "sha256": "68c29b76a818085051f166f1707419d13944fe4072f6ca50288f6eaaaa0fda2c",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_queen",
+      "local_filename": "w13.jpg",
+      "commons_filename": "Queen of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AQueen_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Queen_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "a12e7780ab0eedcf12ab8bc68280fec658a64cba",
+      "sha256": "8afe67cbf4c9272cf2af0bd5fe2ed50e5d4a0d625c4bf01d75c97e74f59d3a3e",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "wands_king",
+      "local_filename": "w14.jpg",
+      "commons_filename": "King of Wands (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKing_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/King_of_Wands_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "8b751adaee69a911a351d88a79ec022a0b98fc29",
+      "sha256": "8ac41537b88c128b2ee74384666ea6c0eab8f57c001254637eb013e93c1451d1",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_ace",
+      "local_filename": "c01.jpg",
+      "commons_filename": "Ace of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AAce_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/86/Ace_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "9db875e95a6d3ac009a139b1eed75b99b7289d46",
+      "sha256": "30234775654efddd2d7009f77021fc98884e7a0b2ca26a9c6cc04bbe372af3b9",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_two",
+      "local_filename": "c02.jpg",
+      "commons_filename": "Two of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATwo_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Two_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "bab9707004a32a71fe1d40f4865acdebee313d2f",
+      "sha256": "f10415119011931e5f55261fda5db24abc7e34c59173c070f962050e526f0932",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_three",
+      "local_filename": "c03.jpg",
+      "commons_filename": "Three of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThree_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Three_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "7e358a176499fdd550284a393324538eb18258aa",
+      "sha256": "d4000320193e293042594a03c8973053cb44d786783f56b30bcb660e7e6e4f04",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_four",
+      "local_filename": "c04.jpg",
+      "commons_filename": "Four of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFour_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Four_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "5513c26c19dcbc90345205445de0452e8bd34542",
+      "sha256": "cdbcc7310953b0f79b3b77d74c535b369e3541081af5e60430f328c2ce43766b",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_five",
+      "local_filename": "c05.jpg",
+      "commons_filename": "Five of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFive_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Five_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "cb6f5426462900a76ee9334788a2f825d2eba273",
+      "sha256": "e38d761d1af20d0aac6816deaa31718d06a67534cbe78ce82662267805927461",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_six",
+      "local_filename": "c06.jpg",
+      "commons_filename": "Six of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASix_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Six_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "afdf12b67cb2ce30392d2fbb06dbf8edbd309503",
+      "sha256": "4602d7cb81df257ce9f77f86ed870c954a75d5406e94f60f832ff3d8b6dfbaf4",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_seven",
+      "local_filename": "c07.jpg",
+      "commons_filename": "Seven of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASeven_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Seven_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "8bb5c45b677e672bfafa7641eb5289ac235426c2",
+      "sha256": "dd4b83302d0460a5f4fee2a2208fa66dabc9920e076d1760e098726eb551dacc",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_eight",
+      "local_filename": "c08.jpg",
+      "commons_filename": "Eight of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AEight_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Eight_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "66f166d46a42494235c7ebc090e9bf9600f84475",
+      "sha256": "697cd4d5024477670e49694cae9537a1ff27872ca0bccc61c525b09e9e4e2659",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_nine",
+      "local_filename": "c09.jpg",
+      "commons_filename": "Nine of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ANine_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/86/Nine_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "bfd5ae6aa5c04936acfad31f51bbccd3974fef13",
+      "sha256": "5bd1adf68e35ddccd280bf348560d5d4b488fb2bca15bf3699b911f8c89a747d",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_ten",
+      "local_filename": "c10.jpg",
+      "commons_filename": "Ten of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATen_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Ten_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "664458e409eab86ecabc054490afca60b982ec52",
+      "sha256": "409fd012ce7a9a434b1a07da2eece5cba7ba37dded9165804992d2fa52a36e2f",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_page",
+      "local_filename": "c11.jpg",
+      "commons_filename": "Page of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3APage_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Page_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "66faced1f954995b3118bd33be17cab8e6e296c7",
+      "sha256": "2c23e79760b40b9e9478a29e7494ce8781b3442b841335f4b9362b57e0339f0c",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_knight",
+      "local_filename": "c12.jpg",
+      "commons_filename": "Knight of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKnight_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Knight_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "8f392b729cea790f7fac213aa8e0cd1c88beb85a",
+      "sha256": "b1adc634840104cba7f40410792c9cce6dc5d63c7b034df6451c1cc565a6f85c",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_queen",
+      "local_filename": "c13.jpg",
+      "commons_filename": "Queen of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AQueen_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Queen_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "a25fb0d27e4c327511c1024f220b8efa7888a15e",
+      "sha256": "26977bdaa1207dfcf3a4fe2c3fee80741baf778da7e31764088df8f160a6af0f",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "cups_king",
+      "local_filename": "c14.jpg",
+      "commons_filename": "King of Cups (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKing_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/King_of_Cups_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "06a0ddeb57db8822e4a420e79e856332b1923d91",
+      "sha256": "a8a4566a46f1e0facc539d8d3712c22b4f39d80a140c75b301a822ba1757a9a0",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_ace",
+      "local_filename": "s01.jpg",
+      "commons_filename": "One of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AOne_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/fd/One_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "e44b41a402885db9da23f8b20fde215f7ed971fb",
+      "sha256": "e55873c17e25a611ed19593cd77a20868df12714ba0a8fe2b21f5531fadc5a3e",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_two",
+      "local_filename": "s02.jpg",
+      "commons_filename": "Two of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATwo_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Two_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "d254dcdc94ff1bac87fa95fb8fa537e618500e7a",
+      "sha256": "9ec6e6523c5b4be505948210845b14949f3de19c4af16d98373e285d6e80dc0e",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_three",
+      "local_filename": "s03.jpg",
+      "commons_filename": "Three of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThree_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Three_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "b10f7146a78f621b41dd1fb5b02272527c99896c",
+      "sha256": "c10a9a54c59d2f0acc1401a844fe8ba9f811732b9d1e41795a954abd127ca1a0",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_four",
+      "local_filename": "s04.jpg",
+      "commons_filename": "Four of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFour_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Four_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "5ea58e1345ddbf1f04bb85446fdb85e3cdae3ccd",
+      "sha256": "5cac63c97d5e7009996a8dd05f00142afe45a6f71e68c6efa24c1a9b42bab392",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_five",
+      "local_filename": "s05.jpg",
+      "commons_filename": "Five of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFive_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Five_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "d4c21b6edcd733cfc9e59a21b539e4db3bc853e4",
+      "sha256": "ec3976c2da3df520f822c17f10b0da77764fcab33e2dbdba10ce7285017b7a4c",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_six",
+      "local_filename": "s06.jpg",
+      "commons_filename": "Six of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASix_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Six_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "ec732d6bc05f31b1ea8688560b74a04328b8bcc0",
+      "sha256": "ce0985269a6c77eae7deab49cd44519b7450d7bf066dd233c209ad551cf2b56c",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_seven",
+      "local_filename": "s07.jpg",
+      "commons_filename": "Seven of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASeven_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/04/Seven_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "e7d7ac7f034761c42a0c435a9e1df27ca2e9d9ab",
+      "sha256": "d9340fcc247911712334584ea67ea53254ee15444cd52fad38a55d54ec7e946a",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_eight",
+      "local_filename": "s08.jpg",
+      "commons_filename": "Eight of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AEight_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Eight_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "d88bd03d6e238df05a899b6862c1b7e2fcb62e5a",
+      "sha256": "e202d20e0fcf7aa3d21a8f143c24923dcb46447596043d32e9eb41dd0d7192d5",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_nine",
+      "local_filename": "s09.jpg",
+      "commons_filename": "Nine of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ANine_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Nine_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "c29de70245a00c5b2108291f8c8016794634b721",
+      "sha256": "3c96d0476f4132cb0269f8ae1ab33222f2502b23cf01a935d10652da1d99fec3",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_ten",
+      "local_filename": "s10.jpg",
+      "commons_filename": "Ten of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATen_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/6/62/Ten_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "6fa6bde4cb3b5cb685c7d01d63b5bde95cd4066f",
+      "sha256": "98f06214f284346c9732c189cd3465ced9a56b47058fed149411a99d363d2463",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_page",
+      "local_filename": "s11.jpg",
+      "commons_filename": "Page of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3APage_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Page_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "6a542934e67e05ad7a970d4736d0bba75685bfdf",
+      "sha256": "5be4de22d8c582629f2064cfa57813d9a9334fd5d3ec17c1ae1700e090e5603a",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_knight",
+      "local_filename": "s12.jpg",
+      "commons_filename": "Knight of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKnight_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Knight_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "5186399f2f6d50cc4f8abd6e852e2584247ba3c3",
+      "sha256": "49b5f5d1013f1860cadb771910fc5c54685c890e7393f1538bae95f40bf584ec",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_queen",
+      "local_filename": "s13.jpg",
+      "commons_filename": "Queen of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AQueen_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Queen_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "9f1e229312e7684650503f2c04935a7cb39c2ab2",
+      "sha256": "01c30f35336186642b67642122c42542cc555ff5ab780c24d18288632e0a1487",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "swords_king",
+      "local_filename": "s14.jpg",
+      "commons_filename": "King of Swords (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKing_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/85/King_of_Swords_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "f3805a53a864f4626e1003185c7e8fdbb4ce1d37",
+      "sha256": "3603e78e73daa483e9e3b436d5cbfe93388e23100643e73dc59f6393b49413d1",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_ace",
+      "local_filename": "p01.jpg",
+      "commons_filename": "One of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AOne_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/54/One_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "0e6cba957980b4d32259cc9f6b51072a68308dd0",
+      "sha256": "0a38f552f00804defb4dfebbabe28647b83b3de1ef1ba03958f6ba5d556ac1de",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_two",
+      "local_filename": "p02.jpg",
+      "commons_filename": "Two of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATwo_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/14/Two_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "d250b386ed7a9cfb588911299e42d0c8a8006090",
+      "sha256": "a49418452e33ecb6500c91626d26647c3767417577103cc604906daf57d0a51f",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_three",
+      "local_filename": "p03.jpg",
+      "commons_filename": "Three of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AThree_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Three_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "90fcedb4821b689d56f9a7e2aa2f920a25536530",
+      "sha256": "3360b8fe0e65774a83c10913f199612e23d2a3b958ae8ba6e99f30c0d063762d",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_four",
+      "local_filename": "p04.jpg",
+      "commons_filename": "Four of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFour_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Four_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "54f4328367d6f8df74e612dd86898354346229b5",
+      "sha256": "bb724a8cd8fedde71ead3899f52acb641986310f19d1a19d29c7f444c8144f01",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_five",
+      "local_filename": "p05.jpg",
+      "commons_filename": "Five of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AFive_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Five_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "a29b90787a455f1bb68f77e60bad8620481fe681",
+      "sha256": "85b39deb0fa3b50806b025136f30138f68f7ea69e853cc27f860763af33525d1",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_six",
+      "local_filename": "p06.jpg",
+      "commons_filename": "Six of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASix_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Six_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "b2ce0a07f2f6aeca13fbff45d0fb1c7e00d640ba",
+      "sha256": "30c76f848cf1f44b3322617e5c675f9db54534272e9bc9b63502f1e4a4820e75",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_seven",
+      "local_filename": "p07.jpg",
+      "commons_filename": "Seven of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ASeven_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Seven_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "2d96844f2ebbed5999d53f55e8c6b92a12669ce0",
+      "sha256": "7db5314ac71504fc30a82c893d3fd8a0af046faa6fd6eec6be50ad9c02efe4ec",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_eight",
+      "local_filename": "p08.jpg",
+      "commons_filename": "Eight of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AEight_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Eight_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "57790487b3e9b4cfd2d43e4d1eb127fb7527878a",
+      "sha256": "14e679b8bd714194262481bf0f8e73cf707046f79a26f2b73c5d5d2a211d9a35",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_nine",
+      "local_filename": "p09.jpg",
+      "commons_filename": "Nine of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ANine_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Nine_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "96b75a43fe945a2c51496779bdb74aa3bf2ea50d",
+      "sha256": "97fcb33b352ceb7368f88a74e53218420041d015018451bdc44012a808a6326b",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_ten",
+      "local_filename": "p10.jpg",
+      "commons_filename": "Ten of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3ATen_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Ten_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "e86548b4897e55537b5b67f9dba3880f37004b1d",
+      "sha256": "8df6a3a89805b8afcce697d6fc4b257950f8cc1bded5d8832e54c8d9f4ebe9c0",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_page",
+      "local_filename": "p11.jpg",
+      "commons_filename": "Page of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3APage_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/86/Page_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "4cb3e73610dd830966c860981202977c0508a996",
+      "sha256": "51f2ae0684d2be143e6b5ff203194fb1314c968d0b80d27854420b2bacf0ffbe",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_knight",
+      "local_filename": "p12.jpg",
+      "commons_filename": "Knight of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKnight_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Knight_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "bfeaee7365ecd1c21653c1cfab5cc1e8c2b378c6",
+      "sha256": "9292c50885e4711d238da0d07a490e94a2e388bdb2574822be3f41e83794c429",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_queen",
+      "local_filename": "p13.jpg",
+      "commons_filename": "Queen of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AQueen_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Queen_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "41158c473ef15e267bbfc6e1a39d02d7adf96256",
+      "sha256": "ad22ded7f21c6f1bd5ea645cc03c7995a610e5da09a198697ec433217c130567",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    },
+    {
+      "card_id": "pentacles_king",
+      "local_filename": "p14.jpg",
+      "commons_filename": "King of Pentacles (Rider-Waite Smith tarot deck).png",
+      "commons_page": "https://commons.wikimedia.org/wiki/File%3AKing_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/King_of_Pentacles_%28Rider-Waite_Smith_tarot_deck%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "source_sha1": "544f6bce1fe45425493f05a323528ea4e8650c2b",
+      "sha256": "997b45e238ab1d007c7a288284f5da8c2a4f4aa4e0db9b723752597889d6968d",
+      "source_mime": "image/png",
+      "source_dimensions": [
+        2100,
+        3600
+      ],
+      "local_dimensions": [
+        350,
+        600
+      ]
+    }
+  ]
+}

@@ -41,7 +41,19 @@ class Analytics:
         "readings",
         "error",
         "error_category",
+        "provider",
+        "model",
+        "attempts",
+        "retry_policy",
+        "repair_used",
+        "timeout_stage",
         "reason",
+        "reading_id",
+        "feedback",
+        "mode",
+        "followup_kind",
+        "duration_bucket",
+        "caption_variant",
     }
 
     def __init__(self, cfg: Config) -> None:

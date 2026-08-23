@@ -26,6 +26,15 @@ async def init_db(db_path: str) -> None:
     _session_factory = async_sessionmaker(_engine, expire_on_commit=False)
 
 
+async def close_db() -> None:
+    """Dispose the current async engine during application or test shutdown."""
+    global _engine, _session_factory
+    if _engine is not None:
+        await _engine.dispose()
+    _engine = None
+    _session_factory = None
+
+
 def get_session() -> AsyncSession:
     if _session_factory is None:
         raise RuntimeError("Database is not initialized; call init_db() first.")

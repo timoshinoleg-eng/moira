@@ -17,6 +17,7 @@ from ..i18n import t
 from ..keyboards import back_menu_kb, invite_menu_kb, main_menu_kb, paywall_kb, tariffs_kb
 from ..payments import PRODUCTS, parse_payload, payload_for
 from ..services.analytics import Analytics
+from .growth import invite_variant, referral_deeplink, telegram_share_url
 from .helpers import ensure_utc, get_or_create_user, redeemed_codes
 
 router = Router()
@@ -24,6 +25,15 @@ router = Router()
 INV_NAME = {"reading_1": "reading", "unlimited_7": "week", "unlimited_30": "month"}
 
 CANCEL_TOKENS = {"/start", "start", "меню", "menu"}
+
+
+def _revoke_unlimited_days(current: datetime | None, amount: int, now: datetime) -> datetime | None:
+    """Remove only the refunded duration from a stacked unlimited entitlement."""
+    until = ensure_utc(current)
+    if until is None or until <= now:
+        return None
+    remaining = until - timedelta(days=amount)
+    return remaining if remaining > now else None
 
 
 class PromoStates(StatesGroup):
@@ -41,16 +51,33 @@ async def cb_tariffs(callback: CallbackQuery, cfg: Config, analytics: Analytics)
 
 @router.callback_query(F.data == "invite")
 async def cb_invite(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
+    """Single active invite route with native share and stable attribution."""
     user = await get_or_create_user(callback.from_user, cfg)
     lang = user.language
-    me = await callback.bot.me()
-    bot_username = me.username or ""
-    link = f"https://t.me/{bot_username}?start=ref_{user.id}" if bot_username else f"ref_{user.id}"
-    await callback.message.answer(t(lang, "invite_text", link=link), reply_markup=invite_menu_kb(lang))
-    await analytics.track(user.id, "invite_viewed")
+    try:
+        me = await callback.bot.me()
+        variant = invite_variant(user.id)
+        link = referral_deeplink(me.username or "", user.id, variant)
+    except Exception:  # noqa: BLE001 - keep invite failure user-safe
+        await callback.answer(t(lang, "invite_link_unavailable"), show_alert=True)
+        return
+
+    share_copy = t(lang, "invite_share_copy")
+    share_url = telegram_share_url(share_copy, link)
+    await analytics.track(user.id, "invite_viewed", caption_variant=variant)
+    message = "\n\n".join(
+        (
+            t(lang, "invite_title"),
+            t(lang, "invite_body", reward=cfg.referral_reward),
+            f"<code>{link}</code>",
+        )
+    )
+    await callback.message.answer(
+        message,
+        reply_markup=invite_menu_kb(lang, share_url),
+        disable_web_page_preview=True,
+    )
     await callback.answer()
-
-
 @router.callback_query(F.data.startswith("pay:"))
 async def cb_pay(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
     product = PRODUCTS.get(callback.data.split(":", 1)[1])
@@ -191,7 +218,9 @@ async def on_refund(message: Message, cfg: Config, analytics: Analytics) -> None
                 if product.kind == "readings":
                     u.free_readings = max(0, u.free_readings - product.amount)
                 else:
-                    u.unlimited_until = None
+                    u.unlimited_until = _revoke_unlimited_days(
+                        u.unlimited_until, product.amount, datetime.now(timezone.utc)
+                    )
                 payment.status = "refunded"
                 session.add(payment)
         elif payment is not None:

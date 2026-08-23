@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import html
 import logging
 
@@ -8,19 +9,25 @@ from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import BufferedInputFile, CallbackQuery, Message
-from sqlalchemy import select, update
+from aiogram.types import BufferedInputFile, CallbackQuery, Message, User as TelegramUser
+from sqlalchemy import func, select, update
 
 from ..config import Config
 from ..db.database import get_session
 from ..db.models import Reading, User
 from ..i18n import t
-from ..keyboards import back_menu_kb, main_menu_kb, paywall_kb, reading_footer_kb
+from ..keyboards import (
+    feedback_reengagement_kb,
+    main_menu_kb,
+    paywall_kb,
+    question_input_kb,
+    reading_footer_kb,
+)
 from ..llm import interpret_reading
 from ..services.analytics import Analytics
 from ..tarot import SPREADS, draw
 from ..tarot.deck import cards_from_codes
-from ..tarot.fallback import compose_fallback_reading
+from ..tarot.fallback import compose_fallback_reading, compose_followup
 from ..visual.render import make_share_image, make_spread_image
 from ..voice.speaker import synthesize_reading_voice
 from .helpers import get_or_create_user, is_unlimited
@@ -29,6 +36,7 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 CANCEL_TOKENS = {"/start", "start", "меню", "menu", "-cancel"}
+SHARE_CAPTION_VARIANTS = ("a", "b")
 
 SAFETY_PATTERNS = [
     # medical
@@ -51,6 +59,23 @@ SAFETY_PATTERNS = [
 ]
 
 
+def share_caption_variant(user_id: int) -> str:
+    """Return a stable, balanced experiment assignment for one referrer."""
+    digest = hashlib.blake2s(str(user_id).encode("utf-8"), digest_size=1).digest()[0]
+    return SHARE_CAPTION_VARIANTS[digest % len(SHARE_CAPTION_VARIANTS)]
+
+
+def _share_caption_key(input_mode: str, variant: str) -> str:
+    prefix = "share_caption_voice" if input_mode == "voice" else "share_caption"
+    return f"{prefix}_{variant}"
+
+
+def _share_referral_link(bot_username: str, user_id: int, variant: str) -> str:
+    if not bot_username:
+        return ""
+    return f"https://t.me/{bot_username}?start=ref_{user_id}_{variant}"
+
+
 def _is_safety_refusal_required(question: str) -> bool:
     low = question.lower()
     return any(p in low for p in SAFETY_PATTERNS)
@@ -68,23 +93,57 @@ async def cb_spread(callback: CallbackQuery, state: FSMContext, cfg: Config, ana
         return
     user = await get_or_create_user(callback.from_user, cfg)
     await analytics.track(user.id, "spread_started", spread=spread_id)
-    await callback.message.answer(t(user.language, "ask_question"), reply_markup=back_menu_kb(user.language))
+    voice_enabled = bool(cfg.deepgram_stt_enabled and cfg.deepgram_api_key)
+    await callback.message.answer(
+        t(user.language, f"ask_question_{spread_id}"),
+        reply_markup=question_input_kb(user.language, spread_id, voice_enabled=voice_enabled),
+    )
     await state.set_state(ReadingStates.waiting_question)
     await state.update_data(spread_id=spread_id)
     await callback.answer()
 
 
-@router.message(ReadingStates.waiting_question)
+@router.message(ReadingStates.waiting_question, F.text)
 async def process_reading(message: Message, state: FSMContext, cfg: Config, analytics: Analytics) -> None:
     data = await state.get_data()
     await state.clear()
     spread_id = data.get("spread_id")
     if spread_id not in SPREADS:
         return
+    await run_reading(message, spread_id, (message.text or "").strip(), cfg, analytics)
 
+
+@router.message(ReadingStates.waiting_question)
+async def prompt_text_or_voice(message: Message, state: FSMContext, cfg: Config) -> None:
+    data = await state.get_data()
+    spread_id = data.get("spread_id")
+    if spread_id not in SPREADS:
+        await state.clear()
+        return
     user = await get_or_create_user(message.from_user, cfg)
+    voice_enabled = bool(cfg.deepgram_stt_enabled and cfg.deepgram_api_key)
+    await message.answer(
+        t(user.language, "question_text_or_voice" if voice_enabled else "question_text_only"),
+        reply_markup=question_input_kb(user.language, spread_id, voice_enabled=voice_enabled),
+    )
+
+
+async def run_reading(
+    message: Message,
+    spread_id: str,
+    question: str,
+    cfg: Config,
+    analytics: Analytics,
+    *,
+    input_mode: str = "text",
+    actor: TelegramUser | None = None,
+) -> None:
+    """Run the canonical reading path for typed and user-confirmed voice questions."""
+    if spread_id not in SPREADS:
+        return
+
+    user = await get_or_create_user(actor or message.from_user, cfg)
     lang = user.language
-    question = (message.text or "").strip()
 
     if question.lower() in CANCEL_TOKENS:
         await message.answer(t(lang, "menu_help"), reply_markup=main_menu_kb(lang))
@@ -109,6 +168,8 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
 
     drawn: list = []
     result = None
+    share_summary = ""
+    response_mode = "fallback"
     try:
         drawn = draw(spread_id)
         spread_title = SPREADS[spread_id]["title"][lang]
@@ -134,6 +195,7 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
             BufferedInputFile(photo_bytes, filename="spread.jpg"),
             caption="\n".join(caption_lines),
         )
+        await status_msg.edit_text(t(lang, "reading_interpreting"))
 
         result = await interpret_reading(
             cfg, lang, spread_title, question or None, drawn, user_id=user.id, spread_id=spread_id
@@ -157,8 +219,10 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
             text = "\n".join(parts)
             plain = ". ".join(plain_parts)
             voice_text = html.unescape(f"{result.headline}. {result.voice_summary}")
+            share_summary = result.share_summary
+            response_mode = "llm"
         else:
-            fallback = compose_fallback_reading(lang, spread_id, drawn)
+            fallback = compose_fallback_reading(lang, spread_id, drawn, question or None)
             parts = [f"<b>{html.escape(fallback['headline'])}</b>"]
             if fallback["opening"]:
                 parts.append(f"<i>{html.escape(fallback['opening'])}</i>")
@@ -169,10 +233,11 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
             if fallback["practical_focus"]:
                 parts.append(f"<i>{html.escape(fallback['practical_focus'])}</i>")
             parts.append(f"<i>✦ {html.escape(fallback['reflection_question'])}</i>")
-            text = "\n".join(parts)
-            plain = fallback["plain_text"]
             if not cfg.openrouter_api_key:
                 parts.append(html.escape(t(lang, "template_note")))
+            text = "\n".join(parts)
+            plain = fallback["plain_text"]
+            share_summary = fallback["share_summary"]
             await analytics.track(user.id, "llm_fallback_used", spread=spread_id)
             voice_text = html.unescape(fallback["voice_text"])
         await message.answer(text)
@@ -186,23 +251,49 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
         await analytics.track(user.id, "spread_failed", spread=spread_id, error=type(exc).__name__)
         return
 
-    audio = await synthesize_reading_voice(voice_text, lang)
-    if audio:
-        await _send_voice_or_audio(message, audio, lang)
-
     reading_id = 0
-    async with get_session() as session:
-        row = Reading(
-            user_id=user.id,
-            spread=spread_id,
-            cards_json=",".join(f"{d.card.id}{'R' if d.reversed else ''}" for d in drawn),
-            question=question[:500] if question and question != "-" else None,
-            interpretation=(plain)[:3900],
+    is_first_referred_reading = False
+    try:
+        async with get_session() as session:
+            previous_readings = await session.scalar(
+                select(func.count()).select_from(Reading).where(Reading.user_id == user.id)
+            )
+            row = Reading(
+                user_id=user.id,
+                spread=spread_id,
+                cards_json=",".join(f"{d.card.id}{'R' if d.reversed else ''}" for d in drawn),
+                question=question[:500] if question and question != "-" else None,
+                interpretation=(plain)[:3900],
+                share_summary=share_summary[:300] or None,
+                response_mode=response_mode,
+                input_mode=input_mode,
+            )
+            session.add(row)
+            await session.commit()
+            reading_id = row.id
+            is_first_referred_reading = bool(user.referred_by and previous_readings == 0)
+    except Exception as exc:  # noqa: BLE001
+        # The interpretation was delivered; a journal outage must not make an
+        # optional voice/share path fail or charge a second credit.
+        logger.exception("reading journal save failed for user %s: %s", user.id, exc)
+        await analytics.track(user.id, "reading_journal_failed", spread=spread_id, error=type(exc).__name__)
+
+    try:
+        audio = await synthesize_reading_voice(voice_text, lang)
+        if audio:
+            await _send_voice_or_audio(message, audio, lang)
+    except Exception as exc:  # noqa: BLE001
+        # Text and the saved reading are the primary flow; TTS is best-effort.
+        logger.warning("voice generation failed for user %s: %s", user.id, exc)
+        await analytics.track(user.id, "voice_failed", spread=spread_id, error=type(exc).__name__)
+    await analytics.track(user.id, "spread_completed", spread=spread_id, ai=bool(result), source=input_mode)
+    if is_first_referred_reading:
+        await analytics.track(
+            user.id,
+            "referral_first_reading",
+            caption_variant=user.referral_variant or "legacy",
+            source=input_mode,
         )
-        session.add(row)
-        await session.commit()
-        reading_id = row.id
-    await analytics.track(user.id, "spread_completed", spread=spread_id, ai=bool(result))
 
     footer_lines = []
     if reason == "unlimited":
@@ -215,7 +306,7 @@ async def process_reading(message: Message, state: FSMContext, cfg: Config, anal
 
     if reading_id:
         await message.answer(
-            t(lang, "reading_actions"), reply_markup=reading_footer_kb(lang, reading_id)
+            t(lang, "reading_actions"), reply_markup=reading_footer_kb(lang, reading_id, spread_id)
         )
 
 
@@ -246,17 +337,111 @@ async def cb_share(callback: CallbackQuery, cfg: Config, analytics: Analytics) -
         else:
             label = str(i + 1)
         cards_info.append({"label": label, "card": card, "reversed": rev, "name": card.name(lang)})
-    summary = (reading.interpretation or "").strip().replace("\n", " ")[:180]
+    # New readings persist a summary that is explicitly screened not to echo a
+    # private question. Older rows use a generic line instead of their raw
+    # interpretation, which may predate that guarantee.
+    summary = (reading.share_summary or t(lang, "share_summary_legacy")).strip().replace("\n", " ")[:180]
     me = await callback.bot.me()
     bot_username = me.username or ""
-    link = f"https://t.me/{bot_username}?start=ref_{user.id}" if bot_username else ""
+    caption_variant = share_caption_variant(user.id)
+    link = _share_referral_link(bot_username, user.id, caption_variant)
     photo = await asyncio.to_thread(make_share_image, spread_title, cards_info, summary, cfg.bot_display_name, lang)
+    caption_key = _share_caption_key(reading.input_mode, caption_variant)
     await callback.message.answer_photo(
         BufferedInputFile(photo, filename="share.jpg"),
-        caption=html.escape(t(lang, "share_caption", link=link)),
+        caption=html.escape(t(lang, caption_key, link=link)),
     )
-    await analytics.track(user.id, "share_created", spread=reading.spread)
+    await analytics.track(
+        user.id,
+        "share_created",
+        spread=reading.spread,
+        source=reading.input_mode,
+        caption_variant=caption_variant,
+    )
     await callback.answer()
+
+
+@router.callback_query(F.data.startswith("follow:"))
+async def cb_followup(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
+    """Continue a saved reading without drawing unrelated new cards."""
+    parts = callback.data.split(":")
+    if len(parts) != 3 or parts[2] not in {"hidden", "next", "deeper"}:
+        await callback.answer("?")
+        return
+    try:
+        reading_id = int(parts[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    lang = user.language
+    async with get_session() as session:
+        reading = await session.get(Reading, reading_id)
+    if reading is None or reading.user_id != user.id:
+        await callback.answer(t(lang, "history_empty"))
+        return
+
+    positions = SPREADS.get(reading.spread, {}).get("positions", [])
+    from ..tarot.spreads import DrawnCard
+
+    drawn = [
+        DrawnCard(position_id=positions[index][0], position_label=positions[index][1], card=card, reversed=reversed_)
+        for index, (card, reversed_) in enumerate(cards_from_codes(reading.cards_json.split(",")))
+        if index < len(positions)
+    ]
+    text = compose_followup(lang, reading.spread, drawn, reading.question, parts[2])
+    await callback.message.answer(text, reply_markup=reading_footer_kb(lang, reading.id, reading.spread))
+    await analytics.track(
+        user.id,
+        "reading_followup",
+        reading_id=reading.id,
+        spread=reading.spread,
+        mode=reading.response_mode or "legacy",
+        followup_kind=parts[2],
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("feedback:"))
+async def cb_feedback(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
+    """Store small, privacy-safe product feedback in the existing event stream."""
+    parts = callback.data.split(":")
+    if len(parts) != 3 or parts[2] not in {"yes", "no"}:
+        await callback.answer("?")
+        return
+    try:
+        reading_id = int(parts[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    lang = user.language
+    async with get_session() as session:
+        reading = await session.get(Reading, reading_id)
+    if reading is None or reading.user_id != user.id:
+        await callback.answer("?")
+        return
+    await analytics.track(
+        user.id,
+        "reading_feedback",
+        reading_id=reading.id,
+        feedback="positive" if parts[2] == "yes" else "negative",
+        spread=reading.spread,
+        mode=reading.response_mode or "legacy",
+    )
+    message_key = "feedback_next_positive" if parts[2] == "yes" else "feedback_next_negative"
+    await callback.message.answer(
+        t(lang, message_key),
+        reply_markup=feedback_reengagement_kb(lang, reading.id, reading.spread),
+    )
+    await analytics.track(
+        user.id,
+        "feedback_reengagement_shown",
+        reading_id=reading.id,
+        feedback="positive" if parts[2] == "yes" else "negative",
+        spread=reading.spread,
+    )
+    await callback.answer(t(lang, "feedback_thanks"))
 
 
 async def _send_voice_or_audio(message: Message, audio: bytes, lang: str) -> None:

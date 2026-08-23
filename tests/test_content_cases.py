@@ -74,7 +74,7 @@ def test_all_cases_have_expected_structure() -> None:
 @pytest.mark.parametrize("case", CASES, ids=lambda c: c["id"])
 def test_content_case(case: dict) -> None:
     drawn = _build_drawn(case["spread"], case["lang"], case["cards"])
-    result = compose_fallback_reading(case["lang"], case["spread"], drawn)
+    result = compose_fallback_reading(case["lang"], case["spread"], drawn, case["question"])
     exp = case["expect"]
     text = _full_text(result)
     low = text.lower()
@@ -101,7 +101,7 @@ def test_content_case(case: dict) -> None:
                       card=d.card, reversed=not d.reversed)
             for d in drawn
         ]
-        flipped_result = compose_fallback_reading(case["lang"], case["spread"], flipped)
+        flipped_result = compose_fallback_reading(case["lang"], case["spread"], flipped, case["question"])
         assert flipped_result["card_texts"] != result["card_texts"], (
             f"{case['id']}: reversal does not change the reading"
         )

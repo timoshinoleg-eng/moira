@@ -1,5 +1,10 @@
 # Moira — ИИ-оракул таро (Telegram-бот)
 
+> **Статус: v1.0.0-rc.1** — release candidate. 175 тестов зелёные, immutable
+> quality-eval прогоняются против зафиксированных базлайнов. Прод-процедуры:
+> [docs/PRODUCTION_RUNBOOK.md](docs/PRODUCTION_RUNBOOK.md) (деплой, бэкапы,
+> обновление, откат) и [docs/BETA_RUNBOOK.md](docs/BETA_RUNBOOK.md).
+
 Двуязычный (RU/EN) Telegram-бот: таро-расклады с ИИ-трактовками, картинки карт,
 голосовые предсказания, личный алтарь с картой дня и лунным календарём,
 тест «Мой Аркан». Монетизация: Telegram Stars + промокоды.
@@ -25,16 +30,39 @@
   события, usage-записи и профиль. Payment-ledger остаётся для аудита.
 - 🔒 **Приватность**: Sentry/PostHog не получают вопросы, трактовки, имена,
   usernames, даты рождения и Telegram ID в открытом виде.
+- 📖 **Дневник раскладов**: открывает сохранённый вопрос, карты и трактовку;
+  из записи доступны избранное, безопасный share, контекстное продолжение и
+  feedback 👍/👎.
 
 ## Реализовано, но экспериментально
 
 - 🪞 **Зеркало недели**: воскресное резюме по частым картам за неделю.
   Работает, но качество LLM-резюме зависит от модели.
-- 🎤 **Голос**: edge-tts. Если пользователь отключил voice-notes в Telegram,
-  бот пробует отправить обычный audio-файл, затем текстовое уведомление.
+- 🎤 **Голос**: edge-tts озвучивает краткий результат. Опциональный Deepgram
+  voice-to-question flow принимает короткое голосовое, показывает редактируемый
+  текст и запускает тот же расклад только после подтверждения пользователя. Для
+  включения нужны `DEEPGRAM_API_KEY` и `DEEPGRAM_STT_ENABLED=true`; rollout и
+  pilot gates — в `docs/DEEPGRAM_VOICE_POC.md`.
 - 🌟 **Реферальная программа**: ссылка `https://t.me/<bot>?start=ref_<id>`,
   награда за первый платёж приглашённого. Проверка подписки на канал пока не
   реализована.
+
+## Growth-pilot: share → referral → first reading
+
+Каждая share-карточка получает стабильный вариант caption A или B и передаёт
+вариант в referral deep link. События хранят только псевдонимный идентификатор,
+вариант и этап воронки — без вопроса, имени или Telegram ID. После feedback
+бот сразу предлагает два контекстных follow-up действия, поэтому пользователь
+может продолжить расклад одним нажатием.
+
+После запуска invite-only пилота собери первые 20 attributed referral signups:
+
+```powershell
+.venv\Scripts\python.exe scripts\growth_pilot_report.py --min-signups 20
+```
+
+Сравни A и B сначала по `signup_per_share`, затем по `reading_per_signup`.
+Не меняй вариант во время сбора — иначе воронка станет несопоставимой.
 
 ## Известные ограничения
 
@@ -81,7 +109,9 @@
 2. Скопируй `.env.example` → `.env`, вставь `BOT_TOKEN` и `ADMIN_IDS`.
 3. Установи зависимости (один раз):
    ```powershell
-   .venv\Scripts\python.exe -m pip install -r requirements.txt
+   uv sync                    # из pyproject.toml + uv.lock (рекомендуется)
+   # или классически:
+   .venv\Scripts\python.exe -m pip install -r requirements-dev.txt
    ```
 4. Накати миграции:
    ```powershell
@@ -114,7 +144,7 @@ python -m bot.main
 .venv\Scripts\python.exe -m alembic check
 ```
 
-Текущая версия: `0002_growth`.
+Текущая версия: `0008_push_delivery_foundation`.
 
 Перед любыми миграциями на production:
 
@@ -128,8 +158,12 @@ cp moira.db moira.db.$(Get-Date -Format yyyyMMdd-HHmmss).bak
 OPENROUTER_API_KEY=sk-or-...
 # или любой OpenAI-compatible endpoint:
 LLM_BASE_URL=https://api.aigate.shop/v1
-LLM_MODEL=deepseek/deepseek-chat
+LLM_MODEL=deepseek/deepseek-v4-flash
 ```
+
+Для нативного API DeepSeek используй `LLM_BASE_URL=https://api.deepseek.com` и
+`LLM_MODEL=deepseek-v4-flash` (без префикса провайдера). Для шлюзов с каталогом
+моделей модель остаётся `deepseek/deepseek-v4-flash`.
 
 Без ключа бот работает на встроенных трактовках карт (режим MVP).
 
@@ -153,15 +187,18 @@ LLM_MODEL=deepseek/deepseek-chat
 
 ## Тесты
 
+Полный прогон (без сети, все внешние вызовы замокованы):
+
 ```powershell
-.venv\Scripts\python.exe -m compileall bot
-.venv\Scripts\python.exe tests/smoke_test.py
-.venv\Scripts\python.exe tests/test_patch1_runtime.py
-.venv\Scripts\python.exe tests/test_patch2_payments.py
-.venv\Scripts\python.exe tests/test_patch3_llm.py
-.venv\Scripts\python.exe tests/test_patch4_critical.py
-.venv\Scripts\python.exe tests/test_patch5_i18n_quiz.py
-.venv\Scripts\python.exe tests/test_patch6_background.py
+.venv\Scripts\python.exe -m pytest -q
+```
+
+Выборочные:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests/test_patch2_payments.py -q   # платежи
+.venv\Scripts\python.exe -m pytest tests/test_cards_78.py -q          # 78 карт
+.venv\Scripts\python.exe tests/smoke_test.py                           # smokе
 ```
 
 ## Privacy и безопасность
@@ -175,4 +212,12 @@ LLM_MODEL=deepseek/deepseek-chat
 ## Лицензия и карты
 
 - Код проекта — собственная разработка.
-- Изображения карт — RWS public domain (`assets/cards/`).
+- Изображения карт — полный RWS public-domain set из Wikimedia Commons,
+  78/78 tracked в assets/cards/. Локальные и исходные хэши:
+  [assets/cards/PROVENANCE.md](assets/cards/PROVENANCE.md).
+
+## Runbooks
+
+- Invite-only beta: [docs/BETA_RUNBOOK.md](docs/BETA_RUNBOOK.md)
+- Single-instance production: [docs/PRODUCTION_RUNBOOK.md](docs/PRODUCTION_RUNBOOK.md)
+- Product decisions informed by Sibyl research: [docs/SIBYL_PRODUCT_COMPARISON.md](docs/SIBYL_PRODUCT_COMPARISON.md)

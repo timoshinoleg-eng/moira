@@ -367,9 +367,9 @@ async def _render_history(message: Message, user: User, edit: bool = False) -> N
         star = "⭐ " if r.id in faved else ""
         dtxt = (ensure_utc(r.created_at) or datetime.now(timezone.utc)).strftime("%d.%m")
         lines.append(f"{star}<b>{dtxt}</b> — {html.escape(title)}\n   {html.escape(', '.join(names))}")
-        ids_labels.append((r.id, f"{dtxt} {title}"[:30], 0))
+        ids_labels.append((r.id, f"{star}{dtxt} {title}"[:46]))
     text = "\n".join(lines)
-    kb = history_kb(lang, faved, ids_labels)
+    kb = history_kb(lang, ids_labels)
     if edit:
         await message.edit_text(text, reply_markup=kb)
     else:
@@ -384,6 +384,61 @@ async def cb_history(callback: CallbackQuery, cfg: Config, analytics: Analytics)
     await callback.answer()
 
 
+@router.callback_query(F.data.startswith("history:open:"))
+async def cb_history_open(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
+    try:
+        reading_id = int(callback.data.rsplit(":", 1)[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    lang = user.language
+    async with get_session() as session:
+        reading = await session.get(Reading, reading_id)
+        faved = bool(
+            await session.scalar(
+                select(ReadingFavorite.id).where(
+                    ReadingFavorite.user_id == user.id,
+                    ReadingFavorite.reading_id == reading_id,
+                )
+            )
+        )
+    if reading is None or reading.user_id != user.id:
+        await callback.answer(t(lang, "history_empty"))
+        return
+    title = SPREADS[reading.spread]["title"][lang] if reading.spread in SPREADS else reading.spread
+    positions = SPREADS.get(reading.spread, {}).get("positions", [])
+    card_lines = []
+    for index, (card, reversed_) in enumerate(cards_from_codes(reading.cards_json.split(","))):
+        label = positions[index][1].get(lang, positions[index][1]["ru"]) if index < len(positions) else str(index + 1)
+        card_lines.append(
+            f"• <i>{html.escape(label)}</i>: <b>{html.escape(card.name(lang))}</b>"
+            + (t(lang, "rev_mark") if reversed_ else "")
+        )
+    question = reading.question or t(lang, "history_general_reading")
+    interpretation = (reading.interpretation or t(lang, "history_interpretation_unavailable")).strip()
+    header_text = "\n".join(
+        [
+            f"<b>{html.escape(title)}</b>",
+            f"<i>{html.escape(t(lang, 'history_question', question=question))}</i>",
+            f"<b>{t(lang, 'history_cards')}</b>",
+            *card_lines,
+        ]
+    )
+    from ..keyboards import reading_footer_kb
+
+    # A reading can be 3,900 characters. Send its metadata separately so a
+    # saved question plus three cards never pushes one Telegram message past
+    # the 4,096-character limit.
+    await callback.message.answer(header_text)
+    await callback.message.answer(
+        f"<b>{t(lang, 'spread_interpretation_header')}</b>\n{html.escape(interpretation)}",
+        reply_markup=reading_footer_kb(lang, reading.id, reading.spread, faved=faved),
+    )
+    await analytics.track(user.id, "reading_reopened", reading_id=reading.id, spread=reading.spread)
+    await callback.answer()
+
+
 @router.callback_query(F.data.startswith("fav:"))
 async def cb_fav(callback: CallbackQuery, cfg: Config) -> None:
     user = await get_or_create_user(callback.from_user, cfg)
@@ -394,30 +449,25 @@ async def cb_fav(callback: CallbackQuery, cfg: Config) -> None:
     except (ValueError, IndexError):
         await callback.answer("?")
         return
-    from_history = len(parts) > 2 and parts[2] == "h"
     async with get_session() as session:
         reading = await session.get(Reading, reading_id)
     if reading is None or reading.user_id != user.id:
         await callback.answer("?")
         return
     now_faved = await _toggle_favorite(user.id, reading_id)
-    if from_history:
-        await _render_history(callback.message, user, edit=True)
-        await callback.answer(t(lang, "fav_added") if now_faved else t(lang, "fav_removed"))
-        return
     try:
         await callback.message.edit_reply_markup(
-            reply_markup=(await _footer_kb_after_fav(lang, reading_id, now_faved))
+            reply_markup=(await _footer_kb_after_fav(lang, reading_id, reading.spread, now_faved))
         )
     except Exception:  # noqa: BLE001
         pass
     await callback.answer(t(lang, "fav_added") if now_faved else t(lang, "fav_removed"))
 
 
-async def _footer_kb_after_fav(lang: str, reading_id: int, faved: bool):
+async def _footer_kb_after_fav(lang: str, reading_id: int, spread_id: str, faved: bool):
     from ..keyboards import reading_footer_kb
 
-    return reading_footer_kb(lang, reading_id, faved=faved)
+    return reading_footer_kb(lang, reading_id, spread_id, faved=faved)
 
 
 def _top_cards_of_week(readings: list[Reading], lang: str, top_n: int = 3) -> list[str]:

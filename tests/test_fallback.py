@@ -86,6 +86,31 @@ def test_fallback_pattern_detection() -> None:
     assert isinstance(pattern_en, str)
 
 
+def test_question_changes_context_without_leaking_raw_question_to_share() -> None:
+    drawn = draw("situation")
+    work = compose_fallback_reading(
+        "en", "situation", drawn, "What is the next helpful step in my career project?"
+    )
+    love = compose_fallback_reading(
+        "en", "situation", drawn, "How can I communicate more clearly in my relationship?"
+    )
+    assert work["synthesis"] != love["synthesis"]
+    assert "work and self-realisation" in work["synthesis"]
+    assert "relationship dynamics" in love["synthesis"]
+    assert "career project" not in work["share_summary"].lower()
+    assert "communicate more clearly" not in love["share_summary"].lower()
+
+
+def test_followup_reuses_saved_cards_and_orientation() -> None:
+    from bot.tarot.fallback import compose_followup
+
+    drawn = draw("choice")
+    text = compose_followup("ru", "choice", drawn, "Какой путь выбрать?", "next")
+    assert drawn[-1].card.name_ru in text
+    assert ("перевёрнутая" if drawn[-1].reversed else "прямая") in text
+    assert "Следующий шаг" in text
+
+
 def run_all() -> None:
     tests = [
         test_fallback_has_all_fields,

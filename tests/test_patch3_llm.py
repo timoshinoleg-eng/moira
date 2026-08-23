@@ -8,10 +8,11 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-os.environ.setdefault("DB_PATH", os.path.join(tempfile.gettempdir(), "moira_patch3.db"))
-db_path = os.environ["DB_PATH"]
-if os.path.exists(db_path):
-    os.remove(db_path)
+db_path = os.path.join(tempfile.gettempdir(), "moira_patch3.db")
+if __name__ == "__main__":
+    os.environ["DB_PATH"] = db_path
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
 from bot.config import Config, load_config
 from bot.db.database import init_db
@@ -78,6 +79,13 @@ async def _test_no_api_key_fallback() -> None:
         posthog_host=cfg.posthog_host,
         sentry_dsn=cfg.sentry_dsn,
         referral_reward=cfg.referral_reward,
+        deepgram_api_key=cfg.deepgram_api_key,
+        deepgram_stt_enabled=cfg.deepgram_stt_enabled,
+        deepgram_stt_model=cfg.deepgram_stt_model,
+        deepgram_stt_endpoint=cfg.deepgram_stt_endpoint,
+        deepgram_stt_max_duration_sec=cfg.deepgram_stt_max_duration_sec,
+        deepgram_stt_max_bytes=cfg.deepgram_stt_max_bytes,
+        deepgram_stt_timeout_sec=cfg.deepgram_stt_timeout_sec,
     )
     drawn = draw("situation")
     result = await interpret_reading(

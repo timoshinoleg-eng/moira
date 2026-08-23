@@ -9,14 +9,19 @@ __pycache__/
 *.sqlite3
 .cache/
 .pytest_cache/
-assets/cards/
 bot.log
 bot.pid
 .bot.lock
+logs/
 chat-export-*.json
 *_prompt_dump.txt
 moira_prompt_dump.txt
 artifacts/
+assets/generated_visuals/
+backups/
+audit_moira_*/
+_moira_*.ps1
+_moira_*.py
 
 # Work archives and extracts
 архивы и доработки/
@@ -35,3 +40,12 @@ run.bat
 run.ps1
 agent_core_tests/
 .agent_state/
+
+# Runtime lock and local-only analysis artifacts
+.bot.runtime.lock
+.moira-video-analysis/
+Манус Мойра/
+Moira.png
+
+# Owner-private review material (never publish)
+docs/*PRIVATE*.json

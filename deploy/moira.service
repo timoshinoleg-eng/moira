@@ -1,0 +1,20 @@
+[Unit]
+Description=Moira Telegram tarot bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=moira
+Group=moira
+WorkingDirectory=/opt/moira/app
+EnvironmentFile=/etc/moira/moira.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/moira/app/.venv/bin/python -m bot.main
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

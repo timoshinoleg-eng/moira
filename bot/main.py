@@ -9,13 +9,15 @@ from datetime import datetime, timezone
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.exceptions import TelegramAPIError
 from aiogram.types import BotCommand
 from sqlalchemy import or_, select
 
 from .config import Config, load_config
-from .db import User, init_db
+from .db import User, close_db, init_db
+
 from .db.database import get_session
-from .handlers import admin, features, payment, reading, start
+from .handlers import admin, features, payment, reading, start, voice
 from .handlers.features import send_daily_push, send_weekly_mirror
 from .services.analytics import Analytics
 
@@ -27,7 +29,10 @@ _lock_handle = None
 def _acquire_single_instance_lock() -> bool:
     """Return True if this process owns the lock, False if another instance runs."""
     global _lock_handle
-    lock_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".bot.lock")
+    # Legacy .bot.lock can remain unreleasable on Windows after a forced process termination.
+    # A versioned runtime lock lets the current release recover while retaining an exclusive guard.
+    lock_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".bot.runtime.lock")
+
     try:
         _lock_handle = open(lock_path, "w")
         if sys.platform == "win32":
@@ -42,6 +47,9 @@ def _acquire_single_instance_lock() -> bool:
         _lock_handle.flush()
         return True
     except OSError:
+        if _lock_handle is not None:
+            _lock_handle.close()
+            _lock_handle = None
         return False
 
 PUSH_HOUR_UTC = 6  # ~09:00 MSK
@@ -185,15 +193,27 @@ async def main() -> None:
     dp["cfg"] = cfg
     dp["analytics"] = analytics
 
-    dp.include_routers(start.router, reading.router, payment.router, admin.router, features.router)
+    dp.include_routers(start.router, voice.router, reading.router, payment.router, admin.router, features.router)
 
-    await set_commands(bot)
-    await bot.delete_webhook(drop_pending_updates=True)
+    try:
+        await set_commands(bot)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Telegram command registration skipped: %s", exc)
+    try:
+        await bot.delete_webhook(drop_pending_updates=True)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Telegram webhook cleanup skipped: %s", exc)
     logger.info("Starting polling as %s…", cfg.bot_display_name)
 
     push_task = asyncio.create_task(daily_push_loop(bot, cfg, analytics))
     try:
-        await dp.start_polling(bot)
+        while True:
+            try:
+                await dp.start_polling(bot)
+                break
+            except TelegramAPIError as exc:
+                logger.warning("Telegram polling stopped; retrying in 10s: %s", exc)
+                await asyncio.sleep(10)
     finally:
         push_task.cancel()
         analytics.shutdown()
@@ -204,6 +224,7 @@ async def main() -> None:
         except Exception:  # noqa: BLE001
             pass
         await bot.session.close()
+        await close_db()
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ import pathlib
 import random
 import re
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 from . import tokens as T
 from .assets import card_image_path
@@ -88,7 +88,47 @@ def _background(w: int, h: int, seed: int | None = None) -> Image.Image:
     return Image.alpha_composite(base.convert("RGBA"), overlay).convert("RGB")
 
 
+VISUAL_PACK_DIR = pathlib.Path(__file__).resolve().parent.parent.parent / "assets" / "generated_visuals" / "2026-08-17"
+
+
+def _asset_background(name: str, w: int, h: int, seed: int | None = None) -> Image.Image:
+    """Use a generated visual plate when present; preserve deterministic fallback."""
+    path = VISUAL_PACK_DIR / name
+    if path.exists():
+        try:
+            source = Image.open(path).convert("RGB")
+            return ImageOps.fit(source, (w, h), method=Image.Resampling.LANCZOS, centering=(0.5, 0.48))
+        except (OSError, ValueError):
+            pass
+    return _background(w, h, seed=seed)
+
+
+def _paste_overlay(img: Image.Image, name: str, max_w: int, max_h: int, center: tuple[int, int]) -> None:
+    """Paste a transparent overlay if the optional visual pack is available."""
+    path = VISUAL_PACK_DIR / name
+    if not path.exists():
+        return
+    try:
+        overlay = Image.open(path).convert("RGBA")
+        scale = min(max_w / overlay.width, max_h / overlay.height, 1.0)
+        size = (max(1, int(overlay.width * scale)), max(1, int(overlay.height * scale)))
+        overlay = overlay.resize(size, Image.Resampling.LANCZOS)
+        x = int(center[0] - size[0] / 2)
+        y = int(center[1] - size[1] / 2)
+        img.paste(overlay, (x, y), overlay)
+    except (OSError, ValueError):
+        return
+
+
+def _shade_region(img: Image.Image, box: tuple[int, int, int, int]) -> None:
+    """Add a translucent local shade to protect text over atmospheric plates."""
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(overlay).rectangle(box, fill=T.READABILITY_SHADE)
+    img.paste(Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB"))
+
+
 def _center_x(draw: ImageDraw.ImageDraw, w: int, text: str, font) -> int:
+
     x0, _, x1, _ = draw.textbbox((0, 0), text, font=font)
     return (w - (x1 - x0)) // 2
 
@@ -147,7 +187,19 @@ def _place_card(img: Image.Image, draw: ImageDraw.ImageDraw, card, x: int, y: in
         if reversed_:
             card_img = card_img.rotate(180)
         _add_glow(img, (x, y, x + w, y + h))
-        img.paste(_fit(card_img, w, h), (x, y))
+        matte = T.CARD_MATTE_PADDING
+        draw.rounded_rectangle(
+            [x - matte, y - matte, x + w + matte, y + h + matte],
+            radius=T.CARD_MATTE_RADIUS, fill=T.CARD_MATTE_FILL,
+            outline=T.CARD_MATTE_OUTLINE, width=T.CARD_MATTE_WIDTH,
+        )
+        inset = T.CARD_INSET
+        img.paste(_fit(card_img, w - inset * 2, h - inset * 2), (x + inset, y + inset))
+        outline = T.CARD_FRAME_REVERSED_OUTLINE if reversed_ else T.CARD_FRAME_OUTLINE
+        draw.rounded_rectangle(
+            [x, y, x + w, y + h], radius=T.CARD_FRAME_RADIUS,
+            outline=outline, width=T.CARD_FRAME_WIDTH,
+        )
     else:
         draw.rounded_rectangle(
             [x, y, x + w, y + h], radius=T.PLACEHOLDER_RADIUS,
@@ -162,8 +214,11 @@ def make_spread_image(
 ) -> bytes:
     """Three-card reading photo. cards_info: [{"label", "card", "reversed", "name"}]."""
     W, H = T.CANVAS_SPREAD
-    img = _background(W, H, seed=len(spread_title))
+    img = _asset_background("moira_altar_portrait.jpg", W, H, seed=len(spread_title))
+    _shade_region(img, T.SPREAD_TOP_SHADE)
     draw = ImageDraw.Draw(img)
+    _paste_overlay(img, "moira_sigil_clean.png", 150, 150, (W // 2, H - 150))
+
     reversed_note = T.REVERSED_NOTE.get(lang, "reversed")
 
     title_font = _font(T.FONT_SPREAD_TITLE, bold=True)
@@ -207,7 +262,8 @@ def make_share_image(
 ) -> bytes:
     """Square share card: title, drawn cards, short synthesis, footer brand."""
     W, H = T.CANVAS_SHARE
-    img = _background(W, H, seed=len(spread_title) * 3 + 1)
+    img = _asset_background("moira_share_background.jpg", W, H, seed=len(spread_title) * 3 + 1)
+    _paste_overlay(img, "moira_thread_overlay_vector.png", 920, 420, (W // 2, 430))
     draw = ImageDraw.Draw(img)
 
     title_font = _font(T.FONT_SHARE_TITLE, bold=True)
@@ -245,8 +301,10 @@ def make_share_image(
             draw.text((_center_x(draw, W, line, sum_font), y), line, font=sum_font, fill=T.TEXT_SECONDARY)
             y += T.SHARE_SUMMARY_STEP
 
+    _paste_overlay(img, "moira_sigil_clean.png", 90, 90, (W // 2, 930))
     foot_font = _font(T.FONT_SHARE_FOOTER)
     foot = _sanitize_text(footer + " \u2726 TAROT")
+
     draw.text((_center_x(draw, W, foot, foot_font), H + T.SHARE_FOOTER_OFFSET_Y), foot, font=foot_font, fill=T.TEXT_FOOTER)
 
     buf = io.BytesIO()
@@ -259,7 +317,8 @@ def make_single_image(
 ) -> bytes:
     """Single card banner: altar, card of the day or quiz result."""
     W, H = T.CANVAS_SINGLE
-    img = _background(W, H, seed=len(header) * 7 + 3)
+    img = _asset_background("moira_altar_portrait.jpg", W, H, seed=len(header) * 7 + 3)
+    _shade_region(img, T.SINGLE_TOP_SHADE)
     draw = ImageDraw.Draw(img)
 
     head_font = _font(T.FONT_SINGLE_HEADER, bold=True)

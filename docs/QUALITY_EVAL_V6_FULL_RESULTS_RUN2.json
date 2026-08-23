@@ -1,0 +1,743 @@
+{
+  "prompt_version": "v6-mystical-clear",
+  "fixture_cases": 24,
+  "structured_cases": 23,
+  "fallback_or_none_cases": 1,
+  "hard_fail_cases": [],
+  "check_failures": {
+    "card_count": 0,
+    "all_cards_have_core_and_context": 0,
+    "has_synthesis": 0,
+    "has_practical_focus": 0,
+    "has_reflection_question": 1,
+    "share_safe_no_question_echo": 0,
+    "natural_output_length": 0,
+    "mystical_imagery_present": 1,
+    "no_gibberish_markers": 0
+  },
+  "results": [
+    {
+      "case_id": "ru-situation-decision",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "decision",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": false,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 46,
+        "opening": 161,
+        "synthesis": 598,
+        "practical_focus": 215,
+        "reflection_question": 106,
+        "voice_summary": 366,
+        "share_summary": 135
+      },
+      "text_hash": "14bd09d51ca4a9e5"
+    },
+    {
+      "case_id": "ru-situation-relationship",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "relationship",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 52,
+        "opening": 149,
+        "synthesis": 501,
+        "practical_focus": 193,
+        "reflection_question": 130,
+        "voice_summary": 408,
+        "share_summary": 147
+      },
+      "text_hash": "7ae0ace633225173"
+    },
+    {
+      "case_id": "ru-situation-work",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "work",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": false,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 41,
+        "opening": 119,
+        "synthesis": 594,
+        "practical_focus": 216,
+        "reflection_question": 171,
+        "voice_summary": 417,
+        "share_summary": 177
+      },
+      "text_hash": "633ab630d8459bff"
+    },
+    {
+      "case_id": "ru-situation-inner_change",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "inner_change",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 42,
+        "opening": 148,
+        "synthesis": 590,
+        "practical_focus": 196,
+        "reflection_question": 135,
+        "voice_summary": 394,
+        "share_summary": 128
+      },
+      "text_hash": "70f058577a9b5dad"
+    },
+    {
+      "case_id": "ru-love-decision",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "decision",
+      "status": "fallback_or_none",
+      "hard_fail": false,
+      "checks": {}
+    },
+    {
+      "case_id": "ru-love-relationship",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "relationship",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 64,
+        "opening": 178,
+        "synthesis": 593,
+        "practical_focus": 206,
+        "reflection_question": 136,
+        "voice_summary": 413,
+        "share_summary": 136
+      },
+      "text_hash": "3d0036bf8fb302ac"
+    },
+    {
+      "case_id": "ru-love-work",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "work",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 56,
+        "opening": 153,
+        "synthesis": 594,
+        "practical_focus": 184,
+        "reflection_question": 127,
+        "voice_summary": 409,
+        "share_summary": 145
+      },
+      "text_hash": "2447d0ad533a23f5"
+    },
+    {
+      "case_id": "ru-love-inner_change",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "inner_change",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 17,
+        "opening": 168,
+        "synthesis": 567,
+        "practical_focus": 109,
+        "reflection_question": 98,
+        "voice_summary": 334,
+        "share_summary": 217
+      },
+      "text_hash": "221a9c369a2fcef7"
+    },
+    {
+      "case_id": "ru-choice-decision",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "decision",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 30,
+        "opening": 155,
+        "synthesis": 407,
+        "practical_focus": 144,
+        "reflection_question": 93,
+        "voice_summary": 418,
+        "share_summary": 112
+      },
+      "text_hash": "11454a21786d3d4c"
+    },
+    {
+      "case_id": "ru-choice-relationship",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "relationship",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 35,
+        "opening": 131,
+        "synthesis": 527,
+        "practical_focus": 172,
+        "reflection_question": 134,
+        "voice_summary": 416,
+        "share_summary": 161
+      },
+      "text_hash": "0a935f5579c26ab2"
+    },
+    {
+      "case_id": "ru-choice-work",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "work",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 51,
+        "opening": 172,
+        "synthesis": 591,
+        "practical_focus": 200,
+        "reflection_question": 112,
+        "voice_summary": 416,
+        "share_summary": 139
+      },
+      "text_hash": "f9077a6fa283286c"
+    },
+    {
+      "case_id": "ru-choice-inner_change",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "inner_change",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 26,
+        "opening": 161,
+        "synthesis": 540,
+        "practical_focus": 150,
+        "reflection_question": 136,
+        "voice_summary": 289,
+        "share_summary": 112
+      },
+      "text_hash": "2dc77d82da0b26ce"
+    },
+    {
+      "case_id": "en-situation-decision",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "decision",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 53,
+        "opening": 178,
+        "synthesis": 367,
+        "practical_focus": 153,
+        "reflection_question": 145,
+        "voice_summary": 215,
+        "share_summary": 62
+      },
+      "text_hash": "6302402afd0e846e"
+    },
+    {
+      "case_id": "en-situation-relationship",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "relationship",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 49,
+        "opening": 138,
+        "synthesis": 463,
+        "practical_focus": 217,
+        "reflection_question": 121,
+        "voice_summary": 415,
+        "share_summary": 106
+      },
+      "text_hash": "75572cfa15715bf9"
+    },
+    {
+      "case_id": "en-situation-work",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "work",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 34,
+        "opening": 178,
+        "synthesis": 588,
+        "practical_focus": 210,
+        "reflection_question": 127,
+        "voice_summary": 264,
+        "share_summary": 214
+      },
+      "text_hash": "a7498217d1bd4434"
+    },
+    {
+      "case_id": "en-situation-inner_change",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "inner_change",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 25,
+        "opening": 176,
+        "synthesis": 592,
+        "practical_focus": 172,
+        "reflection_question": 126,
+        "voice_summary": 218,
+        "share_summary": 209
+      },
+      "text_hash": "b9db9f0b03cd09df"
+    },
+    {
+      "case_id": "en-love-decision",
+      "lang": "en",
+      "spread": "love",
+      "profile": "decision",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 25,
+        "opening": 130,
+        "synthesis": 590,
+        "practical_focus": 136,
+        "reflection_question": 112,
+        "voice_summary": 313,
+        "share_summary": 214
+      },
+      "text_hash": "f3fb66a5a8cea313"
+    },
+    {
+      "case_id": "en-love-relationship",
+      "lang": "en",
+      "spread": "love",
+      "profile": "relationship",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 27,
+        "opening": 74,
+        "synthesis": 502,
+        "practical_focus": 186,
+        "reflection_question": 106,
+        "voice_summary": 418,
+        "share_summary": 174
+      },
+      "text_hash": "25f5dd3774fbbd90"
+    },
+    {
+      "case_id": "en-love-work",
+      "lang": "en",
+      "spread": "love",
+      "profile": "work",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 43,
+        "opening": 180,
+        "synthesis": 421,
+        "practical_focus": 187,
+        "reflection_question": 134,
+        "voice_summary": 389,
+        "share_summary": 132
+      },
+      "text_hash": "23a2ad2dd8b9a314"
+    },
+    {
+      "case_id": "en-love-inner_change",
+      "lang": "en",
+      "spread": "love",
+      "profile": "inner_change",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 42,
+        "opening": 124,
+        "synthesis": 399,
+        "practical_focus": 118,
+        "reflection_question": 90,
+        "voice_summary": 256,
+        "share_summary": 125
+      },
+      "text_hash": "06921d47cd31fb4e"
+    },
+    {
+      "case_id": "en-choice-decision",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "decision",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 30,
+        "opening": 176,
+        "synthesis": 335,
+        "practical_focus": 178,
+        "reflection_question": 106,
+        "voice_summary": 322,
+        "share_summary": 71
+      },
+      "text_hash": "472dd3038a21d705"
+    },
+    {
+      "case_id": "en-choice-relationship",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "relationship",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 63,
+        "opening": 177,
+        "synthesis": 479,
+        "practical_focus": 167,
+        "reflection_question": 108,
+        "voice_summary": 416,
+        "share_summary": 106
+      },
+      "text_hash": "9bdef8a0b868579f"
+    },
+    {
+      "case_id": "en-choice-work",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "work",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 28,
+        "opening": 174,
+        "synthesis": 578,
+        "practical_focus": 82,
+        "reflection_question": 151,
+        "voice_summary": 275,
+        "share_summary": 150
+      },
+      "text_hash": "2c2846a4e649b644"
+    },
+    {
+      "case_id": "en-choice-inner_change",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "inner_change",
+      "status": "llm_structured",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "card_count": true,
+        "all_cards_have_core_and_context": true,
+        "has_synthesis": true,
+        "has_practical_focus": true,
+        "has_reflection_question": true,
+        "share_safe_no_question_echo": true,
+        "natural_output_length": true,
+        "mystical_imagery_present": true,
+        "no_gibberish_markers": true
+      },
+      "field_lengths": {
+        "headline": 28,
+        "opening": 161,
+        "synthesis": 594,
+        "practical_focus": 181,
+        "reflection_question": 143,
+        "voice_summary": 306,
+        "share_summary": 163
+      },
+      "text_hash": "5c11e7e0909e0e9a"
+    }
+  ],
+  "note": "Inputs are synthetic. Public output excludes raw questions and readings; private owner review is synthetic only."
+}
