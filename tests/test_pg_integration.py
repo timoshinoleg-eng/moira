@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -48,7 +49,7 @@ async def _run_alembic(url: str) -> None:
     env["DATABASE_URL"] = url
     env.pop("DB_PATH", None)
     proc = await asyncio.create_subprocess_exec(
-        str(ROOT / ".venv" / "Scripts" / "python.exe"),
+        sys.executable,
         "-m",
         "alembic",
         "upgrade",
@@ -67,7 +68,7 @@ async def _alembic_check(url: str) -> None:
     env["DATABASE_URL"] = url
     env.pop("DB_PATH", None)
     proc = await asyncio.create_subprocess_exec(
-        str(ROOT / ".venv" / "Scripts" / "python.exe"),
+        sys.executable,
         "-m",
         "alembic",
         "check",
