@@ -1,5 +1,10 @@
 # Moira — ИИ-оракул таро (Telegram-бот)
 
+> **Статус: v1.0.0-rc.1** — release candidate. 175 тестов зелёные, immutable
+> quality-eval прогоняются против зафиксированных базлайнов. Прод-процедуры:
+> [docs/PRODUCTION_RUNBOOK.md](docs/PRODUCTION_RUNBOOK.md) (деплой, бэкапы,
+> обновление, откат) и [docs/BETA_RUNBOOK.md](docs/BETA_RUNBOOK.md).
+
 Двуязычный (RU/EN) Telegram-бот: таро-расклады с ИИ-трактовками, картинки карт,
 голосовые предсказания, личный алтарь с картой дня и лунным календарём,
 тест «Мой Аркан». Монетизация: Telegram Stars + промокоды.
@@ -104,6 +109,8 @@
 2. Скопируй `.env.example` → `.env`, вставь `BOT_TOKEN` и `ADMIN_IDS`.
 3. Установи зависимости (один раз):
    ```powershell
+   uv sync                    # из pyproject.toml + uv.lock (рекомендуется)
+   # или классически:
    .venv\Scripts\python.exe -m pip install -r requirements-dev.txt
    ```
 4. Накати миграции:
@@ -137,7 +144,7 @@ python -m bot.main
 .venv\Scripts\python.exe -m alembic check
 ```
 
-Текущая версия: `0005_growth_attribution`.
+Текущая версия: `0008_push_delivery_foundation`.
 
 Перед любыми миграциями на production:
 
@@ -180,15 +187,18 @@ LLM_MODEL=deepseek/deepseek-v4-flash
 
 ## Тесты
 
+Полный прогон (без сети, все внешние вызовы замокованы):
+
 ```powershell
-.venv\Scripts\python.exe -m compileall bot
-.venv\Scripts\python.exe tests/smoke_test.py
-.venv\Scripts\python.exe tests/test_patch1_runtime.py
-.venv\Scripts\python.exe tests/test_patch2_payments.py
-.venv\Scripts\python.exe tests/test_patch3_llm.py
-.venv\Scripts\python.exe tests/test_patch4_critical.py
-.venv\Scripts\python.exe tests/test_patch5_i18n_quiz.py
-.venv\Scripts\python.exe tests/test_patch6_background.py
+.venv\Scripts\python.exe -m pytest -q
+```
+
+Выборочные:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests/test_patch2_payments.py -q   # платежи
+.venv\Scripts\python.exe -m pytest tests/test_cards_78.py -q          # 78 карт
+.venv\Scripts\python.exe tests/smoke_test.py                           # smokе
 ```
 
 ## Privacy и безопасность
