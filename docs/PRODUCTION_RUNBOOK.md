@@ -2,8 +2,9 @@
 
 ## Supported small-scale topology
 
-Moira runs as one polling process, one persistent SQLite database and one
-persistent directory. Do not add a webhook, Redis, worker, PostgreSQL, or a
+Moira runs as one polling process, one primary relational database and one
+persistent directory. Storage backend is chosen at boot via `DATABASE_URL`
+(PostgreSQL) or `DB_PATH` (SQLite). Do not add a webhook, Redis, worker, or a
 second bot instance for the first production release. The application owns a
 non-blocking .bot.lock; a service manager remains the operational restart
 and health boundary.
@@ -13,15 +14,15 @@ Example Linux layout:
 ~~~bash
 sudo useradd --system --create-home --home-dir /opt/moira --shell /usr/sbin/nologin moira
 sudo -u moira git clone https://github.com/timoshinoleg-eng/moira.git /opt/moira/app
-sudo -u moira python3 -m venv /opt/moira/app/.venv
-sudo -u moira /opt/moira/app/.venv/bin/pip install -r /opt/moira/app/requirements.txt
+sudo -u moira uv sync --frozen --project /opt/moira/app
 sudo install -o moira -g moira -m 700 -d /var/lib/moira /etc/moira /var/backups/moira
 sudo install -o root -g moira -m 640 /dev/null /etc/moira/moira.env
 ~~~
 
 Create /etc/moira/moira.env with BOT_TOKEN, ADMIN_IDS,
-DB_PATH=/var/lib/moira/moira.db, the chosen FREE_READINGS, and optional
-provider/observability credentials. This file is never committed.
+DATABASE_URL (or `DB_PATH=/var/lib/moira/moira.db` when staying on SQLite),
+the chosen FREE_READINGS, and optional provider/observability credentials.
+This file is never committed.
 
 Deepgram voice input remains optional. Enable it only with the exact settings
 and live acceptance path in `docs/DEEPGRAM_VOICE_POC.md`; the rest of Moira
@@ -70,6 +71,40 @@ The production health check is the service state plus the real Telegram smoke;
 there is no HTTP health endpoint to claim. Check that exactly one bot.main
 process holds the lock and that no second instance targets the same database.
 
+## PostgreSQL backend
+
+When `DATABASE_URL` is set (e.g. `postgresql+asyncpg://moira:***@localhost:5432/moira`),
+the app uses PostgreSQL via asyncpg with connection pooling (`DB_POOL_SIZE`,
+`DB_POOL_MAX_OVERFLOW`) and a `SELECT 1` healthcheck on boot. Apply migrations:
+
+~~~bash
+sudo -u moira bash -c 'set -a; . /etc/moira/moira.env; set +a; /opt/moira/app/.venv/bin/python -m alembic upgrade head'
+sudo -u moira bash -c 'set -a; . /etc/moira/moira.env; set +a; /opt/moira/app/.venv/bin/python -m alembic check'
+~~~
+
+### Migrating existing SQLite data to PostgreSQL
+
+Recommended loader is pgloader (official Docker image), preserving row ids:
+
+~~~bash
+# 1) point a fresh PostgreSQL at an empty db (or create it first)
+# 2) run pgloader, mapping the SQLite file to the PG connection string
+docker run --rm -v /var/lib/moira/moira.db:/input.db:ro \
+  dimitri/pgloader \
+  "sqlite:////input.db" "postgresql://moira:PASS@host:5432/moira"
+~~~
+
+3) Apply remaining migrations on the new database, then verify:
+
+~~~bash
+sudo -u moira /opt/moira/app/.venv/bin/python scripts/maintenance/verify_db_migration.py \
+  --source sqlite+aiosqlite:///var/lib/moira/moira.db \
+  --target postgresql+asyncpg://moira:PASS@host:5432/moira
+```
+
+Only proceed to switch `DATABASE_URL` after `VERIFY: PASSED` (all table counts
+match and the payment ledger checksum is equal).
+
 ## Backup and restore
 
 Back up before every update and nightly with the SQLite online backup API:
@@ -92,7 +127,7 @@ sudo systemctl stop moira
 # run the backup command above
 sudo -u moira git -C /opt/moira/app fetch origin --tags
 sudo -u moira git -C /opt/moira/app switch --detach <approved-commit-or-tag>
-sudo -u moira /opt/moira/app/.venv/bin/pip install -r /opt/moira/app/requirements.txt
+sudo -u moira uv sync --frozen --project /opt/moira/app
 sudo -u moira bash -c 'set -a; . /etc/moira/moira.env; set +a; /opt/moira/app/.venv/bin/python -m alembic upgrade head'
 sudo -u moira bash -c 'set -a; . /etc/moira/moira.env; set +a; /opt/moira/app/.venv/bin/python -m alembic check'
 sudo systemctl start moira
