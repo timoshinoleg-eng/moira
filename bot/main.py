@@ -174,7 +174,7 @@ async def main() -> None:
         return
     cfg: Config = load_config(require_token=True)
     _init_sentry(cfg)
-    await init_db(cfg.database_url or cfg.db_path)
+    await init_db(cfg.db_path)
 
     # --- agent-core: initialize HarnessState ---
     try:

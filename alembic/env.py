@@ -19,11 +19,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-database_url = os.getenv("DATABASE_URL", "").strip()
-if database_url:
-    config.set_main_option("sqlalchemy.url", database_url)
-else:
-    config.set_main_option("sqlalchemy.url", f"sqlite+aiosqlite:///{os.getenv('DB_PATH', 'moira.db')}")
+config.set_main_option("sqlalchemy.url", f"sqlite+aiosqlite:///{os.getenv('DB_PATH', 'moira.db')}")
 
 target_metadata = Base.metadata
 

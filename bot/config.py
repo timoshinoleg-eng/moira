@@ -61,7 +61,6 @@ class Config:
     llm_v2_primary_timeout_sec: float = 12.0
     llm_v2_total_timeout_sec: float = 18.0
     llm_v2_max_attempts: int = 2
-    database_url: str = ""
 
 
 def load_config(require_token: bool = True) -> Config:
@@ -87,7 +86,6 @@ def load_config(require_token: bool = True) -> Config:
         llm_v2_total_timeout_sec=float(os.getenv("LLM_V2_TOTAL_TIMEOUT_SEC", "18")),
         llm_v2_max_attempts=max(1, min(2, int(os.getenv("LLM_V2_MAX_ATTEMPTS", "2")))),
         db_path=os.getenv("DB_PATH", "moira.db"),
-        database_url=os.getenv("DATABASE_URL", "").strip(),
         bot_display_name=os.getenv("BOT_DISPLAY_NAME", "Мойра"),
         free_readings=int(os.getenv("FREE_READINGS", "3")),
         earlybird_limit=int(os.getenv("EARLYBIRD_LIMIT", "50")),
