@@ -28,53 +28,6 @@ Deepgram voice input remains optional. Enable it only with the exact settings
 and live acceptance path in `docs/DEEPGRAM_VOICE_POC.md`; the rest of Moira
 continues to work with `DEEPGRAM_STT_ENABLED=false`.
 
-## Docker / compose deployment (PostgreSQL stack)
-
-The recommended production path is `docker compose` (bot + postgres:16 + nightly
-backups). Secrets are supplied via `/etc/moira/moira.env` (systemd) or an
-`env_file`; they are never baked into the image.
-
-~~~bash
-# 1) install docker + compose plugin (host)
-# 2) place the deployment on the host
-sudo install -o root -g root -d /opt/moira
-sudo -u root git clone https://github.com/timoshinoleg-eng/moira.git /opt/moira/app
-
-# 3) secrets: create /etc/moira/moira.env (root:moira 640). Compose interpolates
-#    these into the bot service. Required: BOT_TOKEN, POSTGRES_USER,
-#    POSTGRES_PASSWORD, POSTGRES_DB (DATABASE_URL is built by compose).
-sudo install -o root -g moira -m 640 /dev/null /etc/moira/moira.env
-
-# 4) build and start (must run with the *env present for ${VAR:?...} checks)
-sudo -u root bash -c 'set -a; . /etc/moira/moira.env; set +a;
-  cd /opt/moira/app && docker compose up -d --build'
-
-# 5) status
-docker compose -f /opt/moira/app/docker-compose.yml ps
-docker compose -f /opt/moira/app/docker-compose.yml logs -f bot
-~~~
-
-As a systemd unit (oneshot wrapper around compose):
-
-~~~bash
-sudo install -o root -g root -m 644 /opt/moira/app/deploy/moira-compose.service \
-  /etc/systemd/system/moira.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now moira
-~~~
-
-Backups are taken nightly by `prodrigestivill/postgres-backup-local:16` into
-`./backups` (custom-format dumps, retention 14 days). Restore drill:
-
-~~~bash
-BACKUP_DIR=/opt/moira/app/backups \
-PGHOST=127.0.0.1 PGPORT=5432 PGUSER=moira PGPASSWORD=... PGDATABASE=moira \
-  /opt/moira/app/deploy/moira-restore-drill-pg.sh
-~~~
-
-When a plain venv deployment is preferred over containers, keep the unit from
-`deploy/moira.service` instead (it runs `.venv/bin/python -m bot.main` directly).
-
 ## Migrate and launch
 
 ~~~bash
