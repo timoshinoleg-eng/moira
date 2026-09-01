@@ -23,17 +23,12 @@ artifacts/
 архивы и доработки/
 
 # Work files and archives
-архивы и доработки/
 ПРОМПТ-*.md
 ТЗ-*.txt
 исследование*.txt
 улучшение.txt
 *_dump.txt
 Глубокая*.docx
-diag.py
-run_bg.py
-run.bat
-run.ps1
 agent_core_tests/
 .agent_state/
 
