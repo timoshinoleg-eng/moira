@@ -217,7 +217,12 @@ def test_migration_downgrade_and_upgrade_cycle(tmp_path) -> None:
         )
 
     assert alembic("upgrade", "head").returncode == 0
-    assert alembic("downgrade", "-1").returncode == 0
+    # Pinned revisions, not "-1": the cycle must survive newer migrations on top.
+    assert alembic("downgrade", "0009_reading_provenance_feedback").returncode == 0
+    with sqlite3.connect(db_path) as conn:
+        tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert "reading_feedback" in tables
+    assert alembic("downgrade", "0008_push_delivery_foundation").returncode == 0
     with sqlite3.connect(db_path) as conn:
         tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     assert "reading_feedback" not in tables
