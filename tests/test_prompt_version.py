@@ -85,10 +85,10 @@ def _raw_completion(content: str) -> object:
 
 def test_default_prompt_version_unchanged(monkeypatch) -> None:
     monkeypatch.delenv("LLM_PROMPT_VERSION", raising=False)
-    assert PROMPT_VERSION == "v6-mystical-clear"
+    assert PROMPT_VERSION == "v7-minor-content"
     cfg = load_config(require_token=False)
-    assert cfg.llm_prompt_version == "v6-mystical-clear"
-    assert resolve_prompt_version(cfg) == "v6-mystical-clear"
+    assert cfg.llm_prompt_version == "v7-minor-content"
+    assert resolve_prompt_version(cfg) == "v7-minor-content"
 
 
 def test_env_override_is_picked_up(monkeypatch) -> None:

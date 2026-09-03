@@ -35,11 +35,24 @@ SUIT_THEME_EN = {
 }
 ABSTRACT_RU = {"сила", "судьба", "энергия", "путь", "выбор"}
 ABSTRACT_EN = {"strength", "fate", "destiny", "energy", "path", "choice"}
-SUIT_NAME_STEMS = {"жезл", "куб", "меч", "мечи", "пентакл", "wand", "cup", "sword", "pentacle"}
-RANK_STEMS = {"туз", "двой", "трой", "четвёр", "пятёр", "шестёр", "семёр", "восьмёр",
+# A symbol is allowed to *depict* the suit object or count it ("three spilled cups",
+# "woman with closed cup") — that is precisely the RWS imagery we want. What is not
+# allowed is a symbol consisting ONLY of suit-object / rank / number words: such an item
+# merely restates the card name the prompt already prints, and wastes a symbol slot.
+SUIT_OBJECT_PREFIXES = (
+    "жезл", "посох", "палк", "куб", "чаш", "меч", "клин", "пентакл", "диск", "монет",
+    "wand", "staff", "stav", "stick", "rod", "cup", "sword", "blade", "pentacle",
+    "coin", "disc",
+)
+RANK_STEMS = ("туз", "двой", "трой", "четвёр", "пятёр", "шестёр", "семёр", "восьмёр",
               "девят", "десят", "паж", "рыцар", "королев", "корол",
               "ace", "two", "three", "four", "five", "six", "seven", "eight",
-              "nine", "ten", "page", "knight", "queen", "king"}
+              "nine", "ten", "page", "knight", "queen", "king")
+NUMBER_WORDS = {
+    "ru": {"один", "одна", "два", "две", "двое", "три", "четыре", "пять", "шесть",
+           "семь", "восемь", "девять", "десять"},
+    "en": {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"},
+}
 
 LATIN_RE = re.compile(r"[A-Za-z]")
 CYRILLIC_RE = re.compile(r"[А-Яа-яЁё]")
@@ -48,6 +61,20 @@ TEXT_RE = re.compile(r"^[\w\s'’\-.,]+$", re.UNICODE)
 
 def _words(text: str) -> list[str]:
     return re.findall(r"[A-Za-zА-Яа-яЁё]+", text.casefold())
+
+
+def _is_bare_restatement(item: str, lang: str) -> bool:
+    """True when a symbol adds nothing beyond the card name already in the prompt."""
+    numbers = NUMBER_WORDS[lang]
+    for word in _words(item):
+        if word in numbers:
+            continue
+        if any(word.startswith(stem) for stem in RANK_STEMS):
+            continue
+        if any(word.startswith(prefix) for prefix in SUIT_OBJECT_PREFIXES):
+            continue
+        return False
+    return True
 
 
 def _check_list(card_id: str, lang: str, items: object, *, min_words: int, max_words: int,
@@ -99,10 +126,9 @@ def validate() -> list[str]:
                 words = set(_words(item))
                 if words & abstract:
                     errors.append(f"MINOR_SYMBOLS {card_id}.{lang}: abstraction in {item!r}")
-                if words & SUIT_NAME_STEMS:
-                    errors.append(f"MINOR_SYMBOLS {card_id}.{lang}: suit name in {item!r}")
-                if words & RANK_STEMS:
-                    errors.append(f"MINOR_SYMBOLS {card_id}.{lang}: rank name in {item!r}")
+                if _is_bare_restatement(item, lang):
+                    errors.append(f"MINOR_SYMBOLS {card_id}.{lang}: {item!r} only restates "
+                                  f"the card name, adds no imagery")
                 key = item.casefold()
                 if key in seen_per_suit[suit]:
                     errors.append(f"MINOR_SYMBOLS {card_id}.{lang}: {item!r} repeats "

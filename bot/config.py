@@ -55,7 +55,7 @@ class Config:
     deepgram_stt_max_bytes: int
     deepgram_stt_timeout_sec: int
     llm_backup_model: str | None = None
-    llm_prompt_version: str = "v6-mystical-clear"
+    llm_prompt_version: str = "v7-minor-content"
     llm_json_mode: bool = False
     llm_retry_policy_v2: bool = False
     llm_controlled_repair_enabled: bool = False
@@ -81,7 +81,7 @@ def load_config(require_token: bool = True) -> Config:
         llm_model=os.getenv("LLM_MODEL", "deepseek/deepseek-v4-flash"),
         llm_base_url=os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1"),
         llm_backup_model=os.getenv("LLM_BACKUP_MODEL", "").strip() or None,
-        llm_prompt_version=os.getenv("LLM_PROMPT_VERSION", "").strip() or "v6-mystical-clear",
+        llm_prompt_version=os.getenv("LLM_PROMPT_VERSION", "").strip() or "v7-minor-content",
         llm_json_mode=_env_bool("LLM_JSON_MODE"),
         llm_retry_policy_v2=_env_bool("LLM_RETRY_POLICY_V2"),
         llm_controlled_repair_enabled=_env_bool("LLM_CONTROLLED_REPAIR_ENABLED"),
