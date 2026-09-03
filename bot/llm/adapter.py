@@ -18,6 +18,7 @@ from tenacity import AsyncRetrying, retry_if_exception, stop_after_attempt, wait
 from ..config import Config
 from ..db.database import get_session
 from ..db.models import LlmUsage, Reading
+from ..tarot.patterns import analyze_patterns, format_pattern_block
 from ..tarot.spreads import DrawnCard, POSITION_MEANINGS, position_meaning
 
 logger = logging.getLogger(__name__)
@@ -565,6 +566,12 @@ def _build_user_message(
     for d in drawn:
         parts.append("- " + _build_card_block(lang, d, spread_id))
     parts.append("")
+
+    # Level 3b: deterministic pattern facts (supporting context, no LLM).
+    pattern_block = format_pattern_block(analyze_patterns(drawn, lang), lang)
+    if pattern_block:
+        parts.append(pattern_block)
+        parts.append("")
 
     # Level 4: Memory
     if memory:
