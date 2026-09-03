@@ -19,12 +19,19 @@ from ..i18n import t
 from ..keyboards import (
     feedback_reengagement_kb,
     main_menu_kb,
+    note_card_kb,
     paywall_kb,
     question_input_kb,
     reading_footer_kb,
 )
 from ..llm import interpret_reading
 from ..services.analytics import Analytics
+from ..services.reading_notes import (
+    NoteOwnershipError,
+    delete_reading_note,
+    get_reading_note,
+    save_reading_note,
+)
 from ..tarot import SPREADS, draw
 from ..tarot.deck import DECK_VERSION, cards_from_codes
 from ..tarot.spreads import DRAW_ENGINE_VERSION, SPREAD_VERSION
@@ -84,6 +91,10 @@ def _is_safety_refusal_required(question: str) -> bool:
 
 class ReadingStates(StatesGroup):
     waiting_question = State()
+
+
+class NoteStates(StatesGroup):
+    waiting_note = State()
 
 
 @router.callback_query(F.data.startswith("spread:"))
@@ -500,6 +511,105 @@ async def cb_feedback(callback: CallbackQuery, cfg: Config, analytics: Analytics
         spread=reading.spread,
     )
     await callback.answer(t(lang, "feedback_thanks"))
+
+
+@router.callback_query(F.data.startswith("note_edit:"))
+async def cb_note_edit(callback: CallbackQuery, state: FSMContext, cfg: Config) -> None:
+    """Prompt for note text. Ownership-checked before entering input state."""
+    try:
+        reading_id = int(callback.data.split(":", 1)[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    async with get_session() as session:
+        try:
+            await get_reading_note(session, user_id=user.id, reading_id=reading_id)
+        except NoteOwnershipError:
+            await callback.answer("?")
+            return
+    await state.set_state(NoteStates.waiting_note)
+    await state.update_data(reading_id=reading_id)
+    await callback.message.answer(t(user.language, "ask_note"))
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("note_del:"))
+async def cb_note_delete(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
+    try:
+        reading_id = int(callback.data.split(":", 1)[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    try:
+        async with get_session() as session:
+            removed = await delete_reading_note(session, user_id=user.id, reading_id=reading_id)
+            await session.commit()
+    except NoteOwnershipError:
+        await callback.answer("?")
+        return
+    if removed:
+        await callback.message.answer(t(user.language, "note_deleted"))
+        await analytics.track(user.id, "note_deleted", reading_id=reading_id)
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("note:"))
+async def cb_note_view(callback: CallbackQuery, state: FSMContext, cfg: Config) -> None:
+    """Show the existing note with edit/delete, or prompt for a new one."""
+    try:
+        reading_id = int(callback.data.split(":", 1)[1])
+    except ValueError:
+        await callback.answer("?")
+        return
+    user = await get_or_create_user(callback.from_user, cfg)
+    async with get_session() as session:
+        try:
+            note = await get_reading_note(session, user_id=user.id, reading_id=reading_id)
+        except NoteOwnershipError:
+            await callback.answer("?")
+            return
+        text = note.text if note else ""
+    if text:
+        await callback.message.answer(
+            html.escape(text), reply_markup=note_card_kb(user.language, reading_id)
+        )
+    else:
+        await state.set_state(NoteStates.waiting_note)
+        await state.update_data(reading_id=reading_id)
+        await callback.message.answer(t(user.language, "ask_note"))
+    await callback.answer()
+
+
+@router.message(NoteStates.waiting_note, F.text)
+async def process_note(message: Message, state: FSMContext, cfg: Config, analytics: Analytics) -> None:
+    data = await state.get_data()
+    await state.clear()
+    reading_id = data.get("reading_id")
+    user = await get_or_create_user(message.from_user, cfg)
+    if not isinstance(reading_id, int):
+        return
+    try:
+        async with get_session() as session:
+            await save_reading_note(
+                session, user_id=user.id, reading_id=reading_id, text=message.text or ""
+            )
+            await session.commit()
+    except NoteOwnershipError:
+        return
+    except ValueError:
+        await message.answer(t(user.language, "note_empty"))
+        return
+    # Fact only: note text never goes to analytics, logs, or Sentry.
+    await analytics.track(user.id, "note_created", reading_id=reading_id)
+    await message.answer(t(user.language, "note_saved"), reply_markup=main_menu_kb(user.language))
+
+
+@router.message(NoteStates.waiting_note)
+async def prompt_note_text(message: Message, state: FSMContext, cfg: Config) -> None:
+    user = await get_or_create_user(message.from_user, cfg)
+    await message.answer(t(user.language, "ask_note"))
 
 
 async def _send_voice_or_audio(message: Message, audio: bytes, lang: str) -> None:
