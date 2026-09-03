@@ -116,6 +116,11 @@ def _new_request_id() -> str:
     return uuid.uuid4().hex
 
 
+def resolve_prompt_version(cfg: Config) -> str:
+    """Return the configured prompt version, falling back to the default."""
+    return getattr(cfg, "llm_prompt_version", None) or PROMPT_VERSION
+
+
 def _retry_policy(cfg: Config) -> AsyncRetrying:
     """Build the bounded V2 policy; the caller owns the overall latency budget."""
     return AsyncRetrying(
@@ -641,6 +646,7 @@ async def _log_usage(
     timeout_stage: str | None = None,
     request_id: str | None = None,
     generation_id: str | None = None,
+    prompt_version: str | None = None,
 ) -> None:
 
     try:
@@ -651,7 +657,7 @@ async def _log_usage(
                     spread=spread,
                     model=model,
                     provider=provider,
-                    prompt_version=PROMPT_VERSION,
+                    prompt_version=prompt_version or PROMPT_VERSION,
                     prompt_tokens=prompt_tokens,
                     completion_tokens=completion_tokens,
                     latency_ms=latency_ms,
@@ -795,6 +801,7 @@ async def _interpret_reading_v2(
                         repair_used=repair_used,
                         request_id=request_id,
                         generation_id=request_id,
+                        prompt_version=resolve_prompt_version(cfg),
                     )
                     result.generation_id = request_id
                     return result, request_id
@@ -824,6 +831,7 @@ async def _interpret_reading_v2(
         timeout_stage=_timeout_stage(last_exc) if last_exc else None,
         request_id=request_id,
         generation_id=request_id,
+        prompt_version=resolve_prompt_version(cfg),
     )
     return None, request_id
 
@@ -946,6 +954,7 @@ async def interpret_reading(
                 fallback_used=False,
                 error_category=None,
                 generation_id=generation_id,
+                prompt_version=resolve_prompt_version(cfg),
             )
             # --- agent-core: attention transition → IDLE (success) ---
             if _AGENT_CORE:
@@ -971,6 +980,7 @@ async def interpret_reading(
         fallback_used=True,
         error_category=_error_category(last_exc) if last_exc else None,
         generation_id=generation_id,
+        prompt_version=resolve_prompt_version(cfg),
     )
     # --- agent-core: attention transition → IDLE (fallback) ---
     if _AGENT_CORE:
