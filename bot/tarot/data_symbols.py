@@ -25,7 +25,7 @@ MAJOR_SYMBOLS = {
         "en": ["crossed keys", "two acolytes", "pulpit"],
     },
     6: {
-        "ru": ["Archangel Raphael", "tree of fire", "tree of knowledge"],
+        "ru": ["архангел рафаил", "дерево огня", "дерево познания"],
         "en": ["Archangel Raphael", "tree of fire", "tree of knowledge"],
     },
     7: {
@@ -180,3 +180,10 @@ MAJOR_REFLECTION = {
         "en": "What cycle is closing — and what have you learned along the way?",
     },
 }
+
+# Visual symbols for the 56 minor cards (S1 content drop from TASKS_SOL.md).
+# Key = card id "{suit}_{rank}": "wands_ace" ... "pentacles_king".
+# Format: {"wands_ace": {"ru": [...3...], "en": [...3...]}, ...}.
+# Empty until the S1 payload lands; minors keep empty symbols until then.
+# Validate a drop with: uv run python scripts/validate_minor_content.py
+MINOR_SYMBOLS: dict[str, dict[str, list[str]]] = {}
