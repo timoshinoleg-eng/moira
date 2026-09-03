@@ -11,8 +11,9 @@ from .data_minor import (
     COURT_NAMES_RU,
     RANK_NAMES_EN,
     RANK_NAMES_RU,
+    MINOR_KEYWORDS,
 )
-from .data_symbols import MAJOR_SYMBOLS, MAJOR_REFLECTION
+from .data_symbols import MAJOR_SYMBOLS, MAJOR_REFLECTION, MINOR_SYMBOLS
 
 
 @dataclass
@@ -151,7 +152,18 @@ def _build_minor(suit_id: str, suit: dict, rank_id: str, rank_name_ru: str, rank
                  ru_upr_light: str = "", ru_upr_shadow: str = "", ru_upr_advice: str = "",
                  ru_rev_light: str = "", ru_rev_shadow: str = "", ru_rev_advice: str = "",
                  en_upr_light: str = "", en_upr_shadow: str = "", en_upr_advice: str = "",
-                 en_rev_light: str = "", en_rev_shadow: str = "", en_rev_advice: str = "") -> TarotCard:
+                 en_rev_light: str = "", en_rev_shadow: str = "", en_rev_advice: str = "",
+                 kw_ru: list[str] | None = None, kw_en: list[str] | None = None,
+                 ru_symbols: list[str] | None = None, en_symbols: list[str] | None = None,
+                 ru_reflection: str = "", en_reflection: str = "") -> TarotCard:
+    """Build one minor card. Per-card keywords/symbols fall back to suit level.
+
+    kw_ru/kw_en come from the card variant or MINOR_KEYWORDS[card_id]; when the
+    S1/S2 content drop has not landed for a card, suit keywords keep the prompt
+    working instead of failing.
+    """
+    card_kw_ru = kw_ru or suit["kw_ru"]
+    card_kw_en = kw_en or suit["kw_en"]
     return TarotCard(
         id=f"{suit_id}_{rank_id}",
         name_ru=f"{rank_name_ru} {suit['ru_gen']}",
@@ -159,33 +171,55 @@ def _build_minor(suit_id: str, suit: dict, rank_id: str, rank_name_ru: str, rank
         arcana="minor",
         suit=suit_id,
         rank=rank_id,
-        keywords_ru=suit["kw_ru"],
-        keywords_en=suit["kw_en"],
+        keywords_ru=card_kw_ru,
+        keywords_en=card_kw_en,
         meanings={
             "ru": {"upright": ru_upr, "reversed": ru_rev},
             "en": {"upright": en_upr, "reversed": en_rev},
         },
         ru=LocalizedCard(
             upright=CardMeanings(
-                essence=ru_upr, keywords=suit["kw_ru"],
+                essence=ru_upr, keywords=card_kw_ru,
                 light=ru_upr_light, shadow=ru_upr_shadow, advice=ru_upr_advice,
             ),
             reversed=CardMeanings(
-                essence=ru_rev, keywords=suit["kw_ru"],
+                essence=ru_rev, keywords=card_kw_ru,
                 light=ru_rev_light, shadow=ru_rev_shadow, advice=ru_rev_advice,
             ),
+            symbols=list(ru_symbols or []),
+            reflection_question=ru_reflection,
         ),
         en=LocalizedCard(
             upright=CardMeanings(
-                essence=en_upr, keywords=suit["kw_en"],
+                essence=en_upr, keywords=card_kw_en,
                 light=en_upr_light, shadow=en_upr_shadow, advice=en_upr_advice,
             ),
             reversed=CardMeanings(
-                essence=en_rev, keywords=suit["kw_en"],
+                essence=en_rev, keywords=card_kw_en,
                 light=en_rev_light, shadow=en_rev_shadow, advice=en_rev_advice,
             ),
+            symbols=list(en_symbols or []),
+            reflection_question=en_reflection,
         ),
     )
+
+
+def _minor_card_kwargs(suit_id: str, rank_id: str, variants: dict) -> dict:
+    """Resolve per-card keywords/symbols with suit-level fallback.
+
+    Precedence for keywords: inline variant kw_ru/kw_en, then the S1/S2 content
+    drop MINOR_KEYWORDS[card_id], then the suit set (handled in _build_minor).
+    Symbols come from the S1 content drop MINOR_SYMBOLS[card_id].
+    """
+    card_id = f"{suit_id}_{rank_id}"
+    drop = MINOR_KEYWORDS.get(card_id, {})
+    symbols = MINOR_SYMBOLS.get(card_id, {})
+    return {
+        "kw_ru": variants.get("kw_ru") or drop.get("kw_ru"),
+        "kw_en": variants.get("kw_en") or drop.get("kw_en"),
+        "ru_symbols": symbols.get("ru"),
+        "en_symbols": symbols.get("en"),
+    }
 
 
 def build_deck() -> list[TarotCard]:
@@ -218,6 +252,7 @@ def build_deck() -> list[TarotCard]:
                 _fmt(variants.get("en_rev_light", ""), theme_en),
                 _fmt(variants.get("en_rev_shadow", ""), theme_en),
                 _fmt(variants.get("en_rev_advice", ""), theme_en),
+                **_minor_card_kwargs(suit_id, rank_id, variants),
             ))
         for court_id in COURT_NAMES_RU:
             variants = COURT_SUIT_VARIANTS.get(court_id, {}).get(suit_id, {})
@@ -242,5 +277,6 @@ def build_deck() -> list[TarotCard]:
                 _fmt(variants.get("en_rev_light", ""), theme_en),
                 _fmt(variants.get("en_rev_shadow", ""), theme_en),
                 _fmt(variants.get("en_rev_advice", ""), theme_en),
+                **_minor_card_kwargs(suit_id, court_id, variants),
             ))
     return deck

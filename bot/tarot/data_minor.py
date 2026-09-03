@@ -1177,3 +1177,10 @@ COURT_CORE = {
         "en_rev": "Authoritarianism and pressure; strength without flexibility ({theme}).",
     },
 }
+
+# Per-card keywords for the 56 minor cards (S2 content drop from TASKS_SOL.md).
+# Key = card id "{suit}_{rank}": "wands_ace" ... "pentacles_king".
+# Format: {"wands_ace": {"kw_ru": [...3...], "kw_en": [...3...]}, ...}.
+# Empty until the S2 payload lands; deck.py falls back to suit keywords.
+# Validate a drop with: uv run python scripts/validate_minor_content.py
+MINOR_KEYWORDS: dict[str, dict[str, list[str]]] = {}
