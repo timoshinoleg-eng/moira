@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import random
+import secrets
 from dataclasses import dataclass
 
 from .deck import TarotCard, build_deck
@@ -93,7 +93,13 @@ POSITION_MEANINGS = {
 REVERSED_CHANCE = 0.33
 
 SPREAD_VERSION = "v1"
-DRAW_ENGINE_VERSION = "v1"
+DRAW_ENGINE_VERSION = "v2-systemrandom"
+
+# Cryptographically strong source for ordinary (non-deterministic) draws.
+# daily_card() intentionally stays on a seeded random.Random — that determinism
+# is a feature, not a bug. Never persist the seed of an ordinary draw: a
+# recoverable seed would make the reading predictable.
+_rng = secrets.SystemRandom()
 
 
 @dataclass
@@ -108,7 +114,7 @@ def draw(spread_id: str) -> list[DrawnCard]:
     if spread_id not in SPREADS:
         raise ValueError(f"Unknown spread: {spread_id}")
     deck = build_deck()
-    random.shuffle(deck)
+    _rng.shuffle(deck)
     picked = deck[: len(SPREADS[spread_id]["positions"])]
     result = []
     for (pos_id, labels), card in zip(SPREADS[spread_id]["positions"], picked):
@@ -117,7 +123,7 @@ def draw(spread_id: str) -> list[DrawnCard]:
                 position_id=pos_id,
                 position_label=labels,
                 card=card,
-                reversed=random.random() < REVERSED_CHANCE,
+                reversed=_rng.random() < REVERSED_CHANCE,
             )
         )
     return result
