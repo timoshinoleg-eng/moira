@@ -1,9 +1,10 @@
 """QW-2 plumbing: per-card minor keywords/symbols with suit fallback.
 
-Full S1/S2 content has not been delivered yet, so these tests pin the wiring:
-fallback behavior now, per-card override via injected drops, and the data-bug
-class (latin inside RU fields). When the drop lands, test_minor_content.py
-activates the complete acceptance checks automatically.
+The S1/S2 content drop has landed (56 symbols + 56 keyword sets), so the real
+content is exercised here. These tests pin: card-specific keywords instead of the
+old suit-level defaults, per-card override over the suit fallback, and the data-bug
+class (latin inside RU fields). test_minor_content.py below runs the full
+scripts/validate_minor_content.py acceptance checks.
 """
 from __future__ import annotations
 
@@ -25,14 +26,19 @@ def _minors() -> list:
     return [c for c in build_deck() if c.arcana == "minor"]
 
 
-def test_minor_keywords_fall_back_to_suit_level() -> None:
+def test_minor_keywords_are_card_specific() -> None:
+    """S2 fixed the suit-level collapse: 56 cards no longer share 4 keyword sets."""
     cards = _minors()
     assert len(cards) == 56
     for card in cards:
         assert len(card.keywords_ru) == 3 and all(card.keywords_ru)
         assert len(card.keywords_en) == 3 and all(card.keywords_en)
-        assert card.keywords_ru == SUITS[card.suit]["kw_ru"]
-        assert card.keywords_en == SUITS[card.suit]["kw_en"]
+        # The bug this content drop removes: every minor card carried the suit theme.
+        assert card.keywords_ru != SUITS[card.suit]["kw_ru"], card.id
+        assert card.keywords_en != SUITS[card.suit]["kw_en"], card.id
+    # All 56 sets distinct per language — no two cards read the same in a prompt.
+    assert len({tuple(c.keywords_ru) for c in cards}) == 56
+    assert len({tuple(c.keywords_en) for c in cards}) == 56
 
 
 def test_per_card_override_beats_suit_fallback(monkeypatch) -> None:
@@ -98,7 +104,7 @@ def test_build_card_block_snapshot() -> None:
 
 
 def test_minor_content_acceptance_when_drop_lands() -> None:
-    """Full A4 acceptance checks. Skipped until the S1/S2 payload is delivered."""
+    """Full A4 acceptance checks. Skips only if the content drop is ever reverted."""
     from bot.tarot.data_minor import MINOR_KEYWORDS
     from bot.tarot.data_symbols import MINOR_SYMBOLS
 
