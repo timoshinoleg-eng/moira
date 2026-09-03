@@ -72,6 +72,8 @@ class TarotCard:
 
 _DECK_INDEX: dict[str, TarotCard] | None = None
 
+DECK_VERSION = "v1"
+
 
 def deck_index() -> dict[str, TarotCard]:
     global _DECK_INDEX

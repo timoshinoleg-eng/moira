@@ -111,7 +111,7 @@ def test_controlled_repair_uses_safe_second_payload_and_never_exceeds_two_calls(
         memory = "TOP_SECRET_MEMORY"
         client = FakeClient([_raw_completion("TOP_SECRET_RAW_OUTPUT not JSON"), _completion_for(drawn)])
 
-        result = await _interpret_reading_v2(
+        result, generation_id = await _interpret_reading_v2(
             cfg,
             client,
             provider="provider.example",
@@ -154,7 +154,7 @@ def test_transient_error_keeps_normal_retry_payload_when_repair_is_enabled(tmp_p
         client = FakeClient([ProviderError(429), _completion_for(drawn)])
         normal_messages = [{"role": "user", "content": "TOP_SECRET_QUESTION"}]
 
-        result = await _interpret_reading_v2(
+        result, generation_id = await _interpret_reading_v2(
             cfg,
             client,
             provider="provider.example",

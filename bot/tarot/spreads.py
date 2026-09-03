@@ -92,6 +92,9 @@ POSITION_MEANINGS = {
 
 REVERSED_CHANCE = 0.33
 
+SPREAD_VERSION = "v1"
+DRAW_ENGINE_VERSION = "v1"
+
 
 @dataclass
 class DrawnCard:
