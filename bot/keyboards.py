@@ -98,7 +98,21 @@ def reading_footer_kb(
                 InlineKeyboardButton(text=t(lang, "btn_feedback_yes"), callback_data=f"feedback:{reading_id}:yes"),
                 InlineKeyboardButton(text=t(lang, "btn_feedback_no"), callback_data=f"feedback:{reading_id}:no"),
             ],
+            [InlineKeyboardButton(text=t(lang, "btn_note"), callback_data=f"note:{reading_id}")],
             followup_buttons,
+            [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
+        ]
+    )
+
+
+def note_card_kb(lang: str, reading_id: int) -> InlineKeyboardMarkup:
+    """View/edit/delete controls for one reading note."""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=t(lang, "btn_note_edit"), callback_data=f"note_edit:{reading_id}"),
+                InlineKeyboardButton(text=t(lang, "btn_note_delete"), callback_data=f"note_del:{reading_id}"),
+            ],
             [InlineKeyboardButton(text=t(lang, "btn_back"), callback_data="menu")],
         ]
     )

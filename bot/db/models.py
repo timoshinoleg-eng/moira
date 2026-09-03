@@ -194,6 +194,21 @@ class ReadingFeedback(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class ReadingNote(Base):
+    """One private note per reading. Text never leaves the journal and analytics."""
+
+    __tablename__ = "reading_notes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    reading_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("readings.id", ondelete="CASCADE"), unique=True, index=True
+    )
+    text: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
 class Event(Base):
     """Durable in-DB mirror of product events (PostHog is primary when configured)."""
 

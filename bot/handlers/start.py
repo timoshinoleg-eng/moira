@@ -8,7 +8,7 @@ from sqlalchemy import delete, or_
 
 from ..config import Config
 from ..db.database import get_session
-from ..db.models import Event, LlmUsage, Payment, PromoRedemption, Reading, ReadingFavorite, Referral, User
+from ..db.models import Event, LlmUsage, Payment, PromoRedemption, Reading, ReadingFavorite, ReadingNote, Referral, User
 from ..i18n import t
 from ..keyboards import back_menu_kb, main_menu_kb
 from ..services.analytics import Analytics
@@ -70,6 +70,7 @@ async def cmd_delete_my_data(message: Message, cfg: Config, analytics: Analytics
     user = await get_or_create_user(message.from_user, cfg)
     lang = user.language
     async with get_session() as session:
+        await session.execute(delete(ReadingNote).where(ReadingNote.user_id == user.id))
         await session.execute(delete(Reading).where(Reading.user_id == user.id))
         await session.execute(delete(ReadingFavorite).where(ReadingFavorite.user_id == user.id))
         await session.execute(delete(Event).where(Event.distinct_id == Analytics.distinct(user.id)))
