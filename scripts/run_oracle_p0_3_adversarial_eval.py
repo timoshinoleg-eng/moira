@@ -305,7 +305,7 @@ async def execute_provider_case(
     await seed_synthetic_memory(user_id, case.get("memory"))
     spread = SPREADS[case["spread"]]
     try:
-        result = await interpret_reading(
+        result, _generation_id = await interpret_reading(
             cfg,
             case["lang"],
             spread["title"][case["lang"]],

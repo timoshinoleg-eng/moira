@@ -88,7 +88,7 @@ async def _test_no_api_key_fallback() -> None:
         deepgram_stt_timeout_sec=cfg.deepgram_stt_timeout_sec,
     )
     drawn = draw("situation")
-    result = await interpret_reading(
+    result, _generation_id = await interpret_reading(
         cfg_no_key, "ru", "Расклад «Ситуация»", "test", drawn, user_id=1, spread_id="situation"
     )
     assert result is None, "expected fallback without API key"

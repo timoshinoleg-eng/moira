@@ -170,7 +170,7 @@ def test_v2_path_retries_once_uses_backup_and_persists_safe_usage(tmp_path) -> N
         await init_db(cfg.db_path)
         drawn = draw("situation")
         client = FakeClient([ProviderError(429), _valid_completion(drawn)])
-        result = await _interpret_reading_v2(
+        result, generation_id = await _interpret_reading_v2(
             cfg,
             client,
             provider="provider.example",
@@ -221,7 +221,7 @@ def test_v2_path_does_not_retry_auth_and_records_controlled_fallback(tmp_path) -
         )
         await init_db(cfg.db_path)
         client = FakeClient([ProviderError(401, "authentication failed")])
-        result = await _interpret_reading_v2(
+        result, generation_id = await _interpret_reading_v2(
             cfg,
             client,
             provider="provider.example",
@@ -276,7 +276,7 @@ def test_interpret_reading_selects_v2_path_only_when_feature_flag_enabled(tmp_pa
             return client
 
         monkeypatch.setattr(openai, "AsyncOpenAI", fake_client_factory)
-        result = await adapter.interpret_reading(
+        result, _gid = await adapter.interpret_reading(
             cfg,
             "ru",
             "Расклад «Ситуация»",

@@ -44,7 +44,7 @@ def test_eval_harness_passes_fixture_spread_id_to_interpretation() -> None:
 
     async def fake_interpret(*args, **kwargs):
         observed["spread_id"] = kwargs.get("spread_id")
-        return _Result()
+        return _Result(), "test-generation-id"
 
     with patch("run_oracle_v6_eval.interpret_reading", fake_interpret):
         result = asyncio.run(make_reading(object(), case, deck))

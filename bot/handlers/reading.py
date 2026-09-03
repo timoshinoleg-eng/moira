@@ -14,7 +14,7 @@ from sqlalchemy import func, select, update
 
 from ..config import Config
 from ..db.database import get_session
-from ..db.models import Reading, User
+from ..db.models import Reading, ReadingFeedback, User
 from ..i18n import t
 from ..keyboards import (
     feedback_reengagement_kb,
@@ -26,7 +26,8 @@ from ..keyboards import (
 from ..llm import interpret_reading
 from ..services.analytics import Analytics
 from ..tarot import SPREADS, draw
-from ..tarot.deck import cards_from_codes
+from ..tarot.deck import DECK_VERSION, cards_from_codes
+from ..tarot.spreads import DRAW_ENGINE_VERSION, SPREAD_VERSION
 from ..tarot.fallback import compose_fallback_reading, compose_followup
 from ..visual.render import make_share_image, make_spread_image
 from ..voice.speaker import synthesize_reading_voice
@@ -168,6 +169,7 @@ async def run_reading(
 
     drawn: list = []
     result = None
+    generation_id: str | None = None
     share_summary = ""
     response_mode = "fallback"
     try:
@@ -197,7 +199,7 @@ async def run_reading(
         )
         await status_msg.edit_text(t(lang, "reading_interpreting"))
 
-        result = await interpret_reading(
+        result, generation_id = await interpret_reading(
             cfg, lang, spread_title, question or None, drawn, user_id=user.id, spread_id=spread_id
         )
         if result:
@@ -267,6 +269,13 @@ async def run_reading(
                 share_summary=share_summary[:300] or None,
                 response_mode=response_mode,
                 input_mode=input_mode,
+                generation_id=generation_id,
+                # Only the validated Pydantic payload is stored: no raw provider
+                # output and never the user's question text.
+                result_json=result.model_dump(exclude={"generation_id"}, mode="json") if result else None,
+                draw_engine_version=DRAW_ENGINE_VERSION,
+                deck_version=DECK_VERSION,
+                spread_version=SPREAD_VERSION,
             )
             session.add(row)
             await session.commit()
@@ -402,6 +411,41 @@ async def cb_followup(callback: CallbackQuery, cfg: Config, analytics: Analytics
     await callback.answer()
 
 
+async def upsert_reading_feedback(
+    session,
+    *,
+    user_id: int,
+    reading_id: int,
+    generation_id: str | None,
+    value: str,
+    checkpoint: str,
+) -> None:
+    """Insert or update one feedback vote. Repeat votes update, never duplicate.
+
+    Only the categorical vote is stored — never question text or free content.
+    """
+    existing = await session.scalar(
+        select(ReadingFeedback).where(
+            ReadingFeedback.user_id == user_id,
+            ReadingFeedback.reading_id == reading_id,
+            ReadingFeedback.checkpoint == checkpoint,
+        )
+    )
+    if existing is None:
+        session.add(
+            ReadingFeedback(
+                user_id=user_id,
+                reading_id=reading_id,
+                generation_id=generation_id,
+                value=value,
+                checkpoint=checkpoint,
+            )
+        )
+    else:
+        existing.value = value
+        existing.generation_id = generation_id
+
+
 @router.callback_query(F.data.startswith("feedback:"))
 async def cb_feedback(callback: CallbackQuery, cfg: Config, analytics: Analytics) -> None:
     """Store small, privacy-safe product feedback in the existing event stream."""
@@ -421,6 +465,20 @@ async def cb_feedback(callback: CallbackQuery, cfg: Config, analytics: Analytics
     if reading is None or reading.user_id != user.id:
         await callback.answer("?")
         return
+    value = "positive" if parts[2] == "yes" else "negative"
+    try:
+        async with get_session() as session:
+            await upsert_reading_feedback(
+                session,
+                user_id=user.id,
+                reading_id=reading.id,
+                generation_id=reading.generation_id,
+                value=value,
+                checkpoint="immediate",
+            )
+            await session.commit()
+    except Exception:  # noqa: BLE001
+        logger.exception("reading feedback persist failed for user %s", user.id)
     await analytics.track(
         user.id,
         "reading_feedback",

@@ -267,9 +267,11 @@ class CardInterpretation(BaseModel):
 class TarotReadingResult(BaseModel):
     headline: str = Field(min_length=1, max_length=90)
     opening: str = Field(min_length=60, max_length=240)
-
     card_interpretations: list[CardInterpretation] = Field(min_length=1)
     synthesis: str = Field(min_length=180, max_length=650)
+
+    generation_id: str | None = Field(default=None, max_length=64)
+    """Opaque provenance id, set by interpret_reading — never from provider JSON."""
 
     practical_focus: str = Field(min_length=60, max_length=260)
 
@@ -638,7 +640,7 @@ async def _log_usage(
     error_category: str | None = None,
     timeout_stage: str | None = None,
     request_id: str | None = None,
-
+    generation_id: str | None = None,
 ) -> None:
 
     try:
@@ -659,6 +661,7 @@ async def _log_usage(
                     error_category=error_category,
                     timeout_stage=timeout_stage,
                     request_id=request_id,
+                    generation_id=generation_id,
                     status=status,
 
                 )
@@ -719,8 +722,12 @@ async def _interpret_reading_v2(
     user_id: int | None,
     spread_id: str | None,
     messages: list[dict[str, str]],
-) -> TarotReadingResult | None:
-    """Run the opt-in bounded policy and persist only safe reliability metadata."""
+) -> tuple[TarotReadingResult | None, str]:
+    """Run the opt-in bounded policy and persist only safe reliability metadata.
+
+    Returns (result, generation_id). The id comes from the existing
+    _new_request_id() and links llm_usage rows to the saved reading.
+    """
     started = time.monotonic()
     request_id = _new_request_id()
     attempts = 0
@@ -787,8 +794,10 @@ async def _interpret_reading_v2(
                         fallback_used=False,
                         repair_used=repair_used,
                         request_id=request_id,
+                        generation_id=request_id,
                     )
-                    return result
+                    result.generation_id = request_id
+                    return result, request_id
     except Exception as exc:  # noqa: BLE001
         last_exc = exc
         category = _error_category(exc)
@@ -814,8 +823,9 @@ async def _interpret_reading_v2(
         error_category=category,
         timeout_stage=_timeout_stage(last_exc) if last_exc else None,
         request_id=request_id,
+        generation_id=request_id,
     )
-    return None
+    return None, request_id
 
 
 async def interpret_reading(
@@ -827,19 +837,21 @@ async def interpret_reading(
     drawn: list[DrawnCard],
     user_id: int | None = None,
     spread_id: str | None = None,
-) -> TarotReadingResult | None:
-    """Return structured LLM interpretation or None when unavailable/failed (fallback path).
+) -> tuple[TarotReadingResult | None, str]:
+    """Return (structured LLM interpretation or None, generation_id).
 
     Policy: one primary request + at most one format/network retry, then fallback.
     The provider returns a plain JSON response; no tool-call protocol is required.
+    generation_id is an opaque correlation id from _new_request_id() that links
+    llm_usage rows to the saved reading. It carries no user or prompt data.
     """
     if not cfg.openrouter_api_key:
-        return None
+        return None, _new_request_id()
     try:
         from openai import AsyncOpenAI
     except ImportError:
         logger.warning("openai client missing — falling back to embedded meanings")
-        return None
+        return None, _new_request_id()
 
     # --- agent-core: attention transition → FOCUS ---
     if _AGENT_CORE:
@@ -877,7 +889,7 @@ async def interpret_reading(
         )
         if _AGENT_CORE:
             try:
-                state = "llm success" if result is not None else "llm fallback"
+                state = "llm success" if result[0] is not None else "llm fallback"
                 get_attention().transition(AttentionState.IDLE, reason=state)
             except Exception:  # noqa: BLE001
                 pass
@@ -886,6 +898,7 @@ async def interpret_reading(
     client = AsyncOpenAI(base_url=cfg.llm_base_url, api_key=cfg.openrouter_api_key, timeout=90.0)
 
     started = time.monotonic()
+    generation_id = _new_request_id()
 
     last_exc: Exception | None = None
     backup_model = getattr(cfg, "llm_backup_model", None)
@@ -932,6 +945,7 @@ async def interpret_reading(
                 attempts=attempt,
                 fallback_used=False,
                 error_category=None,
+                generation_id=generation_id,
             )
             # --- agent-core: attention transition → IDLE (success) ---
             if _AGENT_CORE:
@@ -939,7 +953,8 @@ async def interpret_reading(
                     get_attention().transition(AttentionState.IDLE, reason="llm success")
                 except Exception:  # noqa: BLE001
                     pass
-            return result
+            result.generation_id = generation_id
+            return result, generation_id
         except Exception as exc:  # noqa: BLE001
             last_exc = exc
             logger.warning("LLM request failed (attempt %d): %s", attempt, exc)
@@ -955,6 +970,7 @@ async def interpret_reading(
         attempts=MAX_LLM_ATTEMPTS,
         fallback_used=True,
         error_category=_error_category(last_exc) if last_exc else None,
+        generation_id=generation_id,
     )
     # --- agent-core: attention transition → IDLE (fallback) ---
     if _AGENT_CORE:
@@ -962,7 +978,7 @@ async def interpret_reading(
             get_attention().transition(AttentionState.IDLE, reason="llm fallback")
         except Exception:  # noqa: BLE001
             pass
-    return None
+    return None, generation_id
 
 
 async def weekly_mirror_text(cfg: Config, lang: str, top_cards: list[str], readings_count: int) -> str | None:

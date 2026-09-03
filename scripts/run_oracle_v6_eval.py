@@ -263,7 +263,7 @@ async def make_reading(cfg: Config, case: dict, deck: dict) -> EvaluationDeliver
     drawn = build_drawn(case, deck)
     spread = SPREADS[case["spread"]]
     try:
-        result = await interpret_reading(
+        result, _generation_id = await interpret_reading(
             cfg,
             case["lang"],
             spread["title"][case["lang"]],

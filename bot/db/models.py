@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import BigInteger, Boolean, DateTime, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, BigInteger, Boolean, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -56,6 +56,11 @@ class Reading(Base):
     share_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     response_mode: Mapped[str] = mapped_column(String(16), default="fallback", server_default="fallback")
     input_mode: Mapped[str] = mapped_column(String(16), default="text", server_default="text")
+    generation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    draw_engine_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    deck_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    spread_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
@@ -167,8 +172,26 @@ class LlmUsage(Base):
     error_category: Mapped[str | None] = mapped_column(String(32), nullable=True)
     timeout_stage: Mapped[str | None] = mapped_column(String(32), nullable=True)
     request_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    generation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     status: Mapped[str] = mapped_column(String(16), default="ok")  # ok | fallback | error
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class ReadingFeedback(Base):
+    """Immediate/delayed user feedback on a reading. No free text, only a vote."""
+
+    __tablename__ = "reading_feedback"
+    __table_args__ = (
+        UniqueConstraint("user_id", "reading_id", "checkpoint", name="uq_feedback_user_reading_checkpoint"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    reading_id: Mapped[int] = mapped_column(ForeignKey("readings.id", ondelete="CASCADE"), index=True)
+    generation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    value: Mapped[str] = mapped_column(String(16))  # "positive" | "negative"
+    checkpoint: Mapped[str] = mapped_column(String(32))  # "immediate" | "d1" | "d7"
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class Event(Base):

@@ -46,7 +46,7 @@ async def main() -> None:
             (False, False, True),
         )
     ]
-    result = await interpret_reading(
+    result, _generation_id = await interpret_reading(
         backup_cfg,
         "en",
         spread["title"]["en"],
