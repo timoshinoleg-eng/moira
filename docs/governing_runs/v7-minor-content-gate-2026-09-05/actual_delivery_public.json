@@ -1,0 +1,993 @@
+{
+  "run_id": "v7-minor-content-gate-2026-09-05",
+  "prompt_version": "v7-minor-content",
+  "fixture_cases": 24,
+  "case_ids": [
+    "ru-situation-decision",
+    "ru-situation-relationship",
+    "ru-situation-work",
+    "ru-situation-inner_change",
+    "ru-love-decision",
+    "ru-love-relationship",
+    "ru-love-work",
+    "ru-love-inner_change",
+    "ru-choice-decision",
+    "ru-choice-relationship",
+    "ru-choice-work",
+    "ru-choice-inner_change",
+    "en-situation-decision",
+    "en-situation-relationship",
+    "en-situation-work",
+    "en-situation-inner_change",
+    "en-love-decision",
+    "en-love-relationship",
+    "en-love-work",
+    "en-love-inner_change",
+    "en-choice-decision",
+    "en-choice-relationship",
+    "en-choice-work",
+    "en-choice-inner_change"
+  ],
+  "terminal_status": "COMPLETE",
+  "terminal_mode_counts": {
+    "failed_to_complete": 0,
+    "deterministic_fallback": 24,
+    "llm_structured": 0
+  },
+  "hard_fail_cases": [],
+  "contract_fail_cases": [
+    "ru-situation-decision",
+    "ru-situation-relationship",
+    "ru-situation-work",
+    "ru-situation-inner_change",
+    "ru-love-decision",
+    "ru-love-relationship",
+    "ru-love-work",
+    "ru-love-inner_change",
+    "ru-choice-decision",
+    "ru-choice-relationship",
+    "ru-choice-work",
+    "ru-choice-inner_change"
+  ],
+  "results": [
+    {
+      "case_id": "ru-situation-decision",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "decision",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "135cde4ff78fe1a9"
+    },
+    {
+      "case_id": "ru-situation-relationship",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "relationship",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "bd05ca8e28a7e6f1"
+    },
+    {
+      "case_id": "ru-situation-work",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "work",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "6dc72f6524ce2d78"
+    },
+    {
+      "case_id": "ru-situation-inner_change",
+      "lang": "ru",
+      "spread": "situation",
+      "profile": "inner_change",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "82976599ce8ddec1"
+    },
+    {
+      "case_id": "ru-love-decision",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "decision",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "ff2a5622f4a85255"
+    },
+    {
+      "case_id": "ru-love-relationship",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "relationship",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "a1072c473dbe3f0e"
+    },
+    {
+      "case_id": "ru-love-work",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "work",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "c7a819278eaf0775"
+    },
+    {
+      "case_id": "ru-love-inner_change",
+      "lang": "ru",
+      "spread": "love",
+      "profile": "inner_change",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "8a6465afe0d84fb0"
+    },
+    {
+      "case_id": "ru-choice-decision",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "decision",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "3094dccd3dbec306"
+    },
+    {
+      "case_id": "ru-choice-relationship",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "relationship",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "4389eaacbfdaf7b0"
+    },
+    {
+      "case_id": "ru-choice-work",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "work",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "fef8138d6b6e99e7"
+    },
+    {
+      "case_id": "ru-choice-inner_change",
+      "lang": "ru",
+      "spread": "choice",
+      "profile": "inner_change",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": false,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "5571d85504633616"
+    },
+    {
+      "case_id": "en-situation-decision",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "decision",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "7fc1251342470313"
+    },
+    {
+      "case_id": "en-situation-relationship",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "relationship",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "458110dafba4e14d"
+    },
+    {
+      "case_id": "en-situation-work",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "work",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "eb209f9f28f23342"
+    },
+    {
+      "case_id": "en-situation-inner_change",
+      "lang": "en",
+      "spread": "situation",
+      "profile": "inner_change",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "079c0096adde990b"
+    },
+    {
+      "case_id": "en-love-decision",
+      "lang": "en",
+      "spread": "love",
+      "profile": "decision",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "c6682ac02b903944"
+    },
+    {
+      "case_id": "en-love-relationship",
+      "lang": "en",
+      "spread": "love",
+      "profile": "relationship",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "7badad50ae7136df"
+    },
+    {
+      "case_id": "en-love-work",
+      "lang": "en",
+      "spread": "love",
+      "profile": "work",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "8fdeecb3ef3f0d28"
+    },
+    {
+      "case_id": "en-love-inner_change",
+      "lang": "en",
+      "spread": "love",
+      "profile": "inner_change",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "be2326f6dea521e9"
+    },
+    {
+      "case_id": "en-choice-decision",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "decision",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "9945b3ff28095af4"
+    },
+    {
+      "case_id": "en-choice-relationship",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "relationship",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "aa24b4598f92c8ff"
+    },
+    {
+      "case_id": "en-choice-work",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "work",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "533da053dcaedb72"
+    },
+    {
+      "case_id": "en-choice-inner_change",
+      "lang": "en",
+      "spread": "choice",
+      "profile": "inner_change",
+      "status": "deterministic_fallback",
+      "hard_fail": false,
+      "hard_fail_patterns": [],
+      "gibberish_markers": [],
+      "checks": {
+        "actual_fallback_composed": true,
+        "fallback_draw_contract": true,
+        "product_language_matches": true,
+        "share_safe_no_question_echo": true,
+        "no_gibberish_markers": true,
+        "no_forbidden_safety_claim": true
+      },
+      "text_hash": "6d92daa290f97d06"
+    }
+  ],
+  "fallback_counterparts": [
+    {
+      "case_id": "ru-situation-decision",
+      "lang": "ru",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "135cde4ff78fe1a9"
+      }
+    },
+    {
+      "case_id": "ru-situation-relationship",
+      "lang": "ru",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "bd05ca8e28a7e6f1"
+      }
+    },
+    {
+      "case_id": "ru-situation-work",
+      "lang": "ru",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "6dc72f6524ce2d78"
+      }
+    },
+    {
+      "case_id": "ru-situation-inner_change",
+      "lang": "ru",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "82976599ce8ddec1"
+      }
+    },
+    {
+      "case_id": "ru-love-decision",
+      "lang": "ru",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "ff2a5622f4a85255"
+      }
+    },
+    {
+      "case_id": "ru-love-relationship",
+      "lang": "ru",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "a1072c473dbe3f0e"
+      }
+    },
+    {
+      "case_id": "ru-love-work",
+      "lang": "ru",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "c7a819278eaf0775"
+      }
+    },
+    {
+      "case_id": "ru-love-inner_change",
+      "lang": "ru",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "8a6465afe0d84fb0"
+      }
+    },
+    {
+      "case_id": "ru-choice-decision",
+      "lang": "ru",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "3094dccd3dbec306"
+      }
+    },
+    {
+      "case_id": "ru-choice-relationship",
+      "lang": "ru",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "4389eaacbfdaf7b0"
+      }
+    },
+    {
+      "case_id": "ru-choice-work",
+      "lang": "ru",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "fef8138d6b6e99e7"
+      }
+    },
+    {
+      "case_id": "ru-choice-inner_change",
+      "lang": "ru",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": false,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "5571d85504633616"
+      }
+    },
+    {
+      "case_id": "en-situation-decision",
+      "lang": "en",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "7fc1251342470313"
+      }
+    },
+    {
+      "case_id": "en-situation-relationship",
+      "lang": "en",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "458110dafba4e14d"
+      }
+    },
+    {
+      "case_id": "en-situation-work",
+      "lang": "en",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "eb209f9f28f23342"
+      }
+    },
+    {
+      "case_id": "en-situation-inner_change",
+      "lang": "en",
+      "spread": "situation",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "079c0096adde990b"
+      }
+    },
+    {
+      "case_id": "en-love-decision",
+      "lang": "en",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "c6682ac02b903944"
+      }
+    },
+    {
+      "case_id": "en-love-relationship",
+      "lang": "en",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "7badad50ae7136df"
+      }
+    },
+    {
+      "case_id": "en-love-work",
+      "lang": "en",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "8fdeecb3ef3f0d28"
+      }
+    },
+    {
+      "case_id": "en-love-inner_change",
+      "lang": "en",
+      "spread": "love",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "be2326f6dea521e9"
+      }
+    },
+    {
+      "case_id": "en-choice-decision",
+      "lang": "en",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "9945b3ff28095af4"
+      }
+    },
+    {
+      "case_id": "en-choice-relationship",
+      "lang": "en",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "aa24b4598f92c8ff"
+      }
+    },
+    {
+      "case_id": "en-choice-work",
+      "lang": "en",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "533da053dcaedb72"
+      }
+    },
+    {
+      "case_id": "en-choice-inner_change",
+      "lang": "en",
+      "spread": "choice",
+      "evaluation": {
+        "status": "deterministic_fallback",
+        "hard_fail": false,
+        "hard_fail_patterns": [],
+        "gibberish_markers": [],
+        "checks": {
+          "actual_fallback_composed": true,
+          "fallback_draw_contract": true,
+          "product_language_matches": true,
+          "share_safe_no_question_echo": true,
+          "no_gibberish_markers": true,
+          "no_forbidden_safety_claim": true
+        },
+        "text_hash": "6d92daa290f97d06"
+      }
+    }
+  ],
+  "note": "All inputs are synthetic. Public output contains only case metadata, terminal modes, hashes and checks; raw outputs are held in the private owner-review artifact."
+}
