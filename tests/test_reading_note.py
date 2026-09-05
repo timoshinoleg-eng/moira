@@ -27,12 +27,28 @@ from bot.services.reading_notes import (
 
 
 class FakeMessage:
-    def __init__(self, user_id: int) -> None:
+    def __init__(self, user_id: int, text: str | None = None) -> None:
         self.from_user = TgUser(id=user_id, is_bot=False, first_name="Test")
+        self.text = text
         self.sent: list[str] = []
 
     async def answer(self, text: str, **kwargs) -> None:
         self.sent.append(text)
+
+
+class FakeState:
+    """Minimal FSMContext stand-in recording clear() calls."""
+
+    def __init__(self, data: dict | None = None) -> None:
+        self._data = dict(data or {})
+        self.cleared = False
+
+    async def get_data(self) -> dict:
+        return dict(self._data)
+
+    async def clear(self) -> None:
+        self._data = {}
+        self.cleared = True
 
 
 class FakeAnalytics:
@@ -151,3 +167,63 @@ def test_notes_migration_downgrade_cycle(tmp_path) -> None:
     assert "reading_notes" not in tables
     assert alembic("upgrade", "head").returncode == 0
     assert alembic("check").returncode == 0
+
+
+def test_cancel_token_never_stores_note(tmp_path) -> None:
+    from bot.handlers.reading import process_note
+    from bot.i18n import t
+
+    async def run() -> None:
+        await _seed(str(tmp_path / "moira-note-cancel.db"))
+        async with get_session() as session:
+            await save_reading_note(session, user_id=21, reading_id=5, text="precious")
+            await session.commit()
+        cfg = load_config(require_token=False)
+        analytics = FakeAnalytics()
+        state = FakeState({"reading_id": 5})
+        msg = FakeMessage(21, text="меню")
+        await process_note(msg, state, cfg, analytics)
+        assert state.cleared
+        async with get_session() as session:
+            note = await get_reading_note(session, user_id=21, reading_id=5)
+            assert note is not None and note.text == "precious", "cancel token overwrote the note"
+        assert t("ru", "menu_help") in msg.sent
+        assert analytics.events == [], "cancel must not track note_created"
+        await close_db()
+
+    asyncio.run(run())
+
+
+def test_cmd_start_clears_pending_note_state(tmp_path) -> None:
+    from bot.handlers.start import cmd_start
+
+    async def run() -> None:
+        await _seed(str(tmp_path / "moira-note-start.db"))
+        cfg = load_config(require_token=False)
+        state = FakeState({"reading_id": 5})
+        await cmd_start(FakeMessage(21), state, cfg, FakeAnalytics())
+        assert state.cleared and state._data == {}, "/start must drop the note prompt"
+        await close_db()
+
+    asyncio.run(run())
+
+
+def test_note_save_failure_is_answered(tmp_path, monkeypatch) -> None:
+    import bot.handlers.reading as reading_module
+    from bot.handlers.reading import process_note
+    from bot.i18n import t
+
+    async def boom(session, **kwargs) -> None:
+        raise RuntimeError("db down")
+
+    monkeypatch.setattr(reading_module, "save_reading_note", boom)
+
+    async def run() -> None:
+        await _seed(str(tmp_path / "moira-note-fail.db"))
+        cfg = load_config(require_token=False)
+        msg = FakeMessage(21, text="an honest note")
+        await process_note(msg, FakeState({"reading_id": 5}), cfg, FakeAnalytics())
+        assert msg.sent == [t("ru", "note_save_failed")], "user left without an answer"
+        await close_db()
+
+    asyncio.run(run())

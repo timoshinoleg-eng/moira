@@ -31,7 +31,12 @@ def _acquire_single_instance_lock() -> bool:
     global _lock_handle
     # Legacy .bot.lock can remain unreleasable on Windows after a forced process termination.
     # A versioned runtime lock lets the current release recover while retaining an exclusive guard.
-    lock_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".bot.runtime.lock")
+    # Containers run the code dir read-only, so the lock lives in a writable runtime dir
+    # (docker-compose sets MOIRA_LOCK_DIR=/var/lib/moira); venv deploys keep the repo-root default.
+    lock_dir = os.getenv("MOIRA_LOCK_DIR", "").strip() or os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+    lock_path = os.path.join(lock_dir, ".bot.runtime.lock")
 
     try:
         _lock_handle = open(lock_path, "w")
@@ -46,10 +51,11 @@ def _acquire_single_instance_lock() -> bool:
         _lock_handle.write(str(os.getpid()))
         _lock_handle.flush()
         return True
-    except OSError:
+    except OSError as exc:
         if _lock_handle is not None:
             _lock_handle.close()
             _lock_handle = None
+        logger.warning("Instance lock unavailable at %s: %s", lock_path, exc)
         return False
 
 PUSH_HOUR_UTC = 6  # ~09:00 MSK

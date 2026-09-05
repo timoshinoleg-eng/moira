@@ -157,5 +157,6 @@
   "insights_top_cards": "Чаще всего выпадали: {cards}",
   "insights_dominant_suit": "Преобладающая масть: {suit}",
   "insights_reversed": "Перевёрнутых карт: {percent}%",
-  "insights_repeat": "Повторы: {card} — {count}"
+  "insights_repeat": "Повторы: {card} — {count}",
+  "note_save_failed": "⚠️ Не удалось сохранить заметку. Попробуй ещё раз."
 }

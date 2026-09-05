@@ -5,6 +5,10 @@ x-postgres-env: &postgres-env
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moira}
   POSTGRES_DB: ${POSTGRES_DB:-moira}
 
+x-bot-build: &bot-build
+  context: .
+  dockerfile: Dockerfile
+
 services:
   db:
     image: postgres:16
@@ -22,18 +26,34 @@ services:
       timeout: 5s
       retries: 5
 
-  bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
+  # One-shot schema bootstrap: init_db on PostgreSQL only runs SELECT 1, so the
+  # bot must not start before Alembic has applied the schema. Idempotent.
+  migrate:
+    build: *bot-build
+    restart: "no"
     depends_on:
       db:
         condition: service_healthy
     environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-moira}:${POSTGRES_PASSWORD:-moira}@db:5432/${POSTGRES_DB:-moira}
+    entrypoint: ["/app/.venv/bin/python", "-m", "alembic", "upgrade", "head"]
+    healthcheck:
+      disable: true
+
+  bot:
+    build: *bot-build
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
       BOT_TOKEN: ${BOT_TOKEN:?BOT_TOKEN must be set}
       ADMIN_IDS: ${ADMIN_IDS:-}
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-moira}:${POSTGRES_PASSWORD:-moira}@db:5432/${POSTGRES_DB:-moira}
+      # Writable runtime dir for the single-instance lock (code dir is read-only).
+      MOIRA_LOCK_DIR: /var/lib/moira
       DB_POOL_SIZE: ${DB_POOL_SIZE:-5}
       DB_POOL_MAX_OVERFLOW: ${DB_POOL_MAX_OVERFLOW:-10}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}

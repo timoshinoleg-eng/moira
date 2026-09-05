@@ -49,3 +49,6 @@ Moira.png
 
 # Owner-private review material (never publish)
 docs/*PRIVATE*.json
+docs/*private*.json
+docs/**/*PRIVATE*.json
+docs/**/*private*.json

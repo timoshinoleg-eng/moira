@@ -21,7 +21,8 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 # Final runtime image.
 FROM base
-RUN useradd --system --create-home --shell /usr/sbin/nologin moira
+RUN useradd --system --create-home --shell /usr/sbin/nologin moira \
+    && install -d -o moira -g moira /var/lib/moira
 COPY --from=build /root/.local /root/.local
 COPY --chown=moira:moira --from=build /app/.venv /app/.venv
 

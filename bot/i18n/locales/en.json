@@ -157,5 +157,6 @@
   "insights_top_cards": "Most frequent cards: {cards}",
   "insights_dominant_suit": "Dominant suit: {suit}",
   "insights_reversed": "Reversed cards: {percent}%",
-  "insights_repeat": "Repeats: {card} — {count}"
+  "insights_repeat": "Repeats: {card} — {count}",
+  "note_save_failed": "⚠️ Could not save the note. Please try again."
 }

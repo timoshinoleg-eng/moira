@@ -54,6 +54,23 @@ docker compose -f /opt/moira/app/docker-compose.yml ps
 docker compose -f /opt/moira/app/docker-compose.yml logs -f bot
 ~~~
 
+PostgreSQL schema is applied automatically: `docker compose up -d --build`
+runs the one-shot `migrate` service (`alembic upgrade head`) and the bot waits
+for it (`depends_on: migrate: service_completed_successfully`). `init_db` on
+PostgreSQL only probes the connection — it never creates tables, so do not
+skip the migrate step. Compose interpolates the whole model (including the
+`BOT_TOKEN` requirement) even for one-off commands, so load the env first.
+Run migrations manually any time:
+
+~~~bash
+sudo -u root bash -c 'set -a; . /etc/moira/moira.env; set +a;
+  cd /opt/moira/app && docker compose run --rm migrate'
+~~~
+
+The bot writes its single-instance lock into `/var/lib/moira`
+(`MOIRA_LOCK_DIR` in compose; the `moira-data` volume keeps it writable) —
+the code directory inside the container is read-only for the `moira` user.
+
 As a systemd unit (oneshot wrapper around compose):
 
 ~~~bash
@@ -64,12 +81,18 @@ sudo systemctl enable --now moira
 ~~~
 
 Backups are taken nightly by `prodrigestivill/postgres-backup-local:16` into
-`./backups` (custom-format dumps, retention 14 days). Restore drill:
+`./backups` (custom-format dumps, retention 14 days). Restore drill — the db
+port is not published to the host, so run the drill inside a throwaway
+`postgres:16` container on the compose network (script and dumps are
+bind-mounted read-only):
 
 ~~~bash
-BACKUP_DIR=/opt/moira/app/backups \
-PGHOST=127.0.0.1 PGPORT=5432 PGUSER=moira PGPASSWORD=... PGDATABASE=moira \
-  /opt/moira/app/deploy/moira-restore-drill-pg.sh
+sudo -u root bash -c 'set -a; . /etc/moira/moira.env; set +a; cd /opt/moira/app &&
+  docker compose run --rm --no-deps \
+  -v /opt/moira/app/deploy:/deploy:ro -v /opt/moira/app/backups:/backups:ro \
+  -e PGHOST=db -e PGPORT=5432 -e PGUSER=moira -e PGPASSWORD="$POSTGRES_PASSWORD" -e PGDATABASE=moira \
+  -e BACKUP_DIR=/backups \
+  --entrypoint bash db /deploy/moira-restore-drill-pg.sh'
 ~~~
 
 When a plain venv deployment is preferred over containers, keep the unit from
