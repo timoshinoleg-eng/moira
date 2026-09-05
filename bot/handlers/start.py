@@ -42,7 +42,10 @@ async def _respond_start(
 
 
 @router.message(CommandStart(deep_link=True))
-async def cmd_start_ref(message: Message, cfg: Config, analytics: Analytics) -> None:
+async def cmd_start_ref(message: Message, state: FSMContext, cfg: Config, analytics: Analytics) -> None:
+    # /start is the universal escape hatch: drop any active FSM state (e.g. a
+    # pending note prompt) so the next message cannot be captured by an old flow.
+    await state.clear()
     param = message.text.split(maxsplit=1)[1] if message.text and " " in message.text else None
     user, created, variant = await _respond_start(message, cfg, param)
     if created and user.referred_by:
@@ -52,7 +55,8 @@ async def cmd_start_ref(message: Message, cfg: Config, analytics: Analytics) -> 
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, cfg: Config, analytics: Analytics) -> None:
+async def cmd_start(message: Message, state: FSMContext, cfg: Config, analytics: Analytics) -> None:
+    await state.clear()
     await _respond_start(message, cfg)
 
 

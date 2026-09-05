@@ -590,6 +590,10 @@ async def process_note(message: Message, state: FSMContext, cfg: Config, analyti
     user = await get_or_create_user(message.from_user, cfg)
     if not isinstance(reading_id, int):
         return
+    # Same escape hatch as run_reading: a cancel token must never be stored as a note.
+    if (message.text or "").lower() in CANCEL_TOKENS:
+        await message.answer(t(user.language, "menu_help"), reply_markup=main_menu_kb(user.language))
+        return
     try:
         async with get_session() as session:
             await save_reading_note(
@@ -600,6 +604,10 @@ async def process_note(message: Message, state: FSMContext, cfg: Config, analyti
         return
     except ValueError:
         await message.answer(t(user.language, "note_empty"))
+        return
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("note save failed for reading %s: %s", reading_id, exc)
+        await message.answer(t(user.language, "note_save_failed"))
         return
     # Fact only: note text never goes to analytics, logs, or Sentry.
     await analytics.track(user.id, "note_created", reading_id=reading_id)
