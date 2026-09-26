@@ -1,5 +1,11 @@
 # Moira — ИИ-оракул таро (Telegram-бот)
 
+<!-- product-snapshot:start -->
+> **Продукт:** RU/EN AI tarot-продукт для Telegram с генерацией трактовок, голосовыми функциями, экспериментальной referral-механикой, privacy-контролями и встроенной монетизацией.
+>
+> **Стадия:** v1.0.0 RC · **Монетизация:** Telegram Stars + промокоды · **Фокус:** качество трактовок, retention/referrals и приватность.
+<!-- product-snapshot:end -->
+
 > **Статус: v1.0.0-rc.1** — release candidate. 175 тестов зелёные, immutable
 > quality-eval прогоняются против зафиксированных базлайнов. Прод-процедуры:
 > [docs/PRODUCTION_RUNBOOK.md](docs/PRODUCTION_RUNBOOK.md) (деплой, бэкапы,
