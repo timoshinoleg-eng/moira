@@ -8,7 +8,6 @@ Retained sub-agents drop after ``idle_timeout`` (Prime Agent).
 
 from __future__ import annotations
 
-import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from typing import Any, Optional

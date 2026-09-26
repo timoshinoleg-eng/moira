@@ -13,7 +13,6 @@ from __future__ import annotations
 import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Optional
 
 from .behavior import BehaviorAddends
 from .memory import MemoryStore

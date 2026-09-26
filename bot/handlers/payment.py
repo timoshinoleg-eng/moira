@@ -14,7 +14,7 @@ from ..config import Config
 from ..db.database import get_session
 from ..db.models import Payment, PromoCode, PromoRedemption, Referral, User
 from ..i18n import t
-from ..keyboards import back_menu_kb, invite_menu_kb, main_menu_kb, paywall_kb, tariffs_kb
+from ..keyboards import back_menu_kb, invite_menu_kb, main_menu_kb, tariffs_kb
 from ..payments import PRODUCTS, parse_payload, payload_for
 from ..services.analytics import Analytics
 from .growth import invite_variant, referral_deeplink, telegram_share_url

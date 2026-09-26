@@ -10,7 +10,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Any, Optional
 
 from ..format.frontmatter import write_frontmatter
 from .base import SQLiteVersionedState, VersionEntry, _from_json, _iso, _parse_iso, _to_json

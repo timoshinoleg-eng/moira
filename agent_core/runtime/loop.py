@@ -10,7 +10,7 @@ the AttentionManager.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable
 
@@ -29,7 +29,7 @@ class AgentResult:
     answer: str
     iterations: int
     evidence_chain: list[EvidenceRecord]
-    attention_log: list[AttentionTransition]
+    attention_log: list[AttentionState]
 
 
 class AgentLoop:

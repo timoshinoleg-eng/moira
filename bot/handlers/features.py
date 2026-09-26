@@ -48,7 +48,6 @@ from ..tarot.quiz import (
     QUIZ_QUESTIONS,
     compute_result,
     format_arcana_result,
-    get_arcana_description,
 )
 
 # Backward compatibility alias

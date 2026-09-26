@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import os
-from pathlib import Path
 
 from openai import AsyncOpenAI
 from bot.config import load_config

@@ -8,9 +8,9 @@ zero external services.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable
+from typing import Callable
 
 from ..format.trust import TrustTier, credibility_score
 from ..state.memory import MemoryStore

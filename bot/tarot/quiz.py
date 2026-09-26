@@ -1,7 +1,6 @@
 """My Arcana quiz: 6 questions -> Major Arcana archetype."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 
 # 22 Major Arcana numbers
 ALL_MAJOR = list(range(22))
