@@ -63,6 +63,10 @@ class Config:
     llm_v2_total_timeout_sec: float = 18.0
     llm_v2_max_attempts: int = 2
     database_url: str = ""
+    # Off by default: the clip is ~1.6 MB against ~450 KB for the still photo, so
+    # enabling it by default would multiply every reading's payload before anyone
+    # has measured whether it buys retention. Flip it on for a beta cohort.
+    spread_animation: bool = False
 
 
 def load_config(require_token: bool = True) -> Config:
@@ -105,4 +109,7 @@ def load_config(require_token: bool = True) -> Config:
         deepgram_stt_max_duration_sec=int(os.getenv("DEEPGRAM_STT_MAX_DURATION_SEC", "60")),
         deepgram_stt_max_bytes=int(os.getenv("DEEPGRAM_STT_MAX_BYTES", "10485760")),
         deepgram_stt_timeout_sec=int(os.getenv("DEEPGRAM_STT_TIMEOUT_SEC", "25")),
+        # The reveal clip is the ritual moment; the still photo is the fallback
+        # whenever the clip is unavailable or Telegram rejects the upload.
+        spread_animation=_env_bool("SPREAD_ANIMATION"),
     )

@@ -161,7 +161,10 @@ def test_notes_migration_downgrade_cycle(tmp_path) -> None:
         )
 
     assert alembic("upgrade", "head").returncode == 0
-    assert alembic("downgrade", "-1").returncode == 0
+    # `downgrade <rev>` stops *at* that revision, so target the one below the
+    # migration under test. A relative "-1" would instead check whichever
+    # migration happens to be newest.
+    assert alembic("downgrade", "0009_reading_provenance_feedback").returncode == 0
     with sqlite3.connect(db_path) as conn:
         tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     assert "reading_notes" not in tables

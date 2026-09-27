@@ -1,4 +1,4 @@
-"""Regression: /delete_my_data must also remove feedback and push-delivery rows."""
+"""Regression: /delete_my_data must also remove feedback, push and ritual rows."""
 from __future__ import annotations
 
 import asyncio
@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from bot.config import load_config
 from bot.db.database import close_db, get_session, init_db
-from bot.db.models import PushDelivery, Reading, ReadingFeedback, User
+from bot.db.models import PushDelivery, Reading, ReadingFeedback, RitualDay, User
 
 
 class FakeMessage:
@@ -54,6 +54,7 @@ def test_delete_my_data_removes_feedback_and_push_delivery(tmp_path) -> None:
                     status="planned",
                 )
             )
+            session.add(RitualDay(user_id=31, day="2026-09-27", actions=2, first_kind="reading"))
             await session.commit()
 
         await cmd_delete_my_data(FakeMessage(31), cfg, FakeAnalytics())
@@ -62,6 +63,7 @@ def test_delete_my_data_removes_feedback_and_push_delivery(tmp_path) -> None:
             assert (await session.execute(select(ReadingFeedback))).scalars().all() == []
             assert (await session.execute(select(PushDelivery))).scalars().all() == []
             assert (await session.execute(select(Reading))).scalars().all() == []
+            assert (await session.execute(select(RitualDay))).scalars().all() == []
             assert (await session.execute(select(User).where(User.id == 31))).scalars().all() == []
         await close_db()
 

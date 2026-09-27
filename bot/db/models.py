@@ -41,6 +41,12 @@ class User(Base):
     voice_transcription_consent: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="0"
     )
+    # Ritual streak: consecutive local days with any meaningful Moira action.
+    # See bot/services/streaks.py for the arithmetic and freeze rules.
+    streak_current: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    streak_longest: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    streak_freezes: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    last_ritual_date: Mapped[str | None] = mapped_column(String(10), nullable=True)  # YYYY-MM-DD local
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
@@ -218,4 +224,22 @@ class Event(Base):
     name: Mapped[str] = mapped_column(String(64), index=True)
     distinct_id: Mapped[str] = mapped_column(String(32), index=True)
     props_json: Mapped[str] = mapped_column(Text, default="{}")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class RitualDay(Base):
+    """One row per local calendar day on which the user showed up.
+
+    Backs the activity heatmap and the streak statistics. Stores counts and a
+    coarse action kind only — never questions, interpretations or notes.
+    """
+
+    __tablename__ = "ritual_days"
+    __table_args__ = (UniqueConstraint("user_id", "day", name="uq_ritual_day_user_day"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, index=True)
+    day: Mapped[str] = mapped_column(String(10), index=True)  # YYYY-MM-DD local
+    actions: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
+    first_kind: Mapped[str | None] = mapped_column(String(24), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

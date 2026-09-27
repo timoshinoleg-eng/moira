@@ -37,6 +37,19 @@ def parse_referral_param(param: str | None, own_id: int) -> int | None:
     return attribution[0] if attribution else None
 
 
+def referral_link(bot_username: str, user_id: int, variant: str | None = None) -> str:
+    """Build a ``/start`` deep link that attributes a signup to one referrer.
+
+    The experiment suffix is appended only for known variants, so the link always
+    parses back through :func:`parse_referral_attribution`. Returns an empty
+    string when the bot username is unknown, which callers treat as "no invite".
+    """
+    if not bot_username:
+        return ""
+    suffix = f"_{variant}" if variant in REFERRAL_VARIANTS else ""
+    return f"https://t.me/{bot_username}?start={REF_PREFIX}{user_id}{suffix}"
+
+
 async def get_or_create_user(
     tg_user: TgUser,
     cfg: Config,

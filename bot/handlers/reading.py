@@ -33,13 +33,15 @@ from ..services.reading_notes import (
     get_reading_note,
     save_reading_note,
 )
+from ..services.streaks import streak_line, track_ritual
 from ..tarot import SPREADS, draw
 from ..tarot.deck import DECK_VERSION, cards_from_codes
 from ..tarot.spreads import DRAW_ENGINE_VERSION, SPREAD_VERSION
 from ..tarot.fallback import compose_fallback_reading, compose_followup
+from ..visual.animate import make_spread_animation
 from ..visual.render import make_share_image, make_spread_image
 from ..voice.speaker import synthesize_reading_voice
-from .helpers import get_or_create_user, is_unlimited
+from .helpers import get_or_create_user, is_unlimited, referral_link
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -90,9 +92,49 @@ def _share_caption_key(input_mode: str, variant: str) -> str:
 
 
 def _share_referral_link(bot_username: str, user_id: int, variant: str) -> str:
-    if not bot_username:
-        return ""
-    return f"https://t.me/{bot_username}?start=ref_{user_id}_{variant}"
+    return referral_link(bot_username, user_id, variant)
+
+
+async def _send_spread(
+    message: Message,
+    *,
+    spread_title: str,
+    cards_info: list[dict],
+    caption: str,
+    lang: str,
+    animate: bool,
+) -> str:
+    """Send the drawn spread, preferring the reveal clip over the still photo.
+
+    Returns which artifact the user saw: ``"animation"`` or ``"photo"``. The
+    still image is the primary artifact and the guaranteed one, so the clip is
+    attempted first and any failure — render, encode or upload — falls through to
+    it. Nothing here may raise: a broken picture must not cost the user the
+    reading they already paid for.
+    """
+    if animate:
+        try:
+            clip = await asyncio.to_thread(
+                make_spread_animation, spread_title, cards_info, "MOIRA ✦ TAROT", lang
+            )
+            if clip:
+                await message.answer_animation(
+                    BufferedInputFile(clip, filename="spread.gif"), caption=caption
+                )
+                return "animation"
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("spread animation unavailable, sending photo: %s", exc)
+    try:
+        photo = await asyncio.to_thread(
+            make_spread_image, spread_title, cards_info, "MOIRA ✦ TAROT", lang
+        )
+        await message.answer_photo(
+            BufferedInputFile(photo, filename="spread.jpg"), caption=caption
+        )
+        return "photo"
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("spread image failed: %s", exc)
+        return "none"
 
 
 def _is_safety_refusal_required(question: str) -> bool:
@@ -209,17 +251,19 @@ async def run_reading(
             }
             for d in drawn
         ]
-        photo_bytes = await asyncio.to_thread(make_spread_image, spread_title, cards_info, "MOIRA ✦ TAROT", lang)
-
         caption_lines = [f"🔮 <b>{html.escape(spread_title)}</b>"]
         if question and question != "-":
             caption_lines.append(html.escape(t(lang, "question_line", q=question[:300])))
         for info in cards_info:
             mark = t(lang, "rev_mark") if info["reversed"] else ""
             caption_lines.append(f"• {html.escape(info['label'])}: <b>{html.escape(info['name'])}{mark}</b>")
-        await message.answer_photo(
-            BufferedInputFile(photo_bytes, filename="spread.jpg"),
+        await _send_spread(
+            message,
+            spread_title=spread_title,
+            cards_info=cards_info,
             caption="\n".join(caption_lines),
+            lang=lang,
+            animate=cfg.spread_animation,
         )
         await status_msg.edit_text(t(lang, "reading_interpreting"))
 
@@ -327,6 +371,7 @@ async def run_reading(
             caption_variant=user.referral_variant or "legacy",
             source=input_mode,
         )
+    ritual = await track_ritual(user.id, "reading")
 
     footer_lines = []
     if reason == "unlimited":
@@ -334,6 +379,8 @@ async def run_reading(
         footer_lines.append(t(lang, "premium_active", date=until.strftime(t(lang, "date_fmt"))))
     else:
         footer_lines.append(t(lang, "free_left", n=user.free_readings + user.promo_readings))
+    if ritual is not None:
+        footer_lines.append(streak_line(lang, ritual))
     footer_lines.append(t(lang, "disclaimer"))
     await status_msg.edit_text("\n".join(footer_lines), reply_markup=main_menu_kb(lang))
 
@@ -378,7 +425,10 @@ async def cb_share(callback: CallbackQuery, cfg: Config, analytics: Analytics) -
     bot_username = me.username or ""
     caption_variant = share_caption_variant(user.id)
     link = _share_referral_link(bot_username, user.id, caption_variant)
-    photo = await asyncio.to_thread(make_share_image, spread_title, cards_info, summary, cfg.bot_display_name, lang)
+    photo = await asyncio.to_thread(
+        make_share_image, spread_title, cards_info, summary, cfg.bot_display_name, lang,
+        link, t(lang, "qr_invite_label"),
+    )
     caption_key = _share_caption_key(reading.input_mode, caption_variant)
     await callback.message.answer_photo(
         BufferedInputFile(photo, filename="share.jpg"),

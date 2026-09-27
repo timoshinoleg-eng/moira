@@ -57,6 +57,7 @@ FONT_SHARE_FOOTER = 24
 FONT_SINGLE_HEADER = 48
 FONT_SINGLE_SUBTITLE = 34
 FONT_SINGLE_FOOTER = 22
+FONT_QR_LABEL = 24
 
 # ----------------------------------------------------------------- layout ----
 # spread
@@ -80,9 +81,13 @@ SHARE_LABEL_OFFSET_Y = -34
 SHARE_NAME_OFFSET_Y = 12
 SHARE_SUMMARY_Y = 740
 SHARE_SUMMARY_STEP = 42
-SHARE_SUMMARY_MAX_LINES = 4
+SHARE_SUMMARY_MAX_LINES = 3
 SHARE_SUMMARY_MAX_WIDTH = 960
+SHARE_SUMMARY_LINE_HEIGHT = 34
 SHARE_FOOTER_OFFSET_Y = -64
+SHARE_SIGIL_SIZE = 90
+SHARE_SIGIL_CENTER = (540, 930)
+SHARE_SIGIL_CENTER_WITH_QR = (900, 962)
 # single
 SINGLE_CARD_SIZE = (430, 745)
 SINGLE_HEADER_Y = 70
@@ -94,7 +99,67 @@ SINGLE_SUBTITLE_OFFSET_Y = 36
 SINGLE_SUBTITLE_STEP = 46
 SINGLE_SUBTITLE_MAX_LINES = 2
 SINGLE_SUBTITLE_MAX_WIDTH = 980
+SINGLE_SUBTITLE_LINE_HEIGHT = 42
 SINGLE_FOOTER_OFFSET_Y = -60
+
+# ------------------------------------------------------------ invite QR ----
+# A referral link rendered as a scannable QR turns a shared screenshot into a
+# signup. The panel is light-on-dark so the code stays readable by phone cameras.
+QR_ERROR_LEVEL = "m"          # ~15% recovery: enough for a printed/inked card
+QR_MATCH_TOLERANCE = 24       # per-channel JPEG tolerance for visual regression
+QR_SCALE = 4                  # segno pixel multiplier (border counted separately)
+QR_BORDER = 2                 # quiet zone in modules, required for scanning
+QR_PANEL_RADIUS = 14
+QR_PANEL_PAD = 12
+QR_PANEL_FILL = (250, 246, 255)
+QR_PANEL_OUTLINE = (92, 67, 123)
+QR_DARK = "#0a0616"
+QR_LIGHT = "#faf6ff"
+QR_LABEL_GAP = 28
+QR_LABEL_MAX_LINES = 3
+QR_LABEL_STEP = 30
+# Minimum clear space between the text block above and the invite panel below.
+QR_BAND_MIN_GAP = 16
+# share card: bottom-left band
+SHARE_QR_SIZE = 160
+SHARE_QR_XY = (64, 890)
+SHARE_QR_LABEL_X_OFFSET = 0  # label starts at QR right edge + QR_LABEL_GAP
+# Width stops short of the sigil parked on the right edge of the share band.
+SHARE_QR_LABEL_MAX_WIDTH = 560
+# single card: bottom-left band
+SINGLE_QR_SIZE = 150
+SINGLE_QR_XY = (64, 1118)
+SINGLE_QR_LABEL_MAX_WIDTH = 700
+
+# ------------------------------------------------------ spread animation ----
+# A drawn spread is revealed one card at a time so the moment reads as an
+# intentional threshold rather than three images appearing at once. The card
+# back is drawn procedurally — the deck ships faces only.
+ANIM_FRAME_MS = 110           # per reveal frame
+ANIM_HOLD_MS = 900            # per frame of the finished spread
+ANIM_COLORS = 64              # shared palette: one quantisation for the whole clip
+# Dithering is not optional here. The night-sky gradient bands into visible
+# horizontal steps at 64 colours without it, which reads as a rendering fault on
+# the one asset meant to feel crafted. It costs ~0.7 MB, far inside Telegram's
+# 10 MB animation limit.
+ANIM_DITHER = "floyd_steinberg"
+# Per-channel tolerance when comparing the clip against the still render.
+ANIM_MATCH_TOLERANCE = 24
+# Per-channel tolerance for spotting caption text in an encoded frame.
+ANIM_CAPTION_TOLERANCE = 42
+# The clip is downscaled before quantising. A GIF is shown inside a chat bubble,
+# so the full 1080px canvas only inflates the download — the still photo remains
+# the full-resolution artifact.
+ANIM_CANVAS_WIDTH = 800
+ANIM_SLIDE_PX = 46            # how far a card rises into place
+ANIM_SLIDE_ALPHA = 0.55       # opacity of the first slide frame
+ANIM_FLIP_WIDTHS = (0.42, 0.10, 0.42)  # horizontal squash, middle frame shows the back
+ANIM_HOLD_FRAMES = 4
+ANIM_BACK_FILL = (18, 12, 34)
+ANIM_BACK_OUTLINE = (196, 160, 106)
+ANIM_BACK_MARK = (206, 176, 122)
+ANIM_BACK_INNER_RADIUS = 22
+ANIM_BACK_MARK_RADIUS = 26
 
 # ------------------------------------------------------------ decorations ----
 BG_STARS = 170
