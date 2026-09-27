@@ -34,6 +34,8 @@ ENV_NAMES = [
     "LLM_JSON_MODE",
     "LLM_RETRY_POLICY_V2",
     "LLM_CONTROLLED_REPAIR_ENABLED",
+    "LLM_V1_TIMEOUT_SEC",
+    "LLM_V1_MAX_RETRIES",
     "LLM_V2_PRIMARY_TIMEOUT_SEC",
     "LLM_V2_TOTAL_TIMEOUT_SEC",
     "LLM_V2_MAX_ATTEMPTS",
@@ -166,6 +168,27 @@ def test_timeouts_default_to_floats(clean_env) -> None:
     assert isinstance(cfg.llm_v2_primary_timeout_sec, float)
     clean_env.setenv("LLM_V2_PRIMARY_TIMEOUT_SEC", "9.5")
     assert load_config(require_token=False).llm_v2_primary_timeout_sec == 9.5
+
+
+def test_v1_llm_timeout_is_tunable_and_defaults_to_the_historical_budget(clean_env) -> None:
+    """The single-request policy had a hardcoded 90s client timeout.
+
+    A slow-but-correct provider could not be used and a fast-but-wrong one could
+    not be cut short without waiting out the full budget, so the value is read
+    from the environment while keeping the previous default.
+    """
+    cfg = load_config(require_token=False)
+    assert cfg.llm_v1_timeout_sec == 90.0
+    assert isinstance(cfg.llm_v1_timeout_sec, float)
+    clean_env.setenv("LLM_V1_TIMEOUT_SEC", "25")
+    assert load_config(require_token=False).llm_v1_timeout_sec == 25.0
+
+
+def test_v1_llm_retries_are_explicit(clean_env) -> None:
+    """The SDK default of 2 retries silently multiplies the timeout budget."""
+    assert load_config(require_token=False).llm_v1_max_retries == 2
+    clean_env.setenv("LLM_V1_MAX_RETRIES", "0")
+    assert load_config(require_token=False).llm_v1_max_retries == 0
 
 
 def test_push_hour_is_not_clamped(clean_env) -> None:

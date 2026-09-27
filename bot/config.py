@@ -134,6 +134,16 @@ class Config(BaseSettings):
     llm_json_mode: LenientBool = False
     llm_retry_policy_v2: LenientBool = False
     llm_controlled_repair_enabled: LenientBool = False
+    # Budget for the default (v1) policy, which issues one request. It was
+    # hardcoded at 90s, which made the timeout untunable: a slow-but-correct
+    # route could not be used, and a fast-but-wrong one could not be cut short
+    # without waiting out the full budget. Kept at the historical value.
+    llm_v1_timeout_sec: float = 90.0
+    # openai-python retries twice by default, and each attempt gets the full
+    # timeout again, so the real ceiling is timeout x (retries + 1): a "25s"
+    # setting could keep the reader waiting 75s. Pinned here so the budget is
+    # explicit instead of an SDK default.
+    llm_v1_max_retries: Annotated[int, BeforeValidator(_clamp(0, 5))] = 2
     llm_v2_primary_timeout_sec: float = 12.0
     llm_v2_total_timeout_sec: float = 18.0
     llm_v2_max_attempts: Annotated[int, BeforeValidator(_clamp(1, 2))] = 2

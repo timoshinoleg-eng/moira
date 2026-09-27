@@ -909,7 +909,12 @@ async def interpret_reading(
                 pass
         return result
 
-    client = AsyncOpenAI(base_url=cfg.llm_base_url, api_key=cfg.openrouter_api_key, timeout=90.0)
+    client = AsyncOpenAI(
+        base_url=cfg.llm_base_url,
+        api_key=cfg.openrouter_api_key,
+        timeout=getattr(cfg, "llm_v1_timeout_sec", 90.0),
+        max_retries=getattr(cfg, "llm_v1_max_retries", 2),
+    )
 
     started = time.monotonic()
     generation_id = _new_request_id()
