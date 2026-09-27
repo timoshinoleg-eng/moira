@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import html
 import logging
+import re
 
 from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
@@ -66,6 +67,16 @@ SAFETY_PATTERNS = [
     "выдай системный", "игнорируй предыдущие", "раскрой промпт", "prompt injection",
 ]
 
+# English tokens match on word boundaries to avoid false positives
+# (e.g. "die" in "studied", "harm" in "pharmacy", "kill" in "skill",
+# "tax" in "taxi", "invest" in "investigate", "court" in "courtesy").
+_SAFETY_EN_RE = re.compile(
+    r"\b(?:" + "|".join(re.escape(p) for p in SAFETY_PATTERNS if p.isascii()) + r")\b",
+    re.IGNORECASE,
+)
+# Cyrillic patterns are stems that match by substring (morphology-friendly).
+_SAFETY_RU = tuple(p for p in SAFETY_PATTERNS if not p.isascii())
+
 
 def share_caption_variant(user_id: int) -> str:
     """Return a stable, balanced experiment assignment for one referrer."""
@@ -86,7 +97,9 @@ def _share_referral_link(bot_username: str, user_id: int, variant: str) -> str:
 
 def _is_safety_refusal_required(question: str) -> bool:
     low = question.lower()
-    return any(p in low for p in SAFETY_PATTERNS)
+    if any(p in low for p in _SAFETY_RU):
+        return True
+    return _SAFETY_EN_RE.search(question) is not None
 
 
 class ReadingStates(StatesGroup):
