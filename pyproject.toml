@@ -16,7 +16,7 @@ dependencies = [
     "tenacity==9.1.4",
     "openai==2.53.0",
     "posthog==7.37.0",
-    "sentry-sdk==2.66.1",
+    "sentry-sdk==2.68.0",
     "pydantic==2.13.4",
     "tzdata==2026.3",
     "PyYAML==6.0.3",
