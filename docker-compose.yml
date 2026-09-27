@@ -2,7 +2,7 @@ name: moira
 
 x-postgres-env: &postgres-env
   POSTGRES_USER: ${POSTGRES_USER:-moira}
-  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moira}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set (no default)}
   POSTGRES_DB: ${POSTGRES_DB:-moira}
 
 x-bot-build: &bot-build
@@ -35,7 +35,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-moira}:${POSTGRES_PASSWORD:-moira}@db:5432/${POSTGRES_DB:-moira}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-moira}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set (no default)}@db:5432/${POSTGRES_DB:-moira}
     entrypoint: ["/app/.venv/bin/python", "-m", "alembic", "upgrade", "head"]
     healthcheck:
       disable: true
@@ -51,7 +51,7 @@ services:
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?BOT_TOKEN must be set}
       ADMIN_IDS: ${ADMIN_IDS:-}
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-moira}:${POSTGRES_PASSWORD:-moira}@db:5432/${POSTGRES_DB:-moira}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-moira}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set (no default)}@db:5432/${POSTGRES_DB:-moira}
       # Writable runtime dir for the single-instance lock (code dir is read-only).
       MOIRA_LOCK_DIR: /var/lib/moira
       DB_POOL_SIZE: ${DB_POOL_SIZE:-5}
@@ -94,7 +94,7 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_USER: ${POSTGRES_USER:-moira}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moira}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set (no default)}
       POSTGRES_DB: ${POSTGRES_DB:-moira}
       SCHEDULE: "@daily"
       BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
