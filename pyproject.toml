@@ -22,6 +22,7 @@ dependencies = [
     "PyYAML==6.0.3",
     "asyncpg==0.30.0",
     "segno==1.6.6",
+    "astronomy-engine==2.1.19",
 ]
 
 [dependency-groups]
