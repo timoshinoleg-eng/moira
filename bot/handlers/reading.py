@@ -33,6 +33,7 @@ from ..services.reading_notes import (
     get_reading_note,
     save_reading_note,
 )
+from ..services.streaks import streak_line, track_ritual
 from ..tarot import SPREADS, draw
 from ..tarot.deck import DECK_VERSION, cards_from_codes
 from ..tarot.spreads import DRAW_ENGINE_VERSION, SPREAD_VERSION
@@ -90,9 +91,7 @@ def _share_caption_key(input_mode: str, variant: str) -> str:
 
 
 def _share_referral_link(bot_username: str, user_id: int, variant: str) -> str:
-    if not bot_username:
-        return ""
-    return f"https://t.me/{bot_username}?start=ref_{user_id}_{variant}"
+    return referral_link(bot_username, user_id, variant)
 
 
 def _is_safety_refusal_required(question: str) -> bool:
@@ -209,8 +208,9 @@ async def run_reading(
             }
             for d in drawn
         ]
-        photo_bytes = await asyncio.to_thread(make_spread_image, spread_title, cards_info, "MOIRA ✦ TAROT", lang)
-
+        photo_bytes = await asyncio.to_thread(
+            make_spread_image, spread_title, cards_info, "MOIRA ✦ TAROT", lang
+        )
         caption_lines = [f"🔮 <b>{html.escape(spread_title)}</b>"]
         if question and question != "-":
             caption_lines.append(html.escape(t(lang, "question_line", q=question[:300])))
@@ -327,6 +327,7 @@ async def run_reading(
             caption_variant=user.referral_variant or "legacy",
             source=input_mode,
         )
+    ritual = await track_ritual(user.id, "reading")
 
     footer_lines = []
     if reason == "unlimited":
@@ -334,6 +335,8 @@ async def run_reading(
         footer_lines.append(t(lang, "premium_active", date=until.strftime(t(lang, "date_fmt"))))
     else:
         footer_lines.append(t(lang, "free_left", n=user.free_readings + user.promo_readings))
+    if ritual is not None:
+        footer_lines.append(streak_line(lang, ritual))
     footer_lines.append(t(lang, "disclaimer"))
     await status_msg.edit_text("\n".join(footer_lines), reply_markup=main_menu_kb(lang))
 

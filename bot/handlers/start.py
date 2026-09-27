@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import html
+
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
@@ -8,10 +10,11 @@ from sqlalchemy import delete, or_
 
 from ..config import Config
 from ..db.database import get_session
-from ..db.models import Event, LlmUsage, PromoRedemption, PushDelivery, Reading, ReadingFavorite, ReadingFeedback, ReadingNote, Referral, User
+from ..db.models import Event, LlmUsage, PromoRedemption, PushDelivery, Reading, ReadingFavorite, ReadingFeedback, ReadingNote, Referral, RitualDay, User
 from ..i18n import t
 from ..keyboards import back_menu_kb, main_menu_kb
 from ..services.analytics import Analytics
+from ..services.streaks import state_from_user, streak_line
 from .helpers import (
     get_or_create_user,
     get_or_create_user_with_status,
@@ -78,6 +81,7 @@ async def cmd_delete_my_data(message: Message, cfg: Config, analytics: Analytics
         await session.execute(delete(ReadingFeedback).where(ReadingFeedback.user_id == user.id))
         await session.execute(delete(Reading).where(Reading.user_id == user.id))
         await session.execute(delete(ReadingFavorite).where(ReadingFavorite.user_id == user.id))
+        await session.execute(delete(RitualDay).where(RitualDay.user_id == user.id))
         await session.execute(delete(PushDelivery).where(PushDelivery.user_id == user.id))
         await session.execute(delete(Event).where(Event.distinct_id == Analytics.distinct(user.id)))
         await session.execute(delete(LlmUsage).where(LlmUsage.user_id == user.id))
@@ -98,7 +102,12 @@ async def cmd_delete_my_data(message: Message, cfg: Config, analytics: Analytics
 async def cb_menu(callback: CallbackQuery, state: FSMContext, cfg: Config) -> None:
     await state.clear()
     user = await get_or_create_user(callback.from_user, cfg)
-    await callback.message.answer(t(user.language, "menu_help"), reply_markup=main_menu_kb(user.language))
+    lang = user.language
+    streak = streak_line(lang, state_from_user(user))
+    await callback.message.answer(
+        f"{t(lang, 'menu_help')}\n\n<i>{html.escape(streak)}</i>",
+        reply_markup=main_menu_kb(lang),
+    )
     await callback.answer()
 
 

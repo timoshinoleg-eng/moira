@@ -160,5 +160,14 @@
   "insights_repeat": "Repeats: {card} — {count}",
   "note_save_failed": "⚠️ Could not save the note. Please try again.",
   "qr_invite_label": "Scan to get your own reading",
-  "qr_invite_label_quiz": "Find your Arcana for free"
+  "qr_invite_label_quiz": "Find your Arcana for free",
+  "streak_none": "Your ritual starts with the first reading",
+  "streak_active": "Streak {n} {word}",
+  "streak_freeze": "Freezes: {n}",
+  "streak_at_risk": "Your streak is waiting for you",
+  "streak_broken_today": "A new streak starts today",
+  "streak_menu": "Streak: {n} {word} · best {best}",
+  "streak_word_day": "day",
+  "streak_word_days_2": "days",
+  "streak_word_days_5": "days"
 }

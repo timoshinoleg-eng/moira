@@ -160,5 +160,14 @@
   "insights_repeat": "Повторы: {card} — {count}",
   "note_save_failed": "⚠️ Не удалось сохранить заметку. Попробуй ещё раз.",
   "qr_invite_label": "Наведи камеру и получи свой расклад",
-  "qr_invite_label_quiz": "Узнай свой Аркан бесплатно"
+  "qr_invite_label_quiz": "Узнай свой Аркан бесплатно",
+  "streak_none": "Ритуал начнётся с первого расклада",
+  "streak_active": "Серия {n} {word}",
+  "streak_freeze": "Заморозка: {n}",
+  "streak_at_risk": "Твоя серия ждёт тебя",
+  "streak_broken_today": "Новая серия начинается сегодня",
+  "streak_menu": "Серия: {n} {word} · рекорд {best}",
+  "streak_word_day": "день",
+  "streak_word_days_2": "дня",
+  "streak_word_days_5": "дней"
 }

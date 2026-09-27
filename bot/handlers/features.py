@@ -34,6 +34,7 @@ from ..i18n import t
 from ..keyboards import altar_kb, back_menu_kb, history_kb, main_menu_kb, mirror_kb
 from ..llm.adapter import weekly_mirror_text
 from ..services.analytics import Analytics
+from ..services.streaks import streak_line, track_ritual
 from ..tarot import SPREADS
 from ..tarot.deck import build_deck, cards_from_codes
 from ..visual.render import make_single_image
@@ -153,6 +154,9 @@ async def cb_altar(callback: CallbackQuery, state: FSMContext, cfg: Config) -> N
         await state.set_state(FeatureStates.waiting_birth)
         await callback.answer()
         return
+    # Opening the altar is a ritual visit in its own right, so it counts even
+    # without a paid reading.
+    await track_ritual(user.id, "altar")
     await _show_altar(callback.bot, callback.message.chat.id, user, cfg)
     await callback.answer()
 
@@ -243,6 +247,8 @@ async def cb_quiz_answer(callback: CallbackQuery, state: FSMContext, cfg: Config
 
     await state.clear()
 
+    # Finishing the quiz is a full ritual visit and the most shareable moment.
+    ritual = await track_ritual(user.id, "quiz")
     title = t(lang, "quiz_result_title", name=arcana_name)
     if card is not None:
         # The arcana result is the most shareable artifact the bot produces, so it
@@ -259,7 +265,10 @@ async def cb_quiz_answer(callback: CallbackQuery, state: FSMContext, cfg: Config
         )
     else:
         await callback.message.answer(f"<b>{title}</b>\n{result_text}")
-    await callback.message.answer(t(lang, "quiz_share"), reply_markup=back_menu_kb(lang))
+    share_text = t(lang, "quiz_share")
+    if ritual is not None:
+        share_text = f"{streak_line(lang, ritual)}\n\n{share_text}"
+    await callback.message.answer(share_text, reply_markup=back_menu_kb(lang))
     await callback.answer()
 
 
