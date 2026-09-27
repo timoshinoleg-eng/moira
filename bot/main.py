@@ -4,6 +4,7 @@ import asyncio
 import logging
 import os
 import sys
+from contextlib import suppress
 from datetime import datetime, timezone
 
 from aiogram import Bot, Dispatcher
@@ -20,6 +21,7 @@ from .db.database import get_session
 from .handlers import admin, features, payment, reading, start, voice
 from .handlers.features import send_daily_push, send_weekly_mirror
 from .services.analytics import Analytics
+from .services.push_worker import PushWorker
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +118,12 @@ async def set_commands(bot: Bot) -> None:
 
 
 async def daily_push_loop(bot: Bot, cfg: Config, analytics: Analytics) -> None:
-    """Each morning sends the personal altar; on Sundays also the weekly mirror."""
+    """Pre-ledger fallback: wake every 20 minutes and send in batches.
+
+    Kept as the rollback path for ``PUSH_WORKER_ENABLED``. The M-09 worker in
+    ``bot/services/push_worker.py`` replaces it, but only once it has been
+    exercised in beta — a flag that silently has no fallback is not a rollback.
+    """
     while True:
         try:
             now = datetime.now(timezone.utc)
@@ -142,7 +149,9 @@ async def daily_push_loop(bot: Bot, cfg: Config, analytics: Analytics) -> None:
                         if sent >= PUSH_BATCH:
                             break
                         try:
-                            if await send_daily_push(bot, cfg, u, session, today_str):
+                            # The senders return None on success and a reason
+                            # code otherwise; only a real send counts.
+                            if await send_daily_push(bot, cfg, u, session, today_str) is None:
                                 sent += 1
                         except Exception as exc:  # noqa: BLE001
                             logger.warning("push to %s failed: %s", u.id, exc)
@@ -168,6 +177,28 @@ async def daily_push_loop(bot: Bot, cfg: Config, analytics: Analytics) -> None:
         except Exception as exc:  # noqa: BLE001
             logger.warning("daily push loop error: %s", exc)
         await asyncio.sleep(PUSH_INTERVAL_SEC)
+
+
+async def _start_push_loop(bot: Bot, cfg: Config, analytics: Analytics) -> asyncio.Task:
+    """Start the M-09 delivery worker, or the legacy loop when it is disabled.
+
+    The flag is read once at startup rather than per tick: a push schedule that
+    can flip mid-flight is harder to reason about than a restart.
+    """
+    if cfg.push_worker_enabled:
+        worker = PushWorker(bot, cfg, analytics)
+        logger.info(
+            "push worker enabled: hour=%02d:00 UTC tick=%ds batch=%d lease=%ds attempts=%d mirror=%s",
+            worker.settings.send_hour_utc,
+            cfg.push_tick_seconds,
+            worker.settings.batch_size,
+            worker.settings.lease_seconds,
+            worker.settings.max_attempts,
+            worker.settings.mirror_enabled,
+        )
+        return asyncio.create_task(worker.run_forever(cfg.push_tick_seconds))
+    logger.info("push worker disabled; using the legacy 20-minute push loop")
+    return asyncio.create_task(daily_push_loop(bot, cfg, analytics))
 
 
 async def main() -> None:
@@ -211,7 +242,7 @@ async def main() -> None:
         logger.warning("Telegram webhook cleanup skipped: %s", exc)
     logger.info("Starting polling as %s…", cfg.bot_display_name)
 
-    push_task = asyncio.create_task(daily_push_loop(bot, cfg, analytics))
+    push_task = _start_push_loop(bot, cfg, analytics)
     try:
         while True:
             try:
@@ -222,6 +253,8 @@ async def main() -> None:
                 await asyncio.sleep(10)
     finally:
         push_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await push_task
         analytics.shutdown()
         # --- agent-core: close harness ---
         try:

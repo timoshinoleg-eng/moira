@@ -276,13 +276,19 @@ async def cb_quiz_answer(callback: CallbackQuery, state: FSMContext, cfg: Config
     await callback.answer()
 
 
-async def send_daily_push(bot: Bot, cfg: Config, user: User, session, today_str: str) -> bool:
-    """Morning personal altar push. Returns True only when the message was sent successfully."""
+async def send_daily_push(bot: Bot, cfg: Config, user: User, session, today_str: str) -> str | None:
+    """Morning personal altar push.
+
+    Returns ``None`` when the message went out, otherwise a short reason: the
+    caller's job. The M-09 worker needs to tell "already sent today" and "the
+    user blocked the bot" apart, because one is finished work and the other must
+    not be retried. Returning a bare bool made both look like failure.
+    """
     lang = user.language
     if not user.daily_push:
-        return False
+        return "opted_out"
     if user.last_push_date == today_str:
-        return False
+        return "already_sent"
     today = date.fromisoformat(today_str)
     card, rev = daily_card(today, user.id)
     phase, _illum, _msign = moon_state_by_date(today)
@@ -304,9 +310,9 @@ async def send_daily_push(bot: Bot, cfg: Config, user: User, session, today_str:
         await bot.send_message(user.id, text, reply_markup=kb)
     except Exception as exc:  # noqa: BLE001
         logger.warning("daily push to %s failed: %s", user.id, exc)
-        return False
+        return classify_push_error(exc)
     user.last_push_date = today_str
-    return True
+    return None
 
 
 MIRROR_QUESTIONS = {
@@ -487,6 +493,42 @@ async def _footer_kb_after_fav(lang: str, reading_id: int, spread_id: str, faved
     return reading_footer_kb(lang, reading_id, spread_id, faved=faved)
 
 
+# Reasons that must never be retried: Telegram will keep rejecting them, so a
+# retry only burns rate limit. Shared with the M-09 worker.
+PUSH_TERMINAL_CODES = frozenset(
+    {
+        "bot_blocked_by_user",
+        "user_is_deactivated",
+        "chat_not_found",
+        "bot_kicked_from_chat",
+    }
+)
+
+# Reasons that mean "there was nothing to send" rather than "the send failed".
+# The work is finished either way, so these close the row instead of retrying it.
+PUSH_SKIP_CODES = frozenset({"already_sent", "opted_out", "too_few_readings"})
+
+
+def classify_push_error(exc: Exception) -> str:
+    """Map a Telegram send failure onto a short, safe reason code.
+
+    Only the exception type name and a keyword scan of the message are used, so
+    no user text ever reaches the ledger.
+    """
+    text = str(exc).lower()
+    if "bot was blocked" in text or "bot_blocked" in text:
+        return "bot_blocked_by_user"
+    if "deactivated" in text:
+        return "user_is_deactivated"
+    if "chat not found" in text:
+        return "chat_not_found"
+    if "kicked" in text:
+        return "bot_kicked_from_chat"
+    if "flood" in text or "retry after" in text:
+        return "flood"
+    return type(exc).__name__[:32]
+
+
 def _top_cards_of_week(readings: list[Reading], lang: str, top_n: int = 3) -> list[str]:
     counts: dict[str, int] = {}
     for r in readings:
@@ -497,11 +539,17 @@ def _top_cards_of_week(readings: list[Reading], lang: str, top_n: int = 3) -> li
     return [name for name, _c in ranked[:top_n]]
 
 
-async def send_weekly_mirror(bot: Bot, cfg: Config, user: User, session, week_str: str, analytics: Analytics) -> bool:
-    """Weekly 'Mirror': aggregated cards + reflection. Returns True when sent."""
+async def send_weekly_mirror(bot: Bot, cfg: Config, user: User, session, week_str: str, analytics: Analytics) -> str | None:
+    """Weekly 'Mirror': aggregated cards + reflection.
+
+    Same contract as :func:`send_daily_push` — ``None`` when sent, otherwise a
+    short reason. A user with fewer than three readings this week is a
+    deliberate no-op (``"too_few_readings"``), not a failure, and the worker must
+    close that row rather than retry it.
+    """
     lang = user.language
     if user.last_mirror_week == week_str:
-        return False
+        return "already_sent"
     since = datetime.now(timezone.utc) - timedelta(days=7)
     rows = (
         (
@@ -515,7 +563,7 @@ async def send_weekly_mirror(bot: Bot, cfg: Config, user: User, session, week_st
         .all()
     )
     if len(rows) < 3:
-        return False
+        return "too_few_readings"
     top = _top_cards_of_week(rows, lang)
     text = await weekly_mirror_text(cfg, lang, top, len(rows))
     if not text:
@@ -526,7 +574,11 @@ async def send_weekly_mirror(bot: Bot, cfg: Config, user: User, session, week_st
             + cards_line
             + f"\n\n✦ {question}"
         )
-    await bot.send_message(user.id, f"<b>{t(lang, 'mirror_title')}</b>\n\n{text}", reply_markup=mirror_kb(lang))
+    try:
+        await bot.send_message(user.id, f"<b>{t(lang, 'mirror_title')}</b>\n\n{text}", reply_markup=mirror_kb(lang))
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("weekly mirror to %s failed: %s", user.id, exc)
+        return classify_push_error(exc)
     user.last_mirror_week = week_str
     await analytics.track(user.id, "mirror_sent", readings=len(rows))
-    return True
+    return None
