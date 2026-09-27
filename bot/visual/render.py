@@ -285,6 +285,21 @@ def _paste_qr_invite(
     return True
 
 
+def spread_card_slots(count: int = 3) -> list[tuple[int, int, int, int]]:
+    """Return ``(x, y, w, h)`` for each card slot of the spread canvas.
+
+    Shared by the still renderer and the reveal animation so a card can never
+    appear in one place in the photo and somewhere else in the GIF.
+    """
+    W, _H = T.CANVAS_SPREAD
+    card_w, card_h = T.SPREAD_CARD_SIZE
+    gap = T.SPREAD_CARD_GAP
+    n = max(1, min(count, 3))
+    total = card_w * n + gap * (n - 1)
+    x_start = (W - total) // 2
+    return [(x_start + i * (card_w + gap), T.SPREAD_CARDS_Y, card_w, card_h) for i in range(n)]
+
+
 def make_spread_image(
     spread_title: str, cards_info: list[dict], footer: str = "MOIRA", lang: str = "ru"
 ) -> bytes:
@@ -301,18 +316,13 @@ def make_spread_image(
     title = _sanitize_text(spread_title)
     draw.text((_center_x(draw, W, title, title_font), T.SPREAD_TITLE_Y), title, font=title_font, fill=T.TEXT_TITLE)
 
-    card_w, card_h = T.SPREAD_CARD_SIZE
-    gap = T.SPREAD_CARD_GAP
-    total = card_w * 3 + gap * 2
-    x_start = (W - total) // 2
-    y0 = T.SPREAD_CARDS_Y
-
+    slots = spread_card_slots(len(cards_info[:3]))
     pos_font = _font(T.FONT_SPREAD_POSITION)
     name_font = _font(T.FONT_SPREAD_NAME, bold=True)
     note_font = _font(T.FONT_SPREAD_NOTE)
 
     for i, info in enumerate(cards_info[:3]):
-        x = x_start + i * (card_w + gap)
+        x, y0, card_w, card_h = slots[i]
         label = _sanitize_text(info["label"])
         draw.text((_center_x_in(draw, x, card_w, label, pos_font), y0 + T.SPREAD_LABEL_OFFSET_Y),
                   label, font=pos_font, fill=T.TEXT_POSITION)

@@ -131,6 +131,36 @@ SINGLE_QR_SIZE = 150
 SINGLE_QR_XY = (64, 1118)
 SINGLE_QR_LABEL_MAX_WIDTH = 700
 
+# ------------------------------------------------------ spread animation ----
+# A drawn spread is revealed one card at a time so the moment reads as an
+# intentional threshold rather than three images appearing at once. The card
+# back is drawn procedurally — the deck ships faces only.
+ANIM_FRAME_MS = 110           # per reveal frame
+ANIM_HOLD_MS = 900            # per frame of the finished spread
+ANIM_COLORS = 64              # shared palette: one quantisation for the whole clip
+# Dithering is not optional here. The night-sky gradient bands into visible
+# horizontal steps at 64 colours without it, which reads as a rendering fault on
+# the one asset meant to feel crafted. It costs ~0.7 MB, far inside Telegram's
+# 10 MB animation limit.
+ANIM_DITHER = "floyd_steinberg"
+# Per-channel tolerance when comparing the clip against the still render.
+ANIM_MATCH_TOLERANCE = 24
+# Per-channel tolerance for spotting caption text in an encoded frame.
+ANIM_CAPTION_TOLERANCE = 42
+# The clip is downscaled before quantising. A GIF is shown inside a chat bubble,
+# so the full 1080px canvas only inflates the download — the still photo remains
+# the full-resolution artifact.
+ANIM_CANVAS_WIDTH = 800
+ANIM_SLIDE_PX = 46            # how far a card rises into place
+ANIM_SLIDE_ALPHA = 0.55       # opacity of the first slide frame
+ANIM_FLIP_WIDTHS = (0.42, 0.10, 0.42)  # horizontal squash, middle frame shows the back
+ANIM_HOLD_FRAMES = 4
+ANIM_BACK_FILL = (18, 12, 34)
+ANIM_BACK_OUTLINE = (196, 160, 106)
+ANIM_BACK_MARK = (206, 176, 122)
+ANIM_BACK_INNER_RADIUS = 22
+ANIM_BACK_MARK_RADIUS = 26
+
 # ------------------------------------------------------------ decorations ----
 BG_STARS = 170
 STAR_RADIUS = (0.4, 1.7)
