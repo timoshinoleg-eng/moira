@@ -6,7 +6,6 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 from sqlalchemy import func, select
-from sqlalchemy.sql import and_
 
 from ..config import Config
 from ..db.database import get_session

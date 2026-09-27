@@ -19,7 +19,7 @@ from ..config import Config
 from ..db.database import get_session
 from ..db.models import LlmUsage, Reading
 from ..tarot.patterns import analyze_patterns, format_pattern_block
-from ..tarot.spreads import DrawnCard, POSITION_MEANINGS, position_meaning
+from ..tarot.spreads import DrawnCard, position_meaning
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +139,6 @@ try:
     from agent_core import (
         AttentionState,
         EvidenceRecord,
-        RetryPolicy,
         TrustTier,
     )
     from ..agent import get_harness, get_attention, get_evidence

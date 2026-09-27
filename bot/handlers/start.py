@@ -8,7 +8,7 @@ from sqlalchemy import delete, or_
 
 from ..config import Config
 from ..db.database import get_session
-from ..db.models import Event, LlmUsage, Payment, PromoRedemption, PushDelivery, Reading, ReadingFavorite, ReadingFeedback, ReadingNote, Referral, User
+from ..db.models import Event, LlmUsage, PromoRedemption, PushDelivery, Reading, ReadingFavorite, ReadingFeedback, ReadingNote, Referral, User
 from ..i18n import t
 from ..keyboards import back_menu_kb, main_menu_kb
 from ..services.analytics import Analytics

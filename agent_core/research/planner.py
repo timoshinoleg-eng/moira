@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Callable, Optional
+from typing import Callable, Optional
 
 from .evidence import Source
 
