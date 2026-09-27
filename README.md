@@ -72,7 +72,10 @@
   можно через `docker compose` (bot + postgres:16 + nightly backups).
 - **Фоновые задачи** (daily push / weekly mirror) живут в процессе polling.
   При рестарте планировщик начинает заново; дубли предотвращаются полями
-  `last_push_date` и `last_mirror_week`.
+  `last_push_date` и `last_mirror_week`. Устойчивая основа `push_deliveries`
+  (идемпотентный планировщик, claim/lease, M-07/M-08) реализована и покрыта
+  тестами, но доставляющий worker (M-09) ещё не подключён — в RC работает
+  legacy-цикл.
 - **TTS**: edge-tts требует интернета и возвращает MP3. Telegram voice note
   предпочитает OGG/OPUS; текущая реализация полагается на Bot API.
 - **Safety**: фильтр чувствительных тем — эвристический. Он снижает риск, но
