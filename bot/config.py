@@ -63,10 +63,19 @@ class Config:
     llm_v2_total_timeout_sec: float = 18.0
     llm_v2_max_attempts: int = 2
     database_url: str = ""
-    # Off by default: the clip is ~1.6 MB against ~450 KB for the still photo, so
+    # Off by default: the reveal clip is ~1.6 MB against ~450 KB for the still photo, so
     # enabling it by default would multiply every reading's payload before anyone
     # has measured whether it buys retention. Flip it on for a beta cohort.
     spread_animation: bool = False
+    # M-09 delivery worker. Off keeps the pre-ledger 20-minute loop, which stays in
+    # the tree as the rollback path until the worker has proven itself in beta.
+    push_worker_enabled: bool = False
+    push_hour_utc: int = 6
+    push_tick_seconds: int = 300
+    push_batch_size: int = 50
+    push_lease_seconds: int = 300
+    push_max_attempts: int = 3
+    push_mirror_enabled: bool = True
 
 
 def load_config(require_token: bool = True) -> Config:
@@ -112,4 +121,11 @@ def load_config(require_token: bool = True) -> Config:
         # The reveal clip is the ritual moment; the still photo is the fallback
         # whenever the clip is unavailable or Telegram rejects the upload.
         spread_animation=_env_bool("SPREAD_ANIMATION"),
+        push_worker_enabled=_env_bool("PUSH_WORKER_ENABLED"),
+        push_hour_utc=int(os.getenv("PUSH_HOUR_UTC", "6")),
+        push_tick_seconds=max(30, int(os.getenv("PUSH_TICK_SECONDS", "300"))),
+        push_batch_size=max(1, int(os.getenv("PUSH_BATCH_SIZE", "50"))),
+        push_lease_seconds=max(30, int(os.getenv("PUSH_LEASE_SECONDS", "300"))),
+        push_max_attempts=max(1, int(os.getenv("PUSH_MAX_ATTEMPTS", "3"))),
+        push_mirror_enabled=_env_bool("PUSH_MIRROR_ENABLED", default=True),
     )
