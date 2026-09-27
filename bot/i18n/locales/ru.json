@@ -158,5 +158,7 @@
   "insights_dominant_suit": "Преобладающая масть: {suit}",
   "insights_reversed": "Перевёрнутых карт: {percent}%",
   "insights_repeat": "Повторы: {card} — {count}",
-  "note_save_failed": "⚠️ Не удалось сохранить заметку. Попробуй ещё раз."
+  "note_save_failed": "⚠️ Не удалось сохранить заметку. Попробуй ещё раз.",
+  "qr_invite_label": "Наведи камеру и получи свой расклад",
+  "qr_invite_label_quiz": "Узнай свой Аркан бесплатно"
 }

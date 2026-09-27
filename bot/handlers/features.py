@@ -37,7 +37,7 @@ from ..services.analytics import Analytics
 from ..tarot import SPREADS
 from ..tarot.deck import build_deck, cards_from_codes
 from ..visual.render import make_single_image
-from .helpers import ensure_utc, get_or_create_user
+from .helpers import ensure_utc, get_or_create_user, referral_link
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -245,8 +245,13 @@ async def cb_quiz_answer(callback: CallbackQuery, state: FSMContext, cfg: Config
 
     title = t(lang, "quiz_result_title", name=arcana_name)
     if card is not None:
+        # The arcana result is the most shareable artifact the bot produces, so it
+        # carries its own invite QR: a screenshot of the banner becomes a signup.
+        me = await callback.bot.me()
+        invite_link = referral_link(me.username or "", user.id)
         photo = await asyncio.to_thread(
-            make_single_image, title, result_text, card, footer="MOIRA ✦ TAROT", lang=lang, reversed_=False
+            make_single_image, title, result_text, card, footer="MOIRA ✦ TAROT", lang=lang,
+            reversed_=False, qr_link=invite_link, qr_label=t(lang, "qr_invite_label_quiz"),
         )
         await callback.message.answer_photo(
             BufferedInputFile(photo, filename="arcana.jpg"),

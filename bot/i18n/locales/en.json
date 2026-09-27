@@ -158,5 +158,7 @@
   "insights_dominant_suit": "Dominant suit: {suit}",
   "insights_reversed": "Reversed cards: {percent}%",
   "insights_repeat": "Repeats: {card} — {count}",
-  "note_save_failed": "⚠️ Could not save the note. Please try again."
+  "note_save_failed": "⚠️ Could not save the note. Please try again.",
+  "qr_invite_label": "Scan to get your own reading",
+  "qr_invite_label_quiz": "Find your Arcana for free"
 }

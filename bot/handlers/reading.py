@@ -39,7 +39,7 @@ from ..tarot.spreads import DRAW_ENGINE_VERSION, SPREAD_VERSION
 from ..tarot.fallback import compose_fallback_reading, compose_followup
 from ..visual.render import make_share_image, make_spread_image
 from ..voice.speaker import synthesize_reading_voice
-from .helpers import get_or_create_user, is_unlimited
+from .helpers import get_or_create_user, is_unlimited, referral_link
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -378,7 +378,10 @@ async def cb_share(callback: CallbackQuery, cfg: Config, analytics: Analytics) -
     bot_username = me.username or ""
     caption_variant = share_caption_variant(user.id)
     link = _share_referral_link(bot_username, user.id, caption_variant)
-    photo = await asyncio.to_thread(make_share_image, spread_title, cards_info, summary, cfg.bot_display_name, lang)
+    photo = await asyncio.to_thread(
+        make_share_image, spread_title, cards_info, summary, cfg.bot_display_name, lang,
+        link, t(lang, "qr_invite_label"),
+    )
     caption_key = _share_caption_key(reading.input_mode, caption_variant)
     await callback.message.answer_photo(
         BufferedInputFile(photo, filename="share.jpg"),

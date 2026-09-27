@@ -209,6 +209,82 @@ def _place_card(img: Image.Image, draw: ImageDraw.ImageDraw, card, x: int, y: in
     return ImageDraw.Draw(img)
 
 
+def qr_code_bytes(link: str, size: int | None = None) -> bytes | None:
+    """Encode a link as a PNG QR code. Returns None when it cannot be produced.
+
+    When ``size`` is given the code is rendered at a whole number of pixels per
+    module, so module edges stay crisp and phone cameras scan it reliably — a
+    LANCZOS downscale would soften the finder patterns. ``segno`` is an optional
+    runtime dependency: a missing package or an unencodable payload must degrade
+    to "no QR" instead of failing the render.
+    """
+    if not link:
+        return None
+    try:
+        import segno
+    except ImportError:
+        return None
+    try:
+        code = segno.make(link, error=T.QR_ERROR_LEVEL)
+        scale = T.QR_SCALE
+        if size:
+            modules = code.symbol_size(scale=1, border=0)[0] + 2 * T.QR_BORDER
+            scale = max(1, size // modules)
+        buf = io.BytesIO()
+        code.save(
+            buf, kind="png", scale=scale, border=T.QR_BORDER,
+            dark=T.QR_DARK, light=T.QR_LIGHT,
+        )
+        return buf.getvalue()
+    except Exception:  # noqa: BLE001 - never let an invite block the card
+        return None
+
+
+def _paste_qr_invite(
+    img: Image.Image, draw: ImageDraw.ImageDraw, link: str, label: str,
+    x: int, y: int, size: int, label_max_w: int,
+) -> bool:
+    """Draw a scannable invite block. Returns True when a QR was rendered.
+
+    The code is centred in the ``size`` slot because whole-module rendering can
+    land a few pixels short of the requested box; the light panel hugs the code
+    itself so the quiet zone stays intact.
+    """
+    payload = qr_code_bytes(link, size=size)
+    if payload is None:
+        return False
+    try:
+        code = Image.open(io.BytesIO(payload)).convert("RGB")
+    except (OSError, ValueError):
+        return False
+
+    pad = T.QR_PANEL_PAD
+    code_x = x + (size - code.width) // 2
+    code_y = y + (size - code.height) // 2
+    panel = [
+        code_x - pad, code_y - pad,
+        code_x + code.width + pad - 1, code_y + code.height + pad - 1,
+    ]
+    draw.rounded_rectangle(
+        panel, radius=T.QR_PANEL_RADIUS, fill=T.QR_PANEL_FILL,
+        outline=T.QR_PANEL_OUTLINE, width=T.CARD_MATTE_WIDTH,
+    )
+    img.paste(code, (code_x, code_y))
+
+    text = _sanitize_text(label)
+    if not text:
+        return True
+    label_font = _font(T.FONT_QR_LABEL)
+    lines = _wrap(draw, text, label_font, label_max_w)[:T.QR_LABEL_MAX_LINES]
+    block_h = len(lines) * T.QR_LABEL_STEP
+    ty = y + (size - block_h) // 2
+    lx = panel[2] + T.QR_LABEL_GAP
+    for line in lines:
+        draw.text((lx, ty), line, font=label_font, fill=T.TEXT_PRIMARY)
+        ty += T.QR_LABEL_STEP
+    return True
+
+
 def make_spread_image(
     spread_title: str, cards_info: list[dict], footer: str = "MOIRA", lang: str = "ru"
 ) -> bytes:
@@ -258,9 +334,14 @@ def make_spread_image(
 
 
 def make_share_image(
-    spread_title: str, cards_info: list[dict], summary: str, footer: str = "MOIRA", lang: str = "ru"
+    spread_title: str, cards_info: list[dict], summary: str, footer: str = "MOIRA", lang: str = "ru",
+    qr_link: str = "", qr_label: str = "",
 ) -> bytes:
-    """Square share card: title, drawn cards, short synthesis, footer brand."""
+    """Square share card: title, drawn cards, short synthesis, footer brand.
+
+    When ``qr_link`` is given the card also carries a scannable invite block, so
+    a forwarded screenshot keeps working as a signup.
+    """
     W, H = T.CANVAS_SHARE
     img = _asset_background("moira_share_background.jpg", W, H, seed=len(spread_title) * 3 + 1)
     _paste_overlay(img, "moira_thread_overlay_vector.png", 920, 420, (W // 2, 430))
@@ -301,7 +382,12 @@ def make_share_image(
             draw.text((_center_x(draw, W, line, sum_font), y), line, font=sum_font, fill=T.TEXT_SECONDARY)
             y += T.SHARE_SUMMARY_STEP
 
-    _paste_overlay(img, "moira_sigil_clean.png", 90, 90, (W // 2, 930))
+    qr_x, qr_y = T.SHARE_QR_XY
+    qr_drawn = _paste_qr_invite(
+        img, draw, qr_link, qr_label, qr_x, qr_y, T.SHARE_QR_SIZE, T.SHARE_QR_LABEL_MAX_WIDTH,
+    )
+    sigil_center = T.SHARE_SIGIL_CENTER_WITH_QR if qr_drawn else T.SHARE_SIGIL_CENTER
+    _paste_overlay(img, "moira_sigil_clean.png", T.SHARE_SIGIL_SIZE, T.SHARE_SIGIL_SIZE, sigil_center)
     foot_font = _font(T.FONT_SHARE_FOOTER)
     foot = _sanitize_text(footer + " \u2726 TAROT")
 
@@ -313,9 +399,14 @@ def make_share_image(
 
 
 def make_single_image(
-    header: str, subtitle: str, card, footer: str = "MOIRA", reversed_: bool = False, lang: str = "ru"
+    header: str, subtitle: str, card, footer: str = "MOIRA", reversed_: bool = False, lang: str = "ru",
+    qr_link: str = "", qr_label: str = "",
 ) -> bytes:
-    """Single card banner: altar, card of the day or quiz result."""
+    """Single card banner: altar, card of the day or quiz result.
+
+    ``qr_link`` adds a scannable invite block for shareable results (the arcana
+    quiz). The altar leaves it empty.
+    """
     W, H = T.CANVAS_SINGLE
     img = _asset_background("moira_altar_portrait.jpg", W, H, seed=len(header) * 7 + 3)
     _shade_region(img, T.SINGLE_TOP_SHADE)
@@ -342,6 +433,10 @@ def make_single_image(
 
     foot_font = _font(T.FONT_SINGLE_FOOTER)
     foot = _sanitize_text(footer)
+    qr_x, qr_y = T.SINGLE_QR_XY
+    _paste_qr_invite(
+        img, draw, qr_link, qr_label, qr_x, qr_y, T.SINGLE_QR_SIZE, T.SINGLE_QR_LABEL_MAX_WIDTH,
+    )
     draw.text((_center_x(draw, W, foot, foot_font), H + T.SINGLE_FOOTER_OFFSET_Y), foot, font=foot_font, fill=T.TEXT_FOOTER)
 
     buf = io.BytesIO()

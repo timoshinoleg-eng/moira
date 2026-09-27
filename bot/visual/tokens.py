@@ -57,6 +57,7 @@ FONT_SHARE_FOOTER = 24
 FONT_SINGLE_HEADER = 48
 FONT_SINGLE_SUBTITLE = 34
 FONT_SINGLE_FOOTER = 22
+FONT_QR_LABEL = 24
 
 # ----------------------------------------------------------------- layout ----
 # spread
@@ -80,9 +81,13 @@ SHARE_LABEL_OFFSET_Y = -34
 SHARE_NAME_OFFSET_Y = 12
 SHARE_SUMMARY_Y = 740
 SHARE_SUMMARY_STEP = 42
-SHARE_SUMMARY_MAX_LINES = 4
+SHARE_SUMMARY_MAX_LINES = 3
 SHARE_SUMMARY_MAX_WIDTH = 960
+SHARE_SUMMARY_LINE_HEIGHT = 34
 SHARE_FOOTER_OFFSET_Y = -64
+SHARE_SIGIL_SIZE = 90
+SHARE_SIGIL_CENTER = (540, 930)
+SHARE_SIGIL_CENTER_WITH_QR = (900, 962)
 # single
 SINGLE_CARD_SIZE = (430, 745)
 SINGLE_HEADER_Y = 70
@@ -94,7 +99,37 @@ SINGLE_SUBTITLE_OFFSET_Y = 36
 SINGLE_SUBTITLE_STEP = 46
 SINGLE_SUBTITLE_MAX_LINES = 2
 SINGLE_SUBTITLE_MAX_WIDTH = 980
+SINGLE_SUBTITLE_LINE_HEIGHT = 42
 SINGLE_FOOTER_OFFSET_Y = -60
+
+# ------------------------------------------------------------ invite QR ----
+# A referral link rendered as a scannable QR turns a shared screenshot into a
+# signup. The panel is light-on-dark so the code stays readable by phone cameras.
+QR_ERROR_LEVEL = "m"          # ~15% recovery: enough for a printed/inked card
+QR_MATCH_TOLERANCE = 24       # per-channel JPEG tolerance for visual regression
+QR_SCALE = 4                  # segno pixel multiplier (border counted separately)
+QR_BORDER = 2                 # quiet zone in modules, required for scanning
+QR_PANEL_RADIUS = 14
+QR_PANEL_PAD = 12
+QR_PANEL_FILL = (250, 246, 255)
+QR_PANEL_OUTLINE = (92, 67, 123)
+QR_DARK = "#0a0616"
+QR_LIGHT = "#faf6ff"
+QR_LABEL_GAP = 28
+QR_LABEL_MAX_LINES = 3
+QR_LABEL_STEP = 30
+# Minimum clear space between the text block above and the invite panel below.
+QR_BAND_MIN_GAP = 16
+# share card: bottom-left band
+SHARE_QR_SIZE = 160
+SHARE_QR_XY = (64, 890)
+SHARE_QR_LABEL_X_OFFSET = 0  # label starts at QR right edge + QR_LABEL_GAP
+# Width stops short of the sigil parked on the right edge of the share band.
+SHARE_QR_LABEL_MAX_WIDTH = 560
+# single card: bottom-left band
+SINGLE_QR_SIZE = 150
+SINGLE_QR_XY = (64, 1118)
+SINGLE_QR_LABEL_MAX_WIDTH = 700
 
 # ------------------------------------------------------------ decorations ----
 BG_STARS = 170
