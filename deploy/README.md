@@ -16,7 +16,7 @@
 
 ```bash
 sudo useradd --system --create-home --home-dir /opt/moira --shell /usr/sbin/nologin moira
-sudo -u moira git clone <repo-url> /opt/moira/app && cd /opt/moira/app && sudo -u moira git switch --detach v6-rc2
+sudo -u moira git clone <repo-url> /opt/moira/app && cd /opt/moira/app && sudo -u moira git switch --detach v1.0.0-rc.2
 sudo -u moira python3 -m venv /opt/moira/app/.venv
 sudo -u moira /opt/moira/app/.venv/bin/pip install -r /opt/moira/app/requirements.txt
 sudo install -o moira -g moira -m 700 -d /var/lib/moira /etc/moira /var/backups/moira

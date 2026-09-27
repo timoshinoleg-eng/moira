@@ -1,6 +1,6 @@
 # Moira — ИИ-оракул таро (Telegram-бот)
 
-> **Статус: v1.0.0-rc.1** — release candidate. 175 тестов зелёные, immutable
+> **Статус: v1.0.0-rc.2** — release candidate. 207 тестов зелёные, immutable
 > quality-eval прогоняются против зафиксированных базлайнов. Прод-процедуры:
 > [docs/PRODUCTION_RUNBOOK.md](docs/PRODUCTION_RUNBOOK.md) (деплой, бэкапы,
 > обновление, откат) и [docs/BETA_RUNBOOK.md](docs/BETA_RUNBOOK.md).
@@ -145,7 +145,7 @@ python -m bot.main
 .venv\Scripts\python.exe -m alembic check
 ```
 
-Текущая версия: `0008_push_delivery_foundation`.
+Текущая версия: `0010_reading_notes`.
 
 Перед любыми миграциями на production:
 
