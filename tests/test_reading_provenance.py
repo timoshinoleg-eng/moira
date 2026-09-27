@@ -73,7 +73,6 @@ def _valid_completion(drawn) -> object:
 
 
 def test_generation_id_threads_through_result_usage_and_reading(tmp_path, monkeypatch) -> None:
-    from dataclasses import replace
 
     import openai
 
@@ -84,10 +83,11 @@ def test_generation_id_threads_through_result_usage_and_reading(tmp_path, monkey
     from bot.tarot import draw
 
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            db_path=str(tmp_path / "moira-provenance.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "db_path": str(tmp_path / "moira-provenance.db"),
+            }
         )
         await init_db(cfg.db_path)
         drawn = draw("love")
@@ -140,7 +140,6 @@ def test_generation_id_threads_through_result_usage_and_reading(tmp_path, monkey
 
 
 def test_interpret_reading_without_key_still_returns_generation_id(tmp_path) -> None:
-    from dataclasses import replace
 
     from bot.config import load_config
     from bot.db.database import close_db, init_db
@@ -148,10 +147,11 @@ def test_interpret_reading_without_key_still_returns_generation_id(tmp_path) -> 
     from bot.tarot import draw
 
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key=None,
-            db_path=str(tmp_path / "moira-provenance-nokey.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": None,
+                "db_path": str(tmp_path / "moira-provenance-nokey.db"),
+            }
         )
         await init_db(cfg.db_path)
         result, generation_id = await adapter.interpret_reading(

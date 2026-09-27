@@ -148,7 +148,6 @@ def _valid_completion(drawn) -> object:
 
 
 def test_v2_path_retries_once_uses_backup_and_persists_safe_usage(tmp_path) -> None:
-    from dataclasses import replace
 
     from sqlalchemy import select
 
@@ -159,13 +158,14 @@ def test_v2_path_retries_once_uses_backup_and_persists_safe_usage(tmp_path) -> N
     from bot.tarot import draw
 
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            llm_retry_policy_v2=True,
-            llm_model="primary-model",
-            llm_backup_model="backup-model",
-            db_path=str(tmp_path / "moira-v2-success.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "llm_retry_policy_v2": True,
+                "llm_model": "primary-model",
+                "llm_backup_model": "backup-model",
+                "db_path": str(tmp_path / "moira-v2-success.db"),
+            }
         )
         await init_db(cfg.db_path)
         drawn = draw("situation")
@@ -202,7 +202,6 @@ def test_v2_path_retries_once_uses_backup_and_persists_safe_usage(tmp_path) -> N
 
 
 def test_v2_path_does_not_retry_auth_and_records_controlled_fallback(tmp_path) -> None:
-    from dataclasses import replace
 
     from sqlalchemy import select
 
@@ -213,11 +212,12 @@ def test_v2_path_does_not_retry_auth_and_records_controlled_fallback(tmp_path) -
     from bot.tarot import draw
 
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            llm_retry_policy_v2=True,
-            db_path=str(tmp_path / "moira-v2-auth.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "llm_retry_policy_v2": True,
+                "db_path": str(tmp_path / "moira-v2-auth.db"),
+            }
         )
         await init_db(cfg.db_path)
         client = FakeClient([ProviderError(401, "authentication failed")])
@@ -250,7 +250,6 @@ def test_v2_path_does_not_retry_auth_and_records_controlled_fallback(tmp_path) -
 
 
 def test_interpret_reading_selects_v2_path_only_when_feature_flag_enabled(tmp_path, monkeypatch) -> None:
-    from dataclasses import replace
 
     import openai
 
@@ -260,11 +259,12 @@ def test_interpret_reading_selects_v2_path_only_when_feature_flag_enabled(tmp_pa
     from bot.tarot import draw
 
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            llm_retry_policy_v2=True,
-            db_path=str(tmp_path / "moira-v2-entrypoint.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "llm_retry_policy_v2": True,
+                "db_path": str(tmp_path / "moira-v2-entrypoint.db"),
+            }
         )
         await init_db(cfg.db_path)
         drawn = draw("situation")

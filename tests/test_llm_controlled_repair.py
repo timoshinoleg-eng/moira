@@ -4,7 +4,6 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
-from dataclasses import replace
 from types import SimpleNamespace
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -96,14 +95,15 @@ def test_repair_messages_exclude_private_context_and_raw_output() -> None:
 
 def test_controlled_repair_uses_safe_second_payload_and_never_exceeds_two_calls(tmp_path) -> None:
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            llm_retry_policy_v2=True,
-            llm_controlled_repair_enabled=True,
-            llm_model="primary-model",
-            llm_backup_model="backup-model",
-            db_path=str(tmp_path / "repair.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "llm_retry_policy_v2": True,
+                "llm_controlled_repair_enabled": True,
+                "llm_model": "primary-model",
+                "llm_backup_model": "backup-model",
+                "db_path": str(tmp_path / "repair.db"),
+            }
         )
         await init_db(cfg.db_path)
         drawn = draw("situation")
@@ -142,12 +142,13 @@ def test_controlled_repair_uses_safe_second_payload_and_never_exceeds_two_calls(
 
 def test_transient_error_keeps_normal_retry_payload_when_repair_is_enabled(tmp_path) -> None:
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            llm_retry_policy_v2=True,
-            llm_controlled_repair_enabled=True,
-            db_path=str(tmp_path / "repair-transient.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "llm_retry_policy_v2": True,
+                "llm_controlled_repair_enabled": True,
+                "db_path": str(tmp_path / "repair-transient.db"),
+            }
         )
         await init_db(cfg.db_path)
         drawn = draw("situation")

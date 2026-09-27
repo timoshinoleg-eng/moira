@@ -25,6 +25,7 @@ dependencies = [
     "astronomy-engine==2.1.19",
     "imageio-ffmpeg==0.6.0",
     "aiogram-calendar>=0.6,<0.7",
+    "pydantic-settings>=2.7,<3.0",
 ]
 
 [dependency-groups]
