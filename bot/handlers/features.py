@@ -31,10 +31,16 @@ from ..astro.calc import (
 from ..astro.sky import safe_altar_lines
 from ..config import Config
 from ..datepicker import (
+    DECADE_PREFIX,
+    DECADES_CALLBACK,
     MANUAL_CALLBACK,
+    MIN_BIRTH,
+    YEAR_PREFIX,
     birth_calendar_kb,
+    decade_menu_kb,
     is_plausible_birth,
     process_birth_calendar,
+    year_menu_kb,
 )
 from ..db.database import get_session
 from ..db.models import Reading, ReadingFavorite, User
@@ -238,6 +244,48 @@ async def cb_birth_calendar(
             t(user.language, "birth_pick"),
             reply_markup=await birth_calendar_kb(user.language),
         )
+
+
+@router.callback_query(F.data == DECADES_CALLBACK)
+async def cb_birth_decades(callback: CallbackQuery, cfg: Config) -> None:
+    # No user lookup: the decade list needs no language, and this button is only
+    # reachable once cb_altar has already loaded (or created) the user.
+    await callback.message.edit_reply_markup(reply_markup=decade_menu_kb())
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith(DECADE_PREFIX))
+async def cb_birth_decade(callback: CallbackQuery, cfg: Config) -> None:
+    try:
+        decade = int(callback.data[len(DECADE_PREFIX) :])
+    except ValueError:
+        await callback.answer()
+        return
+    if not MIN_BIRTH.year <= decade <= date.today().year:
+        # Forged callback data: answer rather than render a menu out of range.
+        await callback.answer()
+        return
+    await callback.message.edit_reply_markup(reply_markup=year_menu_kb(decade))
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith(YEAR_PREFIX))
+async def cb_birth_pick_year(callback: CallbackQuery, cfg: Config) -> None:
+    user = await get_or_create_user(callback.from_user, cfg)
+    lang = user.language
+    try:
+        year = int(callback.data[len(YEAR_PREFIX) :])
+    except ValueError:
+        await callback.answer()
+        return
+    if not MIN_BIRTH.year <= year <= date.today().year:
+        await callback.answer()
+        return
+    # Stay on the calendar, now showing the chosen year and the current month.
+    await callback.message.edit_reply_markup(
+        reply_markup=await birth_calendar_kb(lang, year=year)
+    )
+    await callback.answer()
 
 
 @router.callback_query(F.data == MANUAL_CALLBACK)

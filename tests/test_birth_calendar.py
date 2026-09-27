@@ -14,12 +14,18 @@ from aiogram_calendar import SimpleCalendarCallback
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from bot.datepicker import (  # noqa: E402
+    DECADE_PREFIX,
+    DECADES_CALLBACK,
     MANUAL_CALLBACK,
     MIN_BIRTH,
+    NOOP_CALLBACK,
+    YEAR_PREFIX,
     base_lang,
     birth_calendar_kb,
+    decade_menu_kb,
     is_plausible_birth,
     process_birth_calendar,
+    year_menu_kb,
 )
 from bot.handlers.features import FeatureStates, _parse_birth_date  # noqa: E402
 
@@ -109,6 +115,89 @@ def test_cancel_and_today_captions_are_localised() -> None:
 def test_unknown_language_falls_back_to_russian() -> None:
     assert base_lang("de") == "ru"
     assert base_lang("en") == "en"
+
+
+# --- reaching an old year in two taps, not thirty-one ------------------------
+
+
+def test_the_year_caption_is_a_way_in_not_a_dead_pad() -> None:
+    """The stock header is `<< [year] >>` and the caption does nothing.
+
+    Its arrows move one year per tap, so 1995 is 31 taps away from 2026. The
+    caption is what makes any year two taps away instead.
+    """
+    kb = asyncio.run(birth_calendar_kb("ru"))
+    header = [b.callback_data for b in kb.inline_keyboard[0]]
+    assert header[1] == DECADES_CALLBACK
+    # The one-year arrows are still there for nudging, they are just no longer
+    # the only way to travel.
+    assert "PREV-YEAR" in header[0] and "NEXT-YEAR" in header[2]
+
+
+def test_every_decade_from_1900_to_this_year_is_reachable() -> None:
+    this_year = date.today().year
+    expected = list(range((this_year // 10) * 10, MIN_BIRTH.year - 1, -10))
+    kb = decade_menu_kb()
+    offered = [b.callback_data for row in kb.inline_keyboard for b in row]
+    assert offered == [f"{DECADE_PREFIX}{d}" for d in expected]
+    # The 1990s must be present: it is the modal decade for the product's users.
+    assert f"{DECADE_PREFIX}1990" in offered
+
+
+def test_1995_is_two_taps_away() -> None:
+    """The regression that motivated this: 31 taps through the year arrows."""
+    decades = [b.callback_data for row in decade_menu_kb().inline_keyboard for b in row]
+    assert f"{DECADE_PREFIX}1990" in decades
+    years = [b.callback_data for row in year_menu_kb(1990).inline_keyboard for b in row]
+    assert f"{YEAR_PREFIX}1995" in years
+
+
+def test_unreachable_years_are_greyed_out_with_a_working_noop() -> None:
+    this_year = date.today().year
+    cells = [b for row in year_menu_kb(2020).inline_keyboard for b in row]
+    greyed = [b for b in cells if b.text == "·"]
+    assert greyed, "years after this one must not be tappable"
+    assert all(b.callback_data == NOOP_CALLBACK for b in greyed)
+    # And the no-op is a callback the existing handler already answers.
+    assert SimpleCalendarCallback.unpack(NOOP_CALLBACK).act == "IGNORE"
+    for b in cells:
+        if b.text != "·":
+            year = int(b.text)
+            assert MIN_BIRTH.year <= year <= this_year
+
+
+def test_picking_a_year_renders_that_year() -> None:
+    kb = asyncio.run(birth_calendar_kb("en", year=1995))
+    header = [b for b in kb.inline_keyboard[0]]
+    assert header[1].text == "[1995]"
+    assert header[1].callback_data == DECADES_CALLBACK
+    assert "1995" in header[0].callback_data
+
+
+def test_the_manual_escape_hatch_survives_a_month_redraw() -> None:
+    """The library re-renders through start_calendar; decorations must be reapplied.
+
+    Appending the button to the finished markup worked right up until the user
+    tapped an arrow, and then the only way to enter a date by hand was gone.
+    """
+    from bot.datepicker import _calendar
+
+    cal = _calendar("ru")
+    first = asyncio.run(cal.start_calendar(2026, 9))
+    after_navigation = asyncio.run(cal.start_calendar(2026, 10))
+    for kb in (first, after_navigation):
+        callbacks = [b.callback_data for row in kb.inline_keyboard for b in row]
+        assert MANUAL_CALLBACK in callbacks
+        assert DECADES_CALLBACK in callbacks
+
+
+def test_the_year_jump_survives_a_month_redraw() -> None:
+    from bot.datepicker import _calendar
+
+    cal = _calendar("ru")
+    after_navigation = asyncio.run(cal.start_calendar(1995, 3))
+    header = [b.callback_data for b in after_navigation.inline_keyboard[0]]
+    assert header[1] == DECADES_CALLBACK
 
 
 # --- plausibility ------------------------------------------------------------
