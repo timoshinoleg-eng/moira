@@ -1,6 +1,6 @@
 [project]
 name = "moira"
-version = "1.0.0"
+version = "1.0.0-rc.2"
 description = "Moira — bilingual (RU/EN) AI tarot oracle Telegram bot"
 requires-python = ">=3.11,<3.12"
 dependencies = [
