@@ -285,14 +285,40 @@ def test_every_setting_is_covered_by_this_file() -> None:
     )
 
 
-def test_no_setting_reads_the_environment_behind_the_settings_layer() -> None:
-    """A stray os.getenv in a field default would bypass the isolation above."""
+def test_env_lookup_is_case_insensitive() -> None:
+    """Guards a bug that only shows up off Windows.
+
+    With `case_sensitive=True`, pydantic-settings looks up the field name
+    verbatim (`bot_token`) and matches the environment exactly, so the
+    documented `BOT_TOKEN` is never found. A Windows dev box hides this,
+    because os.environ folds case there; the Linux container does not. Asserting
+    the flag directly is the only check that discriminates on both.
+    """
+    assert Config.model_config.get("case_sensitive", False) is False
+
+
+def test_an_uppercase_env_var_is_found_on_any_platform(clean_env) -> None:
+    """The spelling every deployment actually uses."""
+    clean_env.setenv("BOT_TOKEN", "upper-case-token")
+    assert load_config(require_token=False).bot_token == "upper-case-token"
+
+
+def test_the_environment_is_read_in_exactly_one_place() -> None:
+    """A stray os.getenv in a field default would bypass the isolation above.
+
+    `_read_secret_file` is the single legitimate reader: the `LLM_API_KEY_FILE`
+    side channel is not a field, so it cannot come from the settings layer.
+    """
     import bot.config as cfgmod
 
     source = pathlib.Path(cfgmod.__file__).read_text(encoding="utf-8")
-    body = source.split("class Config", 1)[1]
-    assert "os.getenv" not in body, "field defaults must not read os.environ directly"
-    assert "os.environ" not in body
+    assert source.count("os.getenv(") == 1, (
+        "only _read_secret_file may touch the environment directly"
+    )
+    # Subscript and .get() forms are code, so prose about the environment mapping
+    # does not trip these.
+    assert "os.environ[" not in source
+    assert "os.environ.get(" not in source
 
 
 def test_config_is_immutable() -> None:

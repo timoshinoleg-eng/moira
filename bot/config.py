@@ -98,7 +98,13 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(
         frozen=True,
         extra="ignore",
-        case_sensitive=True,
+        # Deliberately NOT case_sensitive=True. That flag makes pydantic-settings
+        # look up the field name verbatim — `bot_token` — and match the
+        # environment exactly, so the documented `BOT_TOKEN` would stop being
+        # found. It appears to work on a Windows dev box, where the environment
+        # mapping folds case, and then fails only in the Linux container. The
+        # default, case-insensitive matching is what makes BOT_TOKEN resolve to
+        # bot_token on every platform.
         validate_default=True,
     )
 
