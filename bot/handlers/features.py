@@ -27,6 +27,7 @@ from ..astro.calc import (
     moon_state_by_date,
     sign_by_date,
 )
+from ..astro.sky import safe_altar_lines
 from ..config import Config
 from ..db.database import get_session
 from ..db.models import Reading, ReadingFavorite, User
@@ -98,6 +99,9 @@ async def _show_altar(bot: Bot, chat_id: int, user: User, cfg: Config) -> None:
     lines.append(
         t(lang, "altar_moonin", sign=ZODIAC_NAMES[lang][moon_sign], text=MOON_SIGN_TEXTS[lang][moon_sign])
     )
+    # The Moon's distance, true illuminated fraction and any quarter or perigee
+    # landing tonight. Optional: safe_altar_lines cannot raise.
+    lines.extend(safe_altar_lines(lang, today))
 
     if user.birth_date:
         try:
