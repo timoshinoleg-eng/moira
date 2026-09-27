@@ -74,20 +74,36 @@ def _callbacks(kb) -> list[str]:
 # --- rendering ---------------------------------------------------------------
 
 
+def _locale(lang: str) -> dict:
+    path = ROOT / "bot" / "i18n" / "locales" / f"{lang}.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 @pytest.mark.parametrize("lang", ["ru", "en"])
 def test_calendar_offers_a_manual_escape_hatch(lang: str) -> None:
     kb = asyncio.run(birth_calendar_kb(lang))
     assert MANUAL_CALLBACK in _callbacks(kb)
-    assert "✍️" in _labels(kb)[-1][0]
+    # The label is read back from the locale file rather than hardcoded here, so
+    # this asserts the button really is the translated "type it manually" and a
+    # mangled source encoding in this file cannot mask a wrong caption.
+    assert _labels(kb)[-1][0] == _locale(lang)["birth_manual"]
 
 
 def test_month_names_follow_the_user_language() -> None:
     ru = _labels(asyncio.run(birth_calendar_kb("ru")))
     en = _labels(asyncio.run(birth_calendar_kb("en")))
     # Header layout is << [year] >> then < [month] >
-    assert ru[1][1] == "[сен]" or ru[1][1].startswith("[")
+    assert ru[1][1].startswith("[")
     assert en[1][1].startswith("[")
     assert ru[1][1] != en[1][1], "month caption must not stay English for a Russian user"
+
+
+def test_cancel_and_today_captions_are_localised() -> None:
+    ru = [b for row in _labels(asyncio.run(birth_calendar_kb("ru"))) for b in row]
+    en = [b for row in _labels(asyncio.run(birth_calendar_kb("en"))) for b in row]
+    assert _locale("ru")["cal_cancel"] in ru
+    assert _locale("en")["cal_cancel"] in en
+    assert _locale("ru")["cal_cancel"] not in en
 
 
 def test_unknown_language_falls_back_to_russian() -> None:
@@ -134,7 +150,9 @@ def test_a_crafted_out_of_range_tap_is_not_saved() -> None:
 def test_a_future_tap_is_not_saved() -> None:
     future = date.today() + timedelta(days=30)
     callback = _FakeCallback()
-    picked = asyncio.run(process_birth_calendar(callback, _cb(future.year, future.month, future.day), "en"))
+    picked = asyncio.run(
+        process_birth_calendar(callback, _cb(future.year, future.month, future.day), "en")
+    )
     assert picked is None
 
 
@@ -246,14 +264,16 @@ def _run_save(tmp_path, db_user_id: int, birth: date):
             F._show_altar = fake_show_altar
             bot = _FakeBot()
             try:
-                await F._save_birth(bot, 1, detached, birth, load_config())
+                saved = await F._save_birth(
+                    bot, 1, detached, birth, load_config(require_token=False)
+                )
             finally:
                 F._show_altar = original
 
             async with get_session() as session:
                 stored = await session.get(DbUser, detached.id)
                 persisted = stored.birth_date
-            return persisted, bot.sent, shown
+            return persisted, list(bot.sent), shown, saved
         finally:
             await close_db()
 
@@ -261,18 +281,20 @@ def _run_save(tmp_path, db_user_id: int, birth: date):
 
 
 def test_a_valid_date_is_persisted_and_the_altar_opens(tmp_path) -> None:
-    persisted, sent, shown = _run_save(tmp_path, 555, date(1995, 3, 7))
+    persisted, sent, shown, saved = _run_save(tmp_path, 555, date(1995, 3, 7))
+    assert saved is True
     assert persisted == "1995-03-07"
     assert shown, "the altar should open once the date is saved"
-    assert any("Запомнила" in m for m in sent)
+    assert _locale("ru")["birth_ok"] in sent
 
 
 def test_a_crafted_future_date_is_never_written(tmp_path) -> None:
     """The DB is the real boundary: a rejected date must leave the row untouched."""
-    persisted, sent, shown = _run_save(tmp_path, 556, date(3000, 1, 1))
+    persisted, sent, shown, saved = _run_save(tmp_path, 556, date(3000, 1, 1))
+    assert saved is False
     assert persisted is None, "an out-of-range birth date must not reach the database"
     assert not shown, "the altar must not open for a rejected date"
-    assert any("1900" in m for m in sent)
+    assert _locale("ru")["birth_out_of_range"] in sent
 
 
 def test_save_reports_rejection_to_the_caller() -> None:
@@ -283,12 +305,17 @@ def test_save_reports_rejection_to_the_caller() -> None:
 
     async def main():
         bot = _FakeBot()
+
         async def never(*a, **k):
             raise AssertionError("altar must not open for a rejected date")
+
         original = F._show_altar
         F._show_altar = never
         try:
-            return await F._save_birth(bot, 1, DbUser(id=1, language="ru"), date(3000, 1, 1), load_config())
+            return await F._save_birth(
+                bot, 1, DbUser(id=1, language="ru"), date(3000, 1, 1),
+                load_config(require_token=False),
+            )
         finally:
             F._show_altar = original
 
