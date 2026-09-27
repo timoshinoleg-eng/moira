@@ -41,6 +41,7 @@ from ..tarot.fallback import compose_fallback_reading, compose_followup
 from ..visual.animate import make_spread_animation
 from ..visual.render import make_share_image, make_spread_image
 from ..voice.speaker import synthesize_reading_voice
+from ..voice.transcode import VOICE_FILENAME, to_voice_note
 from .helpers import get_or_create_user, is_unlimited, referral_link
 
 logger = logging.getLogger(__name__)
@@ -683,29 +684,45 @@ async def prompt_note_text(message: Message, state: FSMContext, cfg: Config) -> 
     await message.answer(t(user.language, "ask_note"))
 
 
-async def _send_voice_or_audio(message: Message, audio: bytes, lang: str) -> None:
-    """Try voice note first, then audio file, then a localized notice."""
+async def _send_voice_or_audio(message: Message, audio: bytes, lang: str) -> str:
+    """Send the oracle's voice, degrading through audio to a text notice.
+
+    Telegram only renders a real voice message for OGG/OPUS, so the MP3 from
+    edge-tts is transcoded first. Every step is best-effort: the return value
+    says which one the user actually got, for logging, and a failure never
+    interrupts the reading.
+    """
     try:
-        await message.answer_voice(BufferedInputFile(audio, filename="moira_voice.mp3"))
-        return
-    except TelegramBadRequest as exc:
-        if "VOICE_MESSAGES_FORBIDDEN" in str(exc):
-            logger.info("voice messages forbidden for user %s", message.from_user.id)
-        else:
-            logger.warning("voice send bad request: %s", exc)
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("voice send failed: %s", exc)
+        converted = await to_voice_note(audio)
+    except Exception as exc:  # noqa: BLE001 - a converter failure must not end the reading
+        logger.warning("voice transcode failed: %s", exc)
+        converted = None
+    if converted:
+        try:
+            # No mime_type: aiogram's BufferedInputFile takes (file, filename) and
+            # Telegram infers the type from the .ogg extension. Passing mime_type
+            # raises TypeError and silently drops the user to the audio fallback.
+            await message.answer_voice(BufferedInputFile(converted, filename=VOICE_FILENAME))
+            return "voice_ogg"
+        except TelegramBadRequest as exc:
+            if "VOICE_MESSAGES_FORBIDDEN" in str(exc):
+                logger.info("voice messages forbidden for user %s", message.from_user.id)
+            else:
+                logger.warning("voice send bad request: %s", exc)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("voice send failed: %s", exc)
 
     try:
         await message.answer_audio(
             BufferedInputFile(audio, filename="moira_voice.mp3"),
             title=t(lang, "voice_title"),
         )
-        return
+        return "audio_mp3"
     except Exception as exc:  # noqa: BLE001
         logger.warning("audio fallback failed: %s", exc)
 
     await message.answer(t(lang, "voice_unavailable"))
+    return "none"
 
 
 async def _consume_reading(user: User) -> str | None:
