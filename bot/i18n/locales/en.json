@@ -76,7 +76,6 @@
   "lang_switched": "🌐 Language switched: English",
   "help_text": "✨ {name} — AI tarot oracle.\n\n🃏 Situation — past, present and advice.\n❤️ Love — you, your partner and your connection.\n⚖️ Choice — two paths and the cards' advice.\n🌙 My altar — card of the day, moon phase and your personal sign.\n🎭 My Arcana — a quiz that reveals your Major Arcana archetype.\n\nReadings come with card images and the oracle's voice.\nFirst readings are free, then Telegram Stars.",
   "disclaimer": "⚠️ Readings are for entertainment and do not replace medical, legal or financial advice.",
-  "altar_need_birth": "🌙 Your altar needs your birth date.\nSend it as DD.MM.YYYY.",
   "birth_invalid": "❌ I couldn't parse the date. Use DD.MM.YYYY, e.g. 07.03.1995.",
   "birth_ok": "✨ Saved. Your altar is personal now.",
   "altar_header": "🌙 Your altar — {date}",
@@ -195,5 +194,11 @@
   "sky_eclipse_soon": "A {kind} is {n} days away. Worth watching what closes.",
   "sky_eclipse_total": "total lunar eclipse",
   "sky_eclipse_partial": "partial lunar eclipse",
-  "sky_eclipse_penumbral": "penumbral lunar eclipse"
+  "sky_eclipse_penumbral": "penumbral lunar eclipse",
+  "cal_cancel": "Cancel",
+  "cal_today": "Today",
+  "birth_pick": "Pick your birth date — or tap “Type it manually”.",
+  "birth_manual": "✍️ Type it manually",
+  "birth_manual_hint": "Send the date as DD.MM.YYYY, e.g. 07.03.1995.",
+  "birth_out_of_range": "🕯 The date has to be between 1900 and today. Try again."
 }

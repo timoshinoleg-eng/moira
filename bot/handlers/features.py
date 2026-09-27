@@ -11,6 +11,7 @@ from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import BufferedInputFile, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram_calendar import SimpleCalendarCallback
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
@@ -29,6 +30,12 @@ from ..astro.calc import (
 )
 from ..astro.sky import safe_altar_lines
 from ..config import Config
+from ..datepicker import (
+    MANUAL_CALLBACK,
+    birth_calendar_kb,
+    is_plausible_birth,
+    process_birth_calendar,
+)
 from ..db.database import get_session
 from ..db.models import Reading, ReadingFavorite, User
 from ..i18n import t
@@ -81,6 +88,27 @@ def _parse_birth_date(text: str) -> date | None:
         return date(int(year_s), int(month_s), int(day_s))
     except ValueError:
         return None
+
+
+async def _save_birth(bot: Bot, chat_id: int, user: User, birth: date, cfg: Config) -> bool:
+    """Persist a birth date and reveal the altar. Returns False if it was rejected.
+
+    Shared by the calendar and the typed path so both validate identically: the
+    grid greys impossible days out, but typed input and crafted callback data
+    both need the same range check before anything is written to the database.
+    """
+    lang = user.language
+    if not is_plausible_birth(birth):
+        await bot.send_message(chat_id, t(lang, "birth_out_of_range"))
+        return False
+    async with get_session() as session:
+        u = await session.get(User, user.id)
+        u.birth_date = birth.isoformat()
+        await session.commit()
+        await session.refresh(u)
+    await bot.send_message(chat_id, t(lang, "birth_ok"))
+    await _show_altar(bot, chat_id, u, cfg)
+    return True
 
 
 def _major_card(num: int):
@@ -154,14 +182,69 @@ async def cb_altar(callback: CallbackQuery, state: FSMContext, cfg: Config) -> N
     user = await get_or_create_user(callback.from_user, cfg)
     lang = user.language
     if not user.birth_date:
-        await callback.message.answer(t(lang, "altar_need_birth"))
+        # Show the grid instead of only asking for text. The state stays set, so a
+        # user who dismisses the calendar can still type the date.
         await state.set_state(FeatureStates.waiting_birth)
+        await callback.message.answer(
+            t(lang, "birth_pick"),
+            reply_markup=await birth_calendar_kb(lang),
+        )
         await callback.answer()
         return
     # Opening the altar is a ritual visit in its own right, so it counts even
     # without a paid reading.
     await track_ritual(user.id, "altar")
     await _show_altar(callback.bot, callback.message.chat.id, user, cfg)
+    await callback.answer()
+
+
+@router.callback_query(F.data == "altar:set_birth")
+async def cb_altar_set_birth(callback: CallbackQuery, state: FSMContext, cfg: Config) -> None:
+    # This button has been on the altar screen since it was added, with no
+    # handler behind it: tapping "Set birth date" did nothing at all. Reached
+    # only by users who already have a date, so overwriting is the point.
+    user = await get_or_create_user(callback.from_user, cfg)
+    lang = user.language
+    await state.set_state(FeatureStates.waiting_birth)
+    await callback.message.answer(
+        t(lang, "birth_pick"),
+        reply_markup=await birth_calendar_kb(lang),
+    )
+    await callback.answer()
+
+
+@router.callback_query(SimpleCalendarCallback.filter())
+async def cb_birth_calendar(
+    callback: CallbackQuery,
+    callback_data: SimpleCalendarCallback,
+    state: FSMContext,
+    cfg: Config,
+) -> None:
+    # Bound to the one shared `simple_calendar:` prefix. A second SimpleCalendar
+    # elsewhere in the bot would need its own handler or this one eats its taps.
+    user = await get_or_create_user(callback.from_user, cfg)
+    # Navigating months must not leave the FSM armed: the typed handler would
+    # then swallow whatever the user sends next.
+    await state.clear()
+    picked = await process_birth_calendar(callback, callback_data, user.language)
+    if picked is None:
+        return
+    saved = await _save_birth(callback.bot, callback.message.chat.id, user, picked, cfg)
+    if not saved:
+        # The grid cannot produce such a date, so this is a rejected forged tap.
+        # Re-offer the grid anyway so the "try again" reply has something to try.
+        await state.set_state(FeatureStates.waiting_birth)
+        await callback.message.answer(
+            t(user.language, "birth_pick"),
+            reply_markup=await birth_calendar_kb(user.language),
+        )
+
+
+@router.callback_query(F.data == MANUAL_CALLBACK)
+async def cb_birth_manual(callback: CallbackQuery, state: FSMContext, cfg: Config) -> None:
+    user = await get_or_create_user(callback.from_user, cfg)
+    await state.set_state(FeatureStates.waiting_birth)
+    await callback.message.answer(t(user.language, "birth_manual_hint"))
     await callback.answer()
 
 
@@ -179,13 +262,7 @@ async def process_birth(message: Message, state: FSMContext, cfg: Config) -> Non
         await message.answer(t(lang, "birth_invalid"))
         await state.set_state(FeatureStates.waiting_birth)
         return
-    async with get_session() as session:
-        u = await session.get(User, user.id)
-        u.birth_date = birth.isoformat()
-        await session.commit()
-        await session.refresh(u)
-    await message.answer(t(lang, "birth_ok"))
-    await _show_altar(message.bot, message.chat.id, u, cfg)
+    await _save_birth(message.bot, message.chat.id, user, birth, cfg)
 
 
 @router.callback_query(F.data.in_({"altar:push_on", "altar:push_off"}))

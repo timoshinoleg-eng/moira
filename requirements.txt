@@ -19,3 +19,5 @@ segno>=1.6,<2.0
 astronomy-engine>=2.1,<3.0
 # Bundles an ffmpeg binary; used only to turn the TTS mp3 into an OGG/OPUS voice note.
 imageio-ffmpeg>=0.6,<0.7
+# Inline birth-date picker; falls back to typed DD.MM.YYYY input.
+aiogram-calendar>=0.6,<0.7
