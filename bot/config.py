@@ -1,131 +1,170 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
 from pathlib import Path
+from typing import Annotated, Any
 
 from dotenv import load_dotenv
+from pydantic import BeforeValidator, model_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
+# .env wins over the real environment, as it always has: an operator editing
+# .env locally expects it to take effect. We deliberately do *not* also hand
+# pydantic-settings an `env_file`, because that would read the same file a second
+# time through a source with different precedence, and `os.environ` is already
+# the single, well-defined input.
 load_dotenv(override=True)
 
-
-def _env_bool(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
+_TRUTHY = {"1", "true", "yes", "on"}
 
 
-def _optional_secret(env_name: str, file_env_name: str) -> str | None:
-    """Load an optional secret from an environment variable or a local text file."""
-    direct_value = os.getenv(env_name, "").strip()
-    if direct_value:
-        return direct_value
-    secret_file = os.getenv(file_env_name, "").strip()
-    if secret_file:
-        try:
-            value = Path(secret_file).expanduser().read_text(encoding="utf-8").strip()
-        except OSError as exc:
-            raise RuntimeError(f"{file_env_name} cannot be read") from exc
-        return value or None
-    return None
+def _lenient_bool(raw: Any) -> Any:
+    """Accept the usual spellings and treat everything else as False.
+
+    A mistyped `SPREAD_ANIMATION=treu` used to mean "off" and now has to keep
+    meaning that. pydantic's own bool parsing raises on unknown strings, which
+    would turn a typo in a compose file into a crash loop at startup — strictly
+    worse than silently keeping a feature disabled.
+    """
+    if raw is None or isinstance(raw, bool):
+        return raw
+    return str(raw).strip().lower() in _TRUTHY
 
 
-@dataclass(frozen=True)
-class Config:
-    bot_token: str
-    admin_ids: tuple[int, ...]
-    openrouter_api_key: str | None
-    llm_model: str
-    llm_base_url: str
-    db_path: str
-    bot_display_name: str
-    free_readings: int
-    earlybird_limit: int
-    earlybird_bonus: int
-    posthog_api_key: str | None
-    posthog_host: str
-    sentry_dsn: str | None
-    referral_reward: int
-    deepgram_api_key: str | None
-    deepgram_stt_enabled: bool
-    deepgram_stt_model: str
-    deepgram_stt_endpoint: str
-    deepgram_stt_max_duration_sec: int
-    deepgram_stt_max_bytes: int
-    deepgram_stt_timeout_sec: int
-    llm_backup_model: str | None = None
-    llm_prompt_version: str = "v7-minor-content"
-    llm_json_mode: bool = False
-    llm_retry_policy_v2: bool = False
-    llm_controlled_repair_enabled: bool = False
+def _floor(limit: int):
+    def clamp(raw: Any) -> Any:
+        return max(limit, int(raw))
+
+    return clamp
+
+
+def _clamp(low: int, high: int):
+    def clamp(raw: Any) -> Any:
+        return max(low, min(high, int(raw)))
+
+    return clamp
+
+
+def _admin_ids(raw: Any) -> tuple[int, ...]:
+    """`ADMIN_IDS=1,2, 3` — a plain comma list, not the JSON a tuple field implies."""
+    if isinstance(raw, (tuple, list)):
+        return tuple(int(x) for x in raw)
+    return tuple(int(x) for x in str(raw).replace(" ", "").split(",") if x)
+
+
+def _strip(raw: Any) -> Any:
+    return str(raw).strip() if raw is not None else raw
+
+
+def _blank_to_none(raw: Any) -> Any:
+    """An optional secret that is present but blank means "not configured"."""
+    if raw is None:
+        return None
+    return str(raw).strip() or None
+
+
+def _prompt_version(raw: Any) -> Any:
+    return str(raw).strip() or "v7-minor-content"
+
+
+def _read_secret_file(env_name: str) -> str | None:
+    """Docker secrets: the value may live in a file instead of the environment."""
+    path = os.getenv(env_name, "").strip()
+    if not path:
+        return None
+    try:
+        return Path(path).expanduser().read_text(encoding="utf-8").strip() or None
+    except OSError as exc:
+        # Raised as RuntimeError on purpose: pydantic wraps ValueError into a
+        # ValidationError, and callers (and the operator reading the log) expect
+        # to see this message as-is.
+        raise RuntimeError(f"{env_name} cannot be read") from exc
+
+
+LenientBool = Annotated[bool, BeforeValidator(_lenient_bool)]
+AdminIds = Annotated[tuple[int, ...], NoDecode, BeforeValidator(_admin_ids)]
+Stripped = Annotated[str, BeforeValidator(_strip)]
+OptionalSecret = Annotated[str | None, BeforeValidator(_blank_to_none)]
+
+
+class Config(BaseSettings):
+    """Every setting the bot reads, in one typed place.
+
+    Field defaults are the documented defaults, which means a test can build a
+    Config by hand from just the core fields. Note that a hand-built Config still
+    picks up unspecified fields from the environment, exactly as `Config()` does.
+    """
+
+    model_config = SettingsConfigDict(
+        frozen=True,
+        extra="ignore",
+        case_sensitive=True,
+        validate_default=True,
+    )
+
+    bot_token: Stripped = ""
+    admin_ids: AdminIds = ()
+    openrouter_api_key: OptionalSecret = None
+    llm_model: str = "deepseek/deepseek-v4-flash"
+    llm_base_url: str = "https://openrouter.ai/api/v1"
+    db_path: str = "moira.db"
+    bot_display_name: str = "Мойра"
+    free_readings: int = 3
+    earlybird_limit: int = 50
+    earlybird_bonus: int = 3
+    posthog_api_key: OptionalSecret = None
+    posthog_host: str = "https://eu.i.posthog.com"
+    sentry_dsn: OptionalSecret = None
+    referral_reward: int = 2
+    deepgram_api_key: OptionalSecret = None
+    deepgram_stt_enabled: LenientBool = False
+    deepgram_stt_model: str = "nova-3"
+    deepgram_stt_endpoint: str = "https://api.deepgram.com/v1/listen"
+    deepgram_stt_max_duration_sec: int = 60
+    deepgram_stt_max_bytes: int = 10485760
+    deepgram_stt_timeout_sec: int = 25
+    llm_backup_model: OptionalSecret = None
+    llm_prompt_version: Annotated[str, BeforeValidator(_prompt_version)] = "v7-minor-content"
+    llm_json_mode: LenientBool = False
+    llm_retry_policy_v2: LenientBool = False
+    llm_controlled_repair_enabled: LenientBool = False
     llm_v2_primary_timeout_sec: float = 12.0
     llm_v2_total_timeout_sec: float = 18.0
-    llm_v2_max_attempts: int = 2
-    database_url: str = ""
+    llm_v2_max_attempts: Annotated[int, BeforeValidator(_clamp(1, 2))] = 2
+    database_url: Stripped = ""
     # Off by default: the reveal clip is ~1.6 MB against ~450 KB for the still photo, so
     # enabling it by default would multiply every reading's payload before anyone
     # has measured whether it buys retention. Flip it on for a beta cohort.
-    spread_animation: bool = False
+    spread_animation: LenientBool = False
     # M-09 delivery worker. Off keeps the pre-ledger 20-minute loop, which stays in
     # the tree as the rollback path until the worker has proven itself in beta.
-    push_worker_enabled: bool = False
+    push_worker_enabled: LenientBool = False
     push_hour_utc: int = 6
-    push_tick_seconds: int = 300
-    push_batch_size: int = 50
-    push_lease_seconds: int = 300
-    push_max_attempts: int = 3
-    push_mirror_enabled: bool = True
+    push_tick_seconds: Annotated[int, BeforeValidator(_floor(30))] = 300
+    push_batch_size: Annotated[int, BeforeValidator(_floor(1))] = 50
+    push_lease_seconds: Annotated[int, BeforeValidator(_floor(30))] = 300
+    push_max_attempts: Annotated[int, BeforeValidator(_floor(1))] = 3
+    push_mirror_enabled: LenientBool = True
+
+    @model_validator(mode="after")
+    def _apply_secret_files(self) -> Config:
+        """Fill the LLM key from `LLM_API_KEY_FILE` when the variable is empty.
+
+        The direct variable always wins, so an operator can override a mounted
+        secret without unmounting it.
+        """
+        if not self.openrouter_api_key:
+            from_file = _read_secret_file("LLM_API_KEY_FILE")
+            if from_file is not None:
+                # frozen=True blocks normal assignment even inside a validator.
+                object.__setattr__(self, "openrouter_api_key", from_file)
+        return self
 
 
 def load_config(require_token: bool = True) -> Config:
-    token = os.getenv("BOT_TOKEN", "").strip()
-    if require_token and not token:
+    cfg = Config()
+    if require_token and not cfg.bot_token:
         raise RuntimeError(
             "BOT_TOKEN is not set. Copy .env.example to .env and paste a token from @BotFather."
         )
-    admins = tuple(
-        int(x) for x in os.getenv("ADMIN_IDS", "").replace(" ", "").split(",") if x
-    )
-    return Config(
-        bot_token=token,
-        admin_ids=admins,
-        openrouter_api_key=_optional_secret("OPENROUTER_API_KEY", "LLM_API_KEY_FILE"),
-        llm_model=os.getenv("LLM_MODEL", "deepseek/deepseek-v4-flash"),
-        llm_base_url=os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1"),
-        llm_backup_model=os.getenv("LLM_BACKUP_MODEL", "").strip() or None,
-        llm_prompt_version=os.getenv("LLM_PROMPT_VERSION", "").strip() or "v7-minor-content",
-        llm_json_mode=_env_bool("LLM_JSON_MODE"),
-        llm_retry_policy_v2=_env_bool("LLM_RETRY_POLICY_V2"),
-        llm_controlled_repair_enabled=_env_bool("LLM_CONTROLLED_REPAIR_ENABLED"),
-        llm_v2_primary_timeout_sec=float(os.getenv("LLM_V2_PRIMARY_TIMEOUT_SEC", "12")),
-        llm_v2_total_timeout_sec=float(os.getenv("LLM_V2_TOTAL_TIMEOUT_SEC", "18")),
-        llm_v2_max_attempts=max(1, min(2, int(os.getenv("LLM_V2_MAX_ATTEMPTS", "2")))),
-        db_path=os.getenv("DB_PATH", "moira.db"),
-        database_url=os.getenv("DATABASE_URL", "").strip(),
-        bot_display_name=os.getenv("BOT_DISPLAY_NAME", "Мойра"),
-        free_readings=int(os.getenv("FREE_READINGS", "3")),
-        earlybird_limit=int(os.getenv("EARLYBIRD_LIMIT", "50")),
-        earlybird_bonus=int(os.getenv("EARLYBIRD_BONUS", "3")),
-        posthog_api_key=os.getenv("POSTHOG_API_KEY", "").strip() or None,
-        posthog_host=os.getenv("POSTHOG_HOST", "https://eu.i.posthog.com"),
-        sentry_dsn=os.getenv("SENTRY_DSN", "").strip() or None,
-        referral_reward=int(os.getenv("REFERRAL_REWARD", "2")),
-        deepgram_api_key=os.getenv("DEEPGRAM_API_KEY", "").strip() or None,
-        deepgram_stt_enabled=_env_bool("DEEPGRAM_STT_ENABLED"),
-        deepgram_stt_model=os.getenv("DEEPGRAM_STT_MODEL", "nova-3"),
-        deepgram_stt_endpoint=os.getenv("DEEPGRAM_STT_ENDPOINT", "https://api.deepgram.com/v1/listen"),
-        deepgram_stt_max_duration_sec=int(os.getenv("DEEPGRAM_STT_MAX_DURATION_SEC", "60")),
-        deepgram_stt_max_bytes=int(os.getenv("DEEPGRAM_STT_MAX_BYTES", "10485760")),
-        deepgram_stt_timeout_sec=int(os.getenv("DEEPGRAM_STT_TIMEOUT_SEC", "25")),
-        # The reveal clip is the ritual moment; the still photo is the fallback
-        # whenever the clip is unavailable or Telegram rejects the upload.
-        spread_animation=_env_bool("SPREAD_ANIMATION"),
-        push_worker_enabled=_env_bool("PUSH_WORKER_ENABLED"),
-        push_hour_utc=int(os.getenv("PUSH_HOUR_UTC", "6")),
-        push_tick_seconds=max(30, int(os.getenv("PUSH_TICK_SECONDS", "300"))),
-        push_batch_size=max(1, int(os.getenv("PUSH_BATCH_SIZE", "50"))),
-        push_lease_seconds=max(30, int(os.getenv("PUSH_LEASE_SECONDS", "300"))),
-        push_max_attempts=max(1, int(os.getenv("PUSH_MAX_ATTEMPTS", "3"))),
-        push_mirror_enabled=_env_bool("PUSH_MIRROR_ENABLED", default=True),
-    )
+    return cfg

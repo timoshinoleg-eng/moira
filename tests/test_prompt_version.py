@@ -4,7 +4,6 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
-from dataclasses import replace
 from types import SimpleNamespace
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -103,11 +102,12 @@ def test_custom_version_reaches_usage_on_success_and_fallback(tmp_path, monkeypa
 
     async def run() -> None:
         # Legacy success path.
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            llm_prompt_version="v9-test",
-            db_path=str(tmp_path / "moira-pv-ok.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "llm_prompt_version": "v9-test",
+                "db_path": str(tmp_path / "moira-pv-ok.db"),
+            }
         )
         await init_db(cfg.db_path)
         drawn = draw("situation")
@@ -122,7 +122,14 @@ def test_custom_version_reaches_usage_on_success_and_fallback(tmp_path, monkeypa
         await close_db()
 
         # V2 fallback path (auth error → no retry).
-        cfg2 = replace(cfg, llm_retry_policy_v2=True, db_path=str(tmp_path / "moira-pv-fb.db"))
+        # model_copy is the pydantic spelling of dataclasses.replace: neither
+        # re-runs validation, which is what we want when only flipping flags.
+        cfg2 = cfg.model_copy(
+            update={
+                "llm_retry_policy_v2": True,
+                "db_path": str(tmp_path / "moira-pv-fb.db"),
+            }
+        )
         await init_db(cfg2.db_path)
         monkeypatch.setattr(openai, "AsyncOpenAI", lambda **kwargs: FakeClient([ProviderError(401)]))
         result2, _gid2 = await adapter.interpret_reading(
@@ -140,13 +147,14 @@ def test_custom_version_reaches_usage_on_success_and_fallback(tmp_path, monkeypa
 
 def test_custom_version_reaches_usage_on_repair(tmp_path) -> None:
     async def run() -> None:
-        cfg = replace(
-            load_config(require_token=False),
-            openrouter_api_key="test-key",
-            llm_retry_policy_v2=True,
-            llm_controlled_repair_enabled=True,
-            llm_prompt_version="v9-test",
-            db_path=str(tmp_path / "moira-pv-repair.db"),
+        cfg = load_config(require_token=False).model_copy(
+            update={
+                "openrouter_api_key": "test-key",
+                "llm_retry_policy_v2": True,
+                "llm_controlled_repair_enabled": True,
+                "llm_prompt_version": "v9-test",
+                "db_path": str(tmp_path / "moira-pv-repair.db"),
+            }
         )
         await init_db(cfg.db_path)
         drawn = draw("situation")
