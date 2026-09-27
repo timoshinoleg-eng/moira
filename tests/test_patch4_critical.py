@@ -1,4 +1,11 @@
-"""Patch 4 critical test matrix: Alembic, assets, fonts, data deletion, privacy."""
+"""Patch 4 critical test matrix: Alembic, assets, fonts, data deletion, privacy.
+
+These checks used to live only as ``_test_*`` helpers driven by ``main()`` at the
+bottom of this file, so pytest collected the module and ran none of them: the
+matrix was green in CI without ever executing. The helpers are now real tests
+sharing one scratch database (several assert on reading id 1, so the original
+ordering matters) and the standalone runner still works.
+"""
 from __future__ import annotations
 
 import asyncio
@@ -8,13 +15,11 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 
+import pytest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 db_path = os.path.join(tempfile.gettempdir(), "moira_patch4.db")
-if __name__ == "__main__":
-    os.environ["DB_PATH"] = db_path
-    if os.path.exists(db_path):
-        os.remove(db_path)
 
 from aiogram.types import User as TgUser
 from sqlalchemy import select
@@ -29,6 +34,28 @@ from bot.payments import payload_for
 from bot.services.analytics import Analytics
 from bot.visual.assets import check_assets
 from bot.visual.render import _font
+
+
+@pytest.fixture(scope="module", autouse=True)
+async def scratch_db():
+    """One throwaway SQLite file for the whole matrix, in its own directory.
+
+    create_all cannot add columns to an existing table, so a reused file would
+    make the results depend on whatever ran before it.
+    """
+    workdir = tempfile.mkdtemp(prefix="moira_patch4_")
+    target = os.path.join(workdir, "patch4.db")
+    previous = os.environ.get("DB_PATH")
+    os.environ["DB_PATH"] = target
+    await init_db(target)
+    try:
+        yield target
+    finally:
+        if previous is None:
+            os.environ.pop("DB_PATH", None)
+        else:
+            os.environ["DB_PATH"] = previous
+        shutil.rmtree(workdir, ignore_errors=True)
 
 
 class FakeSuccessfulPayment:
@@ -58,7 +85,7 @@ def _tg_user(user_id: int) -> TgUser:
     return TgUser(id=user_id, is_bot=False, first_name="Test")
 
 
-async def _test_alembic_upgrade_empty() -> None:
+async def test_alembic_upgrade_empty() -> None:
     """Run all migrations on a fresh empty SQLite file."""
     import subprocess
 
@@ -86,35 +113,56 @@ async def _test_alembic_upgrade_empty() -> None:
     assert result2.returncode == 0, f"alembic check failed: {result2.stderr}"
 
 
-async def _test_alembic_upgrade_copy() -> None:
-    """Existing DB (already stamped head) passes upgrade idempotently."""
+async def test_alembic_upgrade_copy() -> None:
+    """An already migrated database passes `upgrade head` idempotently.
+
+    The check used to copy a hardcoded temp path that only exists in the
+    standalone runner, and it copied a create_all database, which has no
+    alembic version row: `upgrade head` on that copy replays the whole chain and
+    collides with the existing tables. The chain is now migrated first, so this
+    asserts what its name promises.
+    """
     import subprocess
 
-    copy_db = os.path.join(tempfile.gettempdir(), "moira_copy.db")
-    shutil.copy(db_path, copy_db)
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    workdir = tempfile.mkdtemp(prefix="moira_upgrade_")
+    migrated = os.path.join(workdir, "migrated.db")
+    copy_db = os.path.join(workdir, "copy.db")
     env = os.environ.copy()
-    env["DB_PATH"] = copy_db
-    result = subprocess.run(
-        [sys.executable, "-m", "alembic", "upgrade", "head"],
-        cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        env=env,
-        capture_output=True,
-        text=True,
-    )
-    assert result.returncode == 0, f"upgrade on copy failed: {result.stderr}"
+    env["DB_PATH"] = migrated
+    env.pop("DATABASE_URL", None)
+
+    def run(target: str) -> subprocess.CompletedProcess:
+        env["DB_PATH"] = target
+        return subprocess.run(
+            [sys.executable, "-m", "alembic", "upgrade", "head"],
+            cwd=repo_root,
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+
+    try:
+        first = run(migrated)
+        assert first.returncode == 0, f"initial upgrade failed: {first.stderr}"
+        shutil.copy(migrated, copy_db)
+        second = run(copy_db)
+        assert second.returncode == 0, f"upgrade on copy failed: {second.stderr}"
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
 
 
-async def _test_assets_present() -> None:
+async def test_assets_present() -> None:
     found, expected = check_assets()
     assert found == expected, f"assets missing: {found}/{expected}"
 
 
-async def _test_font_fallback() -> None:
+async def test_font_fallback() -> None:
     font = _font(24)
     assert font is not None
 
 
-async def _test_data_deletion() -> None:
+async def test_data_deletion() -> None:
     cfg = load_config(require_token=False)
     user = await get_or_create_user(_tg_user(900), cfg)
     async with get_session() as session:
@@ -138,7 +186,7 @@ async def _test_data_deletion() -> None:
         assert payment is not None
 
 
-async def _test_access_other_reading() -> None:
+async def test_access_other_reading() -> None:
     cfg = load_config(require_token=False)
     await get_or_create_user(_tg_user(901), cfg)
     await get_or_create_user(_tg_user(902), cfg)
@@ -155,7 +203,7 @@ async def _test_access_other_reading() -> None:
     assert reason is not None
 
 
-async def _test_parallel_favorite() -> None:
+async def test_parallel_favorite() -> None:
     from bot.handlers.features import _toggle_favorite
 
     cfg = load_config(require_token=False)
@@ -175,7 +223,7 @@ async def _test_parallel_favorite() -> None:
     assert row is not None or any(results)
 
 
-async def _test_posthog_allowlist() -> None:
+async def test_posthog_allowlist() -> None:
     cfg = load_config(require_token=False)
     analytics = Analytics(cfg)
     safe = analytics._safe_props({"spread_type": "love", "question": "my secret", "name": "Alice"})
@@ -184,7 +232,7 @@ async def _test_posthog_allowlist() -> None:
     assert "name" not in safe
 
 
-async def _test_sentry_scrub() -> None:
+async def test_sentry_scrub() -> None:
     from bot.main import _init_sentry
 
     # If no DSN, function should be a no-op and not raise.
@@ -195,16 +243,20 @@ async def _test_sentry_scrub() -> None:
 
 
 async def main() -> None:
+    """Standalone runner: the same checks, in the same order, outside pytest."""
+    if os.path.exists(db_path):
+        os.remove(db_path)
+    os.environ["DB_PATH"] = db_path
     await init_db(db_path)
-    await _test_alembic_upgrade_empty()
-    await _test_alembic_upgrade_copy()
-    await _test_assets_present()
-    await _test_font_fallback()
-    await _test_data_deletion()
-    await _test_access_other_reading()
-    await _test_parallel_favorite()
-    await _test_posthog_allowlist()
-    await _test_sentry_scrub()
+    await test_alembic_upgrade_empty()
+    await test_alembic_upgrade_copy()
+    await test_assets_present()
+    await test_font_fallback()
+    await test_data_deletion()
+    await test_access_other_reading()
+    await test_parallel_favorite()
+    await test_posthog_allowlist()
+    await test_sentry_scrub()
     print("PATCH 4 CRITICAL TESTS PASSED")
 
 
